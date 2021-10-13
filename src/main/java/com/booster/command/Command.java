@@ -9,6 +9,7 @@ import java.util.Set;
 public enum Command {
 
     HELP(Set.of("h")),
+    LIST_LANGUAGES(Set.of("l l")),
     EXIT(Set.of("e")),
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 
