@@ -2,9 +2,9 @@ package com.booster;
 
 import com.booster.command.Command;
 import com.booster.command.handler.HelpCommandHandler;
+import com.booster.command.handler.ListLanguagesCommandHandler;
 import com.booster.command.handler.UnrecognizedCommandHandler;
 import com.booster.input.CommandLineReader;
-import com.booster.output.CommandLineWriter;
 import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 public class LearningSessionManager {
 
     private final CommandLineReader commandLineReader;
-    private final CommandLineWriter commandLineWriter;
 
     private final HelpCommandHandler helpCommandHandler;
+    private final ListLanguagesCommandHandler listLanguagesCommandHandler;
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
     private final CommonOperations commonOperations;
@@ -31,6 +31,9 @@ public class LearningSessionManager {
             switch (command) {
                 case HELP:
                     helpCommandHandler.handle();
+                    break;
+                case LIST_LANGUAGES:
+                    listLanguagesCommandHandler.handle();
                     break;
                 case UNRECOGNIZED:
                     unrecognizedCommandHandler.handle();
