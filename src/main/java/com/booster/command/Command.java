@@ -10,6 +10,7 @@ public enum Command {
 
     HELP(Set.of("h")),
     LIST_LANGUAGES(Set.of("l l")),
+    LIST_LANGUAGES_BEING_LEARNED(Set.of("l lbl")),
     EXIT(Set.of("e")),
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 
