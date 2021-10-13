@@ -1,16 +1,16 @@
 package com.booster.mapper;
 
-import com.booster.model.LanguageModel;
+import com.booster.model.Language;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LanguageModelMapper implements RowMapper<LanguageModel> {
+public class LanguageMapper implements RowMapper<Language> {
 
     @Override
-    public LanguageModel mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return LanguageModel.builder()
+    public Language mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return Language.builder()
                 .id(rs.getLong("id"))
                 .name(rs.getString("name"))
                 .build();
