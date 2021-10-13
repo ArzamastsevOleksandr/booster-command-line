@@ -1,10 +1,10 @@
-create table Language
+create table language
 (
-    id   bigint primary key,
+    id   serial primary key,
     name varchar(50) not null
 );
 
-insert into Language
-    (id, name)
-values (1, 'ENGLISH'),
-       (2, 'GERMAN');
+insert into language
+(name)
+values ('ENGLISH'),
+       ('GERMAN');
