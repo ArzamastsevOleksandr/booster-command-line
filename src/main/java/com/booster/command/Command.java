@@ -9,8 +9,9 @@ import java.util.Set;
 public enum Command {
 
     HELP(Set.of("h")),
-    LIST_LANGUAGES(Set.of("l l")),
-    LIST_LANGUAGES_BEING_LEARNED(Set.of("l lbl")),
+    LIST_LANGUAGES(Set.of("l")),
+    LIST_LANGUAGES_BEING_LEARNED(Set.of("lbl")),
+    ADD_LANGUAGE_BEING_LEARNED(Set.of("albl")),
     EXIT(Set.of("e")),
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 

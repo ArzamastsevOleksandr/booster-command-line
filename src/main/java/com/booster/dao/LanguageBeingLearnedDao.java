@@ -30,4 +30,11 @@ public class LanguageBeingLearnedDao {
                         .build());
     }
 
+    public void add(long languageId) {
+        jdbcTemplate.update("insert into language_being_learned " +
+                "(language_id) " +
+                "values " +
+                "(?)", languageId);
+    }
+
 }
