@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class LanguageModel {
+public class Language {
 
     private long id;
     private String name;
