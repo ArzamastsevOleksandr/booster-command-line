@@ -13,11 +13,11 @@ public enum Command {
     EXIT(Set.of("e")),
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 
-    private final Set<String> values;
+    private final Set<String> equivalents;
 
     public static Command fromString(String str) {
         return Arrays.stream(values())
-                .filter(command -> command.values.contains(str))
+                .filter(command -> command.equivalents.contains(str))
                 .findFirst()
                 .orElse(UNRECOGNIZED);
     }
@@ -28,6 +28,14 @@ public enum Command {
 
     public static boolean isNotExit(Command command) {
         return !isExit(command);
+    }
+
+    public static boolean isRecognizable(Command command) {
+        return command != UNRECOGNIZED;
+    }
+
+    public Set<String> getEquivalents() {
+        return equivalents;
     }
 
 }

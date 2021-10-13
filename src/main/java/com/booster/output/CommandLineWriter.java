@@ -13,4 +13,8 @@ public class CommandLineWriter {
         System.out.print(str);
     }
 
+    public void newLine() {
+        System.out.println();
+    }
+
 }
