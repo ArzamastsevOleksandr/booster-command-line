@@ -1,10 +1,9 @@
 package com.booster;
 
 import com.booster.command.Command;
-import com.booster.command.handler.HelpCommandHandler;
-import com.booster.command.handler.ListLanguagesBeingLearnedCommandHandler;
-import com.booster.command.handler.ListLanguagesCommandHandler;
-import com.booster.command.handler.UnrecognizedCommandHandler;
+import com.booster.command.arguments.CommandArgumentsResolver;
+import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.handler.*;
 import com.booster.input.CommandLineReader;
 import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +18,20 @@ public class LearningSessionManager {
     private final HelpCommandHandler helpCommandHandler;
     private final ListLanguagesCommandHandler listLanguagesCommandHandler;
     private final ListLanguagesBeingLearnedCommandHandler listLanguagesBeingLearnedCommandHandler;
+    private final AddLanguageBeingLearnedCommandHandler addLanguageBeingLearnedCommandHandler;
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
     private final CommonOperations commonOperations;
+
+    private final CommandArgumentsResolver commandArgumentsResolver;
 
     public void launch() {
         commonOperations.greeting();
         commonOperations.help();
         commonOperations.askForInput();
 
-        Command command = nextCommand();
+        CommandWithArguments commandWithArguments = nextCommandWithArguments();
+        Command command = commandWithArguments.getCommand();
         while (Command.isNotExit(command)) {
             switch (command) {
                 case HELP:
@@ -40,19 +43,23 @@ public class LearningSessionManager {
                 case LIST_LANGUAGES_BEING_LEARNED:
                     listLanguagesBeingLearnedCommandHandler.handle();
                     break;
-                case UNRECOGNIZED:
+                case ADD_LANGUAGE_BEING_LEARNED:
+                    addLanguageBeingLearnedCommandHandler.handle(commandWithArguments.getArguments());
+                    break;
+                default:
                     unrecognizedCommandHandler.handle();
                     break;
             }
             commonOperations.askForInput();
-            command = nextCommand();
+            commandWithArguments = nextCommandWithArguments();
+            command = commandWithArguments.getCommand();
         }
         commonOperations.end();
     }
 
-    private Command nextCommand() {
+    private CommandWithArguments nextCommandWithArguments() {
         String line = commandLineReader.readLine();
-        return Command.fromString(line);
+        return commandArgumentsResolver.resolve(line);
     }
 
 }
