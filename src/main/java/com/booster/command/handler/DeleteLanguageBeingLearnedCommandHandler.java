@@ -10,17 +10,17 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class AddLanguageBeingLearnedCommandHandler {
+public class DeleteLanguageBeingLearnedCommandHandler {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
 
     private final CommandLineWriter commandLineWriter;
 
-    // todo: can add ENGLISH many times (sql fix)
+    // todo: if no record deleted - notify the user
     public void handle(CommandWithArguments commandWithArguments) {
         List<String> arguments = commandWithArguments.getArguments();
-        String languageId = arguments.get(0);
-        languageBeingLearnedDao.add(Long.parseLong(languageId));
+        String id = arguments.get(0);
+        languageBeingLearnedDao.delete(Long.parseLong(id));
         commandLineWriter.writeLine("Done.");
         commandLineWriter.newLine();
     }

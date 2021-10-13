@@ -37,4 +37,9 @@ public class LanguageBeingLearnedDao {
                 "(?)", languageId);
     }
 
+    public void delete(long id) {
+        jdbcTemplate.update("delete from language_being_learned " +
+                "where id = ?", id);
+    }
+
 }
