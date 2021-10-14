@@ -22,3 +22,18 @@ create table language_being_learned
 insert into language_being_learned
     (language_id)
 values ((select id from language l where l.name = 'ENGLISH'));
+
+create table vocabulary
+(
+    id                        serial primary key,
+    name                      varchar(50),
+    created_at                timestamp default now(),
+    language_being_learned_id bigint,
+
+    foreign key (language_being_learned_id) references language_being_learned,
+    unique (name, language_being_learned_id)
+);
+
+insert into vocabulary
+    (name, language_being_learned_id)
+values ('DEFAULT', 1);
