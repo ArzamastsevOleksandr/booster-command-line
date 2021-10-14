@@ -17,6 +17,7 @@ public enum Command {
     DELETE_LANGUAGE_BEING_LEARNED(Set.of("dlbl")),
 
     LIST_VOCABULARIES(Set.of("v")),
+    DELETE_VOCABULARY(Set.of("dv")),
 
     EXIT(Set.of("e")),
 
