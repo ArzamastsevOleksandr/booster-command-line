@@ -24,6 +24,7 @@ public class LearningSessionManager {
     private final DeleteLanguageBeingLearnedCommandHandler deleteLanguageBeingLearnedCommandHandler;
 
     private final ListVocabulariesCommandHandler listVocabulariesCommandHandler;
+    private final DeleteVocabularyCommandHandler deleteVocabularyCommandHandler;
 
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
@@ -60,6 +61,9 @@ public class LearningSessionManager {
 
                 case LIST_VOCABULARIES:
                     listVocabulariesCommandHandler.handle();
+                    break;
+                case DELETE_VOCABULARY:
+                    deleteVocabularyCommandHandler.handle(commandWithArguments);
                     break;
 
                 default:
