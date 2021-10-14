@@ -16,10 +16,15 @@ public class LearningSessionManager {
     private final CommandLineReader commandLineReader;
 
     private final HelpCommandHandler helpCommandHandler;
+
     private final ListLanguagesCommandHandler listLanguagesCommandHandler;
+
     private final ListLanguagesBeingLearnedCommandHandler listLanguagesBeingLearnedCommandHandler;
     private final AddLanguageBeingLearnedCommandHandler addLanguageBeingLearnedCommandHandler;
     private final DeleteLanguageBeingLearnedCommandHandler deleteLanguageBeingLearnedCommandHandler;
+
+    private final ListVocabulariesCommandHandler listVocabulariesCommandHandler;
+
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
     private final CommonOperations commonOperations;
@@ -38,9 +43,11 @@ public class LearningSessionManager {
                 case HELP:
                     helpCommandHandler.handle();
                     break;
+
                 case LIST_LANGUAGES:
                     listLanguagesCommandHandler.handle();
                     break;
+
                 case LIST_LANGUAGES_BEING_LEARNED:
                     listLanguagesBeingLearnedCommandHandler.handle();
                     break;
@@ -50,6 +57,11 @@ public class LearningSessionManager {
                 case DELETE_LANGUAGE_BEING_LEARNED:
                     deleteLanguageBeingLearnedCommandHandler.handle(commandWithArguments);
                     break;
+
+                case LIST_VOCABULARIES:
+                    listVocabulariesCommandHandler.handle();
+                    break;
+
                 default:
                     unrecognizedCommandHandler.handle();
                     break;
