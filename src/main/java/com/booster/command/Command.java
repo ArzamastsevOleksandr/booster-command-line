@@ -16,6 +16,8 @@ public enum Command {
     ADD_LANGUAGE_BEING_LEARNED(Set.of("albl")),
     DELETE_LANGUAGE_BEING_LEARNED(Set.of("dlbl")),
 
+    LIST_VOCABULARIES(Set.of("v")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
