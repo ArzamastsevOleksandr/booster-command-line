@@ -37,3 +37,13 @@ create table vocabulary
 insert into vocabulary
     (name, language_being_learned_id)
 values ('DEFAULT', 1);
+
+create table word
+(
+    id   serial primary key,
+    name varchar(50)
+);
+
+insert into word
+    (name)
+values ('language');
