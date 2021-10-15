@@ -1,0 +1,2 @@
+java -XX:+PrintFlagsFinal -version | grep ergonomic (jvm parameters configured by the jvm ergonomics)
+-XX:-UseContainerSupport (disable jvm container support)
