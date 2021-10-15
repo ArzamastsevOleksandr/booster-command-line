@@ -34,4 +34,11 @@ public class VocabularyDao {
                 "where id = ?", id);
     }
 
+    public void add(Vocabulary vocabulary) {
+        jdbcTemplate.update("insert into vocabulary " +
+                        "(name, language_being_learned_id) " +
+                        "values (?, ?)",
+                vocabulary.getName(), vocabulary.getLanguageBeingLearnedId());
+    }
+
 }
