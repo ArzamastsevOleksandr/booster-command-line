@@ -20,6 +20,8 @@ public enum Command {
     ADD_VOCABULARY(Set.of("av")),
     DELETE_VOCABULARY(Set.of("dv")),
 
+    LIST_WORDS(Set.of("w")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
