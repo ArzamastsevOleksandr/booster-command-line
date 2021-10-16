@@ -22,6 +22,8 @@ public enum Command {
 
     LIST_WORDS(Set.of("w")),
 
+    LIST_VOCABULARY_ENTRIES(Set.of("ve")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));

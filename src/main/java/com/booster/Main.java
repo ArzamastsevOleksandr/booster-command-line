@@ -4,6 +4,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+// todo: standardize maven builds with maven wrapper
 @Configuration
 @ComponentScan
 public class Main {
