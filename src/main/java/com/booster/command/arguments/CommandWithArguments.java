@@ -11,6 +11,7 @@ import java.util.List;
 public class CommandWithArguments {
 
     private Command command;
-    private List<String> arguments;
+    @Builder.Default
+    private List<String> arguments = List.of();
 
 }

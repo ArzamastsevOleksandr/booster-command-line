@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Set;
 
+// todo: group commands based on functionality (HELP command will use it to print data expressively).
 @RequiredArgsConstructor
 public enum Command {
 
@@ -24,6 +25,7 @@ public enum Command {
 
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),
     DELETE_VOCABULARY_ENTRY(Set.of("dve")),
+    ADD_VOCABULARY_ENTRY(Set.of("ave")),
 
     EXIT(Set.of("e")),
 

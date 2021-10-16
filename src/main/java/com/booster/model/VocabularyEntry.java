@@ -13,6 +13,7 @@ public class VocabularyEntry {
     private Timestamp createdAt;
     private int correctAnswersCount;
 
+    // todo: feat 1 ve can belong to N v
     private String vocabularyName;
     private Word word;
 

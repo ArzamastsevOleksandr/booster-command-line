@@ -41,4 +41,12 @@ public class VocabularyEntryDao {
                 "where id = ?", id);
     }
 
+    public void add(long wordId, long vocabularyId) {
+        jdbcTemplate.update("insert into vocabulary_entry " +
+                        "(word_id, vocabulary_id) " +
+                        "values (?, ?)",
+                wordId, vocabularyId
+        );
+    }
+
 }
