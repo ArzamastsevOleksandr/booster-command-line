@@ -23,6 +23,7 @@ public enum Command {
     LIST_WORDS(Set.of("w")),
 
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),
+    DELETE_VOCABULARY_ENTRY(Set.of("dve")),
 
     EXIT(Set.of("e")),
 
