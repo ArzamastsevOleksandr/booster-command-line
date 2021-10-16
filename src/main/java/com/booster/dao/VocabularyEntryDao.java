@@ -36,4 +36,9 @@ public class VocabularyEntryDao {
                         .build());
     }
 
+    public void delete(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry " +
+                "where id = ?", id);
+    }
+
 }
