@@ -29,6 +29,8 @@ public class LearningSessionManager {
 
     private final ListWordsCommandHandler listWordsCommandHandler;
 
+    private final ListVocabularyEntriesCommandHandler listVocabularyEntriesCommandHandler;
+
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
     private final CommonOperations commonOperations;
@@ -74,6 +76,10 @@ public class LearningSessionManager {
 
                 case LIST_WORDS:
                     listWordsCommandHandler.handle();
+                    break;
+
+                case LIST_VOCABULARY_ENTRIES:
+                    listVocabularyEntriesCommandHandler.handle();
                     break;
 
                 default:
