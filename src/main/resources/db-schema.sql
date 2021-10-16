@@ -47,3 +47,16 @@ create table word
 insert into word
     (name)
 values ('language');
+
+create table vocabulary_entry
+(
+    id                    serial primary key,
+    created_at            timestamp default now(),
+    correct_answers_count smallint  default 0,
+
+    word_id               bigint,
+    vocabulary_id         bigint,
+
+    foreign key (word_id) references word (id),
+    foreign key (vocabulary_id) references vocabulary (id)
+);
