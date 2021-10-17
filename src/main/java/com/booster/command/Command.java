@@ -27,6 +27,8 @@ public enum Command {
     DELETE_VOCABULARY_ENTRY(Set.of("dve")),
     ADD_VOCABULARY_ENTRY(Set.of("ave")),
 
+    START_TRAINING_SESSION(Set.of("t")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));

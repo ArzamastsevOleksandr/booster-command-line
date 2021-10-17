@@ -5,6 +5,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 // todo: standardize maven builds with maven wrapper
+// todo: learn javac
+// todo: java flame graphs
 @Configuration
 @ComponentScan
 public class Main {
