@@ -18,6 +18,9 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class StartTrainingSessionCommandHandler {
 
+    private static final int MAX_CORRECT_ANSWERS_COUNT = 10;
+    private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
+
     private final VocabularyEntryDao vocabularyEntryDao;
 
     private final CommandLineWriter commandLineWriter;
@@ -62,10 +65,19 @@ public class StartTrainingSessionCommandHandler {
                     commandLineWriter.writeLine("Going to the next word.");
                 }
                 commandLineWriter.newLine();
+                int correctAnswersCountChange = isCorrectAnswer ? 1 : -1;
+                int cacUpdated = ve.getCorrectAnswersCount() + correctAnswersCountChange;
+                if (isValidCorrectAnswersCount(cacUpdated)) {
+                    vocabularyEntryDao.updateCorrectAnswersCount(ve.getId(), cacUpdated);
+                }
             }
         }
         commandLineWriter.writeLine("Training session finished!");
         commandLineWriter.newLine();
+    }
+
+    private boolean isValidCorrectAnswersCount(int cacUpdated) {
+        return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated && cacUpdated <= MAX_CORRECT_ANSWERS_COUNT;
     }
 
     private Set<String> parseEquivalents(String equivalents) {

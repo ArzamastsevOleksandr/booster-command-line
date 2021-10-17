@@ -117,4 +117,10 @@ public class VocabularyEntryDao {
         };
     }
 
+    public void updateCorrectAnswersCount(long id, int cacUpdated) {
+        jdbcTemplate.update("update vocabulary_entry ve " +
+                "set correct_answers_count = ? " +
+                "where ve.id = ?", cacUpdated, id);
+    }
+
 }
