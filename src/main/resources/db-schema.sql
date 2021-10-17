@@ -60,3 +60,11 @@ create table vocabulary_entry
     foreign key (word_id) references word (id),
     foreign key (vocabulary_id) references vocabulary (id)
 );
+
+create table vocabulary_entry__synonym
+(
+    vocabulary_entry_id bigint,
+    word_id             bigint,
+
+    primary key (vocabulary_entry_id, word_id)
+);
