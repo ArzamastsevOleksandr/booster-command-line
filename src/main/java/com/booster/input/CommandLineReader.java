@@ -12,7 +12,7 @@ public class CommandLineReader {
 
     public String readLine() {
         try {
-            return bufferedReader.readLine().trim();
+            return bufferedReader.readLine().strip();
         } catch (IOException e) {
             e.printStackTrace();
             return "AN ERROR OCCURRED";

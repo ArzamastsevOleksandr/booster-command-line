@@ -33,6 +33,8 @@ public class LearningSessionManager {
     private final AddVocabularyEntryCommandHandler addVocabularyEntryCommandHandler;
     private final DeleteVocabularyEntryCommandHandler deleteVocabularyEntryCommandHandler;
 
+    private final StartTrainingSessionCommandHandler startTrainingSessionCommandHandler;
+
     private final UnrecognizedCommandHandler unrecognizedCommandHandler;
 
     private final CommonOperations commonOperations;
@@ -88,6 +90,10 @@ public class LearningSessionManager {
                     break;
                 case DELETE_VOCABULARY_ENTRY:
                     deleteVocabularyEntryCommandHandler.handle(commandWithArguments);
+                    break;
+
+                case START_TRAINING_SESSION:
+                    startTrainingSessionCommandHandler.handle(commandWithArguments);
                     break;
 
                 default:
