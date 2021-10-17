@@ -5,12 +5,13 @@ import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class VocabularyEntryDao {
 
     // todo: one sql query?
     public List<VocabularyEntry> findAll() {
-        return jdbcTemplate.query(
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, " +
                         "w.id as w_id, w.name as w_name, " +
                         "v.name as v_name " +
@@ -39,6 +40,23 @@ public class VocabularyEntryDao {
                                 .name(rs.getString("w_name"))
                                 .build())
                         .build());
+        var veid2Synonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym ves " +
+                        "join word w on ves.word_id = w.id " +
+                        "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id", (ResultSetExtractor<Map>) rs -> {
+                    Map<Long, Set<String>> veid2Synonyms1 = new HashMap<>();
+                    while (rs.next()) {
+                        veid2Synonyms1.computeIfAbsent(
+                                rs.getLong("ve_id"),
+                                k -> new HashSet<>()).add(rs.getString("synonym")
+                        );
+                    }
+                    return veid2Synonyms1;
+                });
+        for (var ve : vocabularyEntries) {
+            ve.setSynonyms((Set<String>) veid2Synonyms.get(ve.getId()));
+        }
+        return vocabularyEntries;
     }
 
     public void delete(long id) {
