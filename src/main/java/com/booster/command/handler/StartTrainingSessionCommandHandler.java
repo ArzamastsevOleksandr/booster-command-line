@@ -31,23 +31,47 @@ public class StartTrainingSessionCommandHandler {
             commandLineWriter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
 
             for (var ve : vocabularyEntries) {
-                commandLineWriter.writeLine("Word: " + ve.getWord().getName() + ".");
+                boolean isCorrectAnswer = true;
+                commandLineWriter.writeLine("Current word: [" + ve.getWord().getName() + "]");
+                commandLineWriter.newLine();
+
+                // todo: separate methods
                 commandLineWriter.write("Enter synonyms: ");
-                String input = commandLineReader.readLine();
-                Set<String> synonymsAnswer = Arrays.stream(input.split(";"))
-                        .map(String::strip)
-                        .collect(toSet());
+                String enteredSynonyms = commandLineReader.readLine();
+                Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
 
                 if (synonymsAnswer.equals(ve.getSynonyms())) {
-                    commandLineWriter.writeLine("Correct.");
+                    commandLineWriter.writeLine("Correct!");
                 } else {
-                    commandLineWriter.writeLine("Wrong.");
+                    commandLineWriter.writeLine("Wrong!");
+                    isCorrectAnswer = false;
                 }
+                commandLineWriter.newLine();
+
+                if (isCorrectAnswer) {
+                    commandLineWriter.write("Enter antonyms: ");
+                    String enteredAntonyms = commandLineReader.readLine();
+                    Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
+
+                    if (antonymsAnswer.equals(ve.getAntonyms())) {
+                        commandLineWriter.writeLine("Correct!");
+                    } else {
+                        commandLineWriter.writeLine("Wrong!");
+                    }
+                } else {
+                    commandLineWriter.writeLine("Going to the next word.");
+                }
+                commandLineWriter.newLine();
             }
         }
-
-        commandLineWriter.writeLine("Done");
+        commandLineWriter.writeLine("Training session finished!");
         commandLineWriter.newLine();
+    }
+
+    private Set<String> parseEquivalents(String equivalents) {
+        return Arrays.stream(equivalents.split(";"))
+                .map(String::strip)
+                .collect(toSet());
     }
 
 }
