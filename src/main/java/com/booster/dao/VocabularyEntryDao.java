@@ -40,21 +40,21 @@ public class VocabularyEntryDao {
                                 .name(rs.getString("w_name"))
                                 .build())
                         .build());
-        var veid2Synonyms = jdbcTemplate.query(
+        var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym ves " +
                         "join word w on ves.word_id = w.id " +
-                        "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id", (ResultSetExtractor<Map>) rs -> {
-                    Map<Long, Set<String>> veid2Synonyms1 = new HashMap<>();
-                    while (rs.next()) {
-                        veid2Synonyms1.computeIfAbsent(
-                                rs.getLong("ve_id"),
-                                k -> new HashSet<>()).add(rs.getString("synonym")
-                        );
-                    }
-                    return veid2Synonyms1;
-                });
+                        "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("synonym"));
+
+        var veId2Antonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as antonym from vocabulary_entry__antonym vea " +
+                        "join word w on vea.word_id = w.id " +
+                        "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("antonym"));
+
         for (var ve : vocabularyEntries) {
-            ve.setSynonyms((Set<String>) veid2Synonyms.get(ve.getId()));
+            ve.setSynonyms(veId2Synonyms.get(ve.getId()));
+            ve.setAntonyms(veId2Antonyms.get(ve.getId()));
         }
         return vocabularyEntries;
     }
@@ -86,6 +86,19 @@ public class VocabularyEntryDao {
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
                 createBatchPreparedStatementSetter(antonymIds, vocabularyEntryId));
+    }
+
+    private ResultSetExtractor<Map<Long, Set<String>>> createResultSetExtractor(String columnName) {
+        return rs -> {
+            Map<Long, Set<String>> veId2Values = new HashMap<>();
+            while (rs.next()) {
+                veId2Values.computeIfAbsent(
+                        rs.getLong("ve_id"),
+                        k -> new HashSet<>()).add(rs.getString(columnName)
+                );
+            }
+            return veId2Values;
+        };
     }
 
     private BatchPreparedStatementSetter createBatchPreparedStatementSetter(List<Long> ids, Long vocabularyEntryId) {
