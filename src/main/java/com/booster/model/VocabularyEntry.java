@@ -20,5 +20,7 @@ public class VocabularyEntry {
 
     @Builder.Default
     private Set<String> synonyms = Set.of();
+    @Builder.Default
+    private Set<String> antonyms = Set.of();
 
 }
