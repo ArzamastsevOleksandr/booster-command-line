@@ -68,3 +68,11 @@ create table vocabulary_entry__synonym
 
     primary key (vocabulary_entry_id, word_id)
 );
+
+create table vocabulary_entry__antonym
+(
+    vocabulary_entry_id bigint,
+    word_id             bigint,
+
+    primary key (vocabulary_entry_id, word_id)
+);

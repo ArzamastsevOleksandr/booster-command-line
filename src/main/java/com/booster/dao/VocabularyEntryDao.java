@@ -64,7 +64,7 @@ public class VocabularyEntryDao {
                 "where id = ?", id);
     }
 
-    public void add(long wordId, long vocabularyId, List<Long> synonymIds) {
+    public void add(long wordId, long vocabularyId, List<Long> synonymIds, List<Long> antonymIds) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
@@ -75,23 +75,33 @@ public class VocabularyEntryDao {
             preparedStatement.setLong(2, vocabularyId);
             return preparedStatement;
         }, keyHolder);
+        long vocabularyEntryId = keyHolder.getKey().longValue();
         jdbcTemplate.batchUpdate(
                 "insert into vocabulary_entry__synonym " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        Long wordId = synonymIds.get(i);
-                        ps.setLong(1, keyHolder.getKey().longValue());
-                        ps.setLong(2, wordId);
-                    }
+                createBatchPreparedStatementSetter(synonymIds, vocabularyEntryId));
+        jdbcTemplate.batchUpdate(
+                "insert into vocabulary_entry__antonym " +
+                        "(vocabulary_entry_id, word_id) " +
+                        "values (?, ?)",
+                createBatchPreparedStatementSetter(antonymIds, vocabularyEntryId));
+    }
 
-                    @Override
-                    public int getBatchSize() {
-                        return synonymIds.size();
-                    }
-                });
+    private BatchPreparedStatementSetter createBatchPreparedStatementSetter(List<Long> ids, Long vocabularyEntryId) {
+        return new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                Long wordId = ids.get(i);
+                ps.setLong(1, vocabularyEntryId);
+                ps.setLong(2, wordId);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return ids.size();
+            }
+        };
     }
 
 }

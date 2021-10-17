@@ -29,6 +29,7 @@ public class AddVocabularyEntryCommandHandler {
         long vocabularyId = -1;
         long wordId = -1;
         List<Long> synonymIds = new ArrayList<>();
+        List<Long> antonymIds = new ArrayList<>();
         for (String arg : arguments) {
             String[] flagAndValues = arg.split("=");
             String flag = flagAndValues[0];
@@ -42,18 +43,21 @@ public class AddVocabularyEntryCommandHandler {
                     wordId = wordDao.findByNameOrCreateAndGet(values).getId();
                     break;
                 case "s":
-                    synonymIds = getSynonymIds(values);
+                    synonymIds = getWordIds(values);
+                    break;
+                case "a":
+                    antonymIds = getWordIds(values);
                     break;
                 default:
                     System.out.println("ERROR");
             }
         }
-        vocabularyEntryDao.add(wordId, vocabularyId, synonymIds);
+        vocabularyEntryDao.add(wordId, vocabularyId, synonymIds, antonymIds);
         commandLineWriter.writeLine("Done.");
         commandLineWriter.newLine();
     }
 
-    private List<Long> getSynonymIds(String values) {
+    private List<Long> getWordIds(String values) {
         return Arrays.stream(values.split(";"))
                 .map(String::strip)
                 .map(wordDao::findByNameOrCreateAndGet)
