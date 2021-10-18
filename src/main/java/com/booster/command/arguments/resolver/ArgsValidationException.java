@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+// todo: value class?
 @Getter
 @RequiredArgsConstructor
 public class ArgsValidationException extends RuntimeException {
