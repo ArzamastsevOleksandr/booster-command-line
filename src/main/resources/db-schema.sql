@@ -48,11 +48,18 @@ create table vocabulary_entry
     correct_answers_count smallint  default 0,
 
     word_id               bigint,
-    vocabulary_id         bigint,
-
-    foreign key (word_id) references word (id),
-    foreign key (vocabulary_id) references vocabulary (id)
+    vocabulary_id         bigint
 );
+
+alter table vocabulary_entry
+    add constraint vocabulary_entry__word_id__fkey
+        foreign key (word_id)
+            references word (id);
+
+alter table vocabulary_entry
+    add constraint vocabulary_entry__vocabulary_id__fkey
+        foreign key (vocabulary_id)
+            references vocabulary (id);
 
 create table vocabulary_entry__synonym
 (
