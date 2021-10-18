@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommandLineWriter {
 
+    // todo: Object, ...varargs
     public void writeLine(String str) {
         System.out.println(str);
     }

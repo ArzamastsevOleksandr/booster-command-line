@@ -20,4 +20,11 @@ public class LanguageDao {
                 .build());
     }
 
+    public boolean existsWithId(long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from language l " +
+                "where l.id = ?", Integer.class, id);
+
+        return count > 0;
+    }
+
 }

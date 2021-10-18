@@ -11,7 +11,14 @@ import java.util.List;
 public class CommandWithArguments {
 
     private Command command;
+
+    @Deprecated
     @Builder.Default
     private List<String> arguments = List.of();
+
+    private Args args;
+
+    @Builder.Default
+    private List<String> argErrors = List.of();
 
 }
