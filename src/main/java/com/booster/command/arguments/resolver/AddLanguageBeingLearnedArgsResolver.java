@@ -7,13 +7,19 @@ import com.booster.dao.LanguageDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.booster.command.Command.ADD_LANGUAGE_BEING_LEARNED;
 
 @Component
 @RequiredArgsConstructor
 public class AddLanguageBeingLearnedArgsResolver {
+
+    private static final String ID_FLAG = "id";
 
     private final LanguageDao languageDao;
 
@@ -22,18 +28,13 @@ public class AddLanguageBeingLearnedArgsResolver {
         try {
             checkIfArgumentsAreSpecified(args);
 
-            String[] flagAndValue = Args.splitAndStrip(args.get(0));
-            checkIfFlagHasValue(flagAndValue);
-
-            checkIfFlagIsId(flagAndValue);
-
-            String idValue = flagAndValue[1];
-            checkIfLanguageIdIsCorrectNumber(idValue);
-            long languageId = Long.parseLong(idValue);
-            checkIfLanguageExistsWithId(languageId);
+            Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
+            checkIfMandatoryFlagsArePresent(flag2value, Set.of(ID_FLAG));
+            checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
+            checkIfLanguageExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
 
             return builder
-                    .args(new AddLanguageBeingLearnedArgs(languageId))
+                    .args(new AddLanguageBeingLearnedArgs(Long.parseLong(flag2value.get(ID_FLAG))))
                     .build();
         } catch (ArgsValidationException e) {
             return builder
@@ -54,30 +55,40 @@ public class AddLanguageBeingLearnedArgsResolver {
         }
     }
 
+    private Map<String, String> checkFlagsWithValuesAndReturn(List<String> args) {
+        try {
+            return args.stream()
+                    .map(Args::splitAndStrip)
+                    .collect(Collectors.toMap(arr -> arr[0], arr -> arr[1]));
+        } catch (ArrayIndexOutOfBoundsException e) {
+            List<String> argErrors = List.of(
+                    "Flag must come together with the value, separated by the '=' sign.",
+                    "All flag-value pairs must be separated with a space."
+            );
+            throw new ArgsValidationException(argErrors);
+        }
+    }
+
+    private void checkIfMandatoryFlagsArePresent(Map<String, String> flag2value, Set<String> mandatoryFlags) {
+        var providedFlags = new HashSet<>(flag2value.keySet());
+        var mandatoryFlagsCopy = new HashSet<>(mandatoryFlags);
+        mandatoryFlagsCopy.removeAll(providedFlags);
+        if (!mandatoryFlagsCopy.isEmpty()) {
+            var argErrors = List.of(
+                    "Mandatory flags (" + String.join(",", mandatoryFlagsCopy) + ") are missing"
+            );
+            throw new ArgsValidationException(argErrors);
+        }
+    }
+
+    private void checkIfIdIsCorrectNumber(String idValue) {
+        if (isNotLongType(idValue)) {
+            throw new ArgsValidationException(List.of("Id must be a positive integer number. Got: " + idValue + "."));
+        }
+    }
+
     private String commandString() {
         return ADD_LANGUAGE_BEING_LEARNED.extendedToString();
-    }
-
-    private void checkIfFlagHasValue(String[] flagAndValue) {
-        if (flagAndValue.length != 2) {
-            List<String> argErrors = List.of("Flag must come together with the value, separated by the '=' sign.");
-            throw new ArgsValidationException(argErrors);
-        }
-    }
-
-    private void checkIfFlagIsId(String[] flagAndValue) {
-        String idFlag = flagAndValue[0];
-        if (!idFlag.equals("id")) {
-            List<String> argErrors = List.of("Unknown flag: " + idFlag + " for the " + commandString() + " command.");
-            throw new ArgsValidationException(argErrors);
-        }
-    }
-
-    private void checkIfLanguageIdIsCorrectNumber(String idValue) {
-        if (isNotLongType(idValue)) {
-            List<String> argErrors = List.of("Language id must be a positive integer number. Provided: " + idValue + ".");
-            throw new ArgsValidationException(argErrors);
-        }
     }
 
     private void checkIfLanguageExistsWithId(long languageId) {
