@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.LanguageBeingLearnedDao;
 import com.booster.model.LanguageBeingLearned;
 import com.booster.output.CommandLineWriter;
@@ -17,7 +18,7 @@ public class ListLanguagesBeingLearnedCommandHandler {
     private final CommandLineWriter commandLineWriter;
 
     // todo: default pagination + pagination flags
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         List<LanguageBeingLearned> languagesBeingLearned = languageBeingLearnedDao.findAll();
 
         if (languagesBeingLearned.isEmpty()) {

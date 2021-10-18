@@ -22,7 +22,8 @@ public class CommonOperations {
     }
 
     public void end() {
-        commandLineWriter.writeLine("END");
+        commandLineWriter.newLine();
+        commandLineWriter.writeLine("See you next time!");
     }
 
 }

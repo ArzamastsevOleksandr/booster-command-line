@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyDao;
 import com.booster.model.Vocabulary;
 import com.booster.output.CommandLineWriter;
@@ -16,7 +17,7 @@ public class ListVocabulariesCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         List<Vocabulary> vocabularies = vocabularyDao.findAll();
 
         if (vocabularies.isEmpty()) {
