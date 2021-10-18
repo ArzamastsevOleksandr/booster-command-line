@@ -1,12 +1,11 @@
 package com.booster.command.handler;
 
 import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.DeleteVocabularyArgs;
 import com.booster.dao.VocabularyDao;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -16,13 +15,17 @@ public class DeleteVocabularyCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    // todo: id flag
     public void handle(CommandWithArguments commandWithArguments) {
-        List<String> arguments = commandWithArguments.getArguments();
-        String id = arguments.get(0);
-        vocabularyDao.delete(Long.parseLong(id));
-
-        commandLineWriter.writeLine("Done");
+        if (commandWithArguments.hasNoErrors()) {
+            var args = (DeleteVocabularyArgs) commandWithArguments.getArgs();
+            vocabularyDao.delete(args.getId());
+            commandLineWriter.writeLine("Done.");
+        } else {
+            commandLineWriter.writeLine("Errors: ");
+            commandLineWriter.newLine();
+            commandWithArguments.getArgErrors()
+                    .forEach(commandLineWriter::writeLine);
+        }
         commandLineWriter.newLine();
     }
 
