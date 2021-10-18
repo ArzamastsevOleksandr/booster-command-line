@@ -58,4 +58,8 @@ public enum Command {
         return equivalents;
     }
 
+    public String extendedToString() {
+        return this + " (" + String.join(",", equivalents) + ")";
+    }
+
 }
