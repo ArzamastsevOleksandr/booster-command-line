@@ -21,4 +21,8 @@ public class CommandWithArguments {
     @Builder.Default
     private List<String> argErrors = List.of();
 
+    public boolean hasNoErrors() {
+        return argErrors == null || argErrors.isEmpty();
+    }
+
 }
