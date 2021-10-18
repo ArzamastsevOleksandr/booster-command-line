@@ -22,18 +22,23 @@ alter table language_being_learned
 create table vocabulary
 (
     id                        serial primary key,
-    name                      varchar(50),
-    created_at                timestamp default now(),
-    language_being_learned_id bigint,
-
-    foreign key (language_being_learned_id) references language_being_learned,
-    unique (name, language_being_learned_id)
+    name                      varchar(50)             not null,
+    created_at                timestamp default now() not null,
+    language_being_learned_id bigint
 );
+
+create unique index vocabulary__name__language_being_learned_id__index
+    on vocabulary (name, language_being_learned_id);
+
+alter table vocabulary
+    add constraint vocabulary__language_being_learned_id__fkey
+        foreign key (language_being_learned_id)
+            references language_being_learned (id);
 
 create table word
 (
     id   serial primary key,
-    name varchar(50)
+    name varchar(50) not null
 );
 
 create table vocabulary_entry
