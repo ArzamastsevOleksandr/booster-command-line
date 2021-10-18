@@ -15,7 +15,6 @@ public class AddLanguageBeingLearnedCommandHandler implements CommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    // todo: can add ENGLISH many times (sql fix)
     public void handle(CommandWithArguments commandWithArguments) {
         if (noErrors(commandWithArguments)) {
             var args = (AddLanguageBeingLearnedArgs) commandWithArguments.getArgs();
