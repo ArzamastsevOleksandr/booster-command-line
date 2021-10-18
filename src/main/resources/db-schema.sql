@@ -14,7 +14,7 @@ create table language_being_learned
     id          serial primary key,
     created_at  timestamp default now(),
 
-    language_id bigint,
+    language_id bigint unique,
 
     foreign key (language_id) references language
 );
