@@ -51,15 +51,15 @@ public class LearningSessionManager {
         while (Command.isNotExit(command)) {
             switch (command) {
                 case HELP:
-                    helpCommandHandler.handle();
+                    helpCommandHandler.handle(commandWithArguments);
                     break;
 
                 case LIST_LANGUAGES:
-                    listLanguagesCommandHandler.handle();
+                    listLanguagesCommandHandler.handle(commandWithArguments);
                     break;
 
                 case LIST_LANGUAGES_BEING_LEARNED:
-                    listLanguagesBeingLearnedCommandHandler.handle();
+                    listLanguagesBeingLearnedCommandHandler.handle(commandWithArguments);
                     break;
                 case ADD_LANGUAGE_BEING_LEARNED:
                     addLanguageBeingLearnedCommandHandler.handle(commandWithArguments);
@@ -69,7 +69,7 @@ public class LearningSessionManager {
                     break;
 
                 case LIST_VOCABULARIES:
-                    listVocabulariesCommandHandler.handle();
+                    listVocabulariesCommandHandler.handle(commandWithArguments);
                     break;
                 case ADD_VOCABULARY:
                     addVocabularyCommandHandler.handle(commandWithArguments);
@@ -79,11 +79,11 @@ public class LearningSessionManager {
                     break;
 
                 case LIST_WORDS:
-                    listWordsCommandHandler.handle();
+                    listWordsCommandHandler.handle(commandWithArguments);
                     break;
 
                 case LIST_VOCABULARY_ENTRIES:
-                    listVocabularyEntriesCommandHandler.handle();
+                    listVocabularyEntriesCommandHandler.handle(commandWithArguments);
                     break;
                 case ADD_VOCABULARY_ENTRY:
                     addVocabularyEntryCommandHandler.handle(commandWithArguments);
@@ -97,7 +97,7 @@ public class LearningSessionManager {
                     break;
 
                 default:
-                    unrecognizedCommandHandler.handle();
+                    unrecognizedCommandHandler.handle(commandWithArguments);
                     break;
             }
             commonOperations.askForInput();

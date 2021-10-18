@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import com.booster.output.CommandLineWriter;
@@ -17,7 +18,7 @@ public class ListVocabularyEntriesCommandHandler {
     private final CommandLineWriter commandLineWriter;
 
     // todo: default pagination + pagination flags
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
 
         if (vocabularyEntries.isEmpty()) {

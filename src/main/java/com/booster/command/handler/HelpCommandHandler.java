@@ -1,6 +1,7 @@
 package com.booster.command.handler;
 
 import com.booster.command.Command;
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ public class HelpCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         commandLineWriter.writeLine("Available commands are:");
         commandLineWriter.newLine();
 

@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.output.CommandLineWriter;
 import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class UnrecognizedCommandHandler {
 
     private final CommonOperations commonOperations;
 
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         commandLineWriter.writeLine("Unknown command.");
         commandLineWriter.newLine();
         commonOperations.help();

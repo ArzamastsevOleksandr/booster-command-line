@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
 import com.booster.output.CommandLineWriter;
@@ -16,7 +17,7 @@ public class ListWordsCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    public void handle() {
+    public void handle(CommandWithArguments commandWithArguments) {
         List<Word> words = wordDao.findAll();
 
         if (words.isEmpty()) {
