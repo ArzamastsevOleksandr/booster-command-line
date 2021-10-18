@@ -61,7 +61,7 @@ alter table vocabulary_entry
         foreign key (vocabulary_id)
             references vocabulary (id);
 
-create table vocabulary_entry__synonym
+create table vocabulary_entry__synonym__jt
 (
     vocabulary_entry_id bigint,
     word_id             bigint,
@@ -69,7 +69,7 @@ create table vocabulary_entry__synonym
     primary key (vocabulary_entry_id, word_id)
 );
 
-create table vocabulary_entry__antonym
+create table vocabulary_entry__antonym__jt
 (
     vocabulary_entry_id bigint,
     word_id             bigint,

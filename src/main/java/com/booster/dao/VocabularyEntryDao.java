@@ -41,13 +41,13 @@ public class VocabularyEntryDao {
                                 .build())
                         .build());
         var veId2Synonyms = jdbcTemplate.query(
-                "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym ves " +
+                "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym__jt ves " +
                         "join word w on ves.word_id = w.id " +
                         "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id",
                 createResultSetExtractor("synonym"));
 
         var veId2Antonyms = jdbcTemplate.query(
-                "select ve.id as ve_id, w.name as antonym from vocabulary_entry__antonym vea " +
+                "select ve.id as ve_id, w.name as antonym from vocabulary_entry__antonym__jt vea " +
                         "join word w on vea.word_id = w.id " +
                         "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id",
                 createResultSetExtractor("antonym"));
@@ -77,12 +77,12 @@ public class VocabularyEntryDao {
         }, keyHolder);
         long vocabularyEntryId = keyHolder.getKey().longValue();
         jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__synonym " +
+                "insert into vocabulary_entry__synonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
                 createBatchPreparedStatementSetter(synonymIds, vocabularyEntryId));
         jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__antonym " +
+                "insert into vocabulary_entry__antonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
                 createBatchPreparedStatementSetter(antonymIds, vocabularyEntryId));
