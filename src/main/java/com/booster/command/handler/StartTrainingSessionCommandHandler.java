@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class StartTrainingSessionCommandHandler {
 
+    // todo: configurable db setting
     private static final int MAX_CORRECT_ANSWERS_COUNT = 10;
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 

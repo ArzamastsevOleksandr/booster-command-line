@@ -16,11 +16,19 @@ public class ListLanguagesCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: default pagination + pagination flags
     public void handle() {
         List<Language> languages = languageDao.findAll();
-        commandLineWriter.writeLine("All languages:");
-        for (var language : languages) {
-            commandLineWriter.writeLine(language.toString());
+
+        if (languages.isEmpty()) {
+            commandLineWriter.writeLine("There are no languages in the system now.");
+        } else {
+            commandLineWriter.writeLine("All languages:");
+            commandLineWriter.newLine();
+
+            for (var language : languages) {
+                commandLineWriter.writeLine(language.toString());
+            }
         }
     }
 

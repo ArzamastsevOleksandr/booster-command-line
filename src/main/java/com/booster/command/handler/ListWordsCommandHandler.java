@@ -20,7 +20,7 @@ public class ListWordsCommandHandler {
         List<Word> words = wordDao.findAll();
 
         if (words.isEmpty()) {
-            commandLineWriter.writeLine("There are no words yet.");
+            commandLineWriter.writeLine("There are no words in the system yet.");
         } else {
             commandLineWriter.writeLine("All words:");
             for (var word : words) {

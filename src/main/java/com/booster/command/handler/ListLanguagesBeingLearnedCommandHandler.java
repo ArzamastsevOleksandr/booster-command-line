@@ -16,11 +16,12 @@ public class ListLanguagesBeingLearnedCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: default pagination + pagination flags
     public void handle() {
         List<LanguageBeingLearned> languagesBeingLearned = languageBeingLearnedDao.findAll();
 
         if (languagesBeingLearned.isEmpty()) {
-            commandLineWriter.writeLine("You are not learning any languages now.");
+            commandLineWriter.writeLine("You are not learning any languages yet.");
         } else {
             commandLineWriter.writeLine("All languages being learned:");
             commandLineWriter.newLine();

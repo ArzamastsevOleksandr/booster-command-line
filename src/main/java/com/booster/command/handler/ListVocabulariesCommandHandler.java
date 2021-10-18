@@ -20,7 +20,7 @@ public class ListVocabulariesCommandHandler {
         List<Vocabulary> vocabularies = vocabularyDao.findAll();
 
         if (vocabularies.isEmpty()) {
-            commandLineWriter.writeLine("You don't have any vocabularies.");
+            commandLineWriter.writeLine("There are no vocabularies yet.");
         } else {
             commandLineWriter.writeLine("All vocabularies:");
             for (var vocabulary : vocabularies) {
