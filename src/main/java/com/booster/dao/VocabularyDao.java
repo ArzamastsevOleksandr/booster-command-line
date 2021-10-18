@@ -34,11 +34,20 @@ public class VocabularyDao {
                 "where id = ?", id);
     }
 
-    public void add(Vocabulary vocabulary) {
+    public void add(String name, long id) {
         jdbcTemplate.update("insert into vocabulary " +
-                        "(name, language_being_learned_id) " +
-                        "values (?, ?)",
-                vocabulary.getName(), vocabulary.getLanguageBeingLearnedId());
+                "(name, language_being_learned_id) " +
+                "values (?, ?)", name, id);
+    }
+
+    public boolean existsWithNameForLanguageBeingLearned(String name, long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from (" +
+                "select * from vocabulary v " +
+                "join language_being_learned lbl " +
+                "on v.language_being_learned_id = lbl.id " +
+                "and v.name = ? " +
+                "and lbl.id = ?) v_count", Integer.class, name, id);
+        return count > 0;
     }
 
 }

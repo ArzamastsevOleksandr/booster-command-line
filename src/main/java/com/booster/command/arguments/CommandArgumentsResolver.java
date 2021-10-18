@@ -2,6 +2,7 @@ package com.booster.command.arguments;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.resolver.AddLanguageBeingLearnedArgsResolver;
+import com.booster.command.arguments.resolver.AddVocabularyArgsResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ public class CommandArgumentsResolver {
             .build();
 
     private final AddLanguageBeingLearnedArgsResolver addLanguageBeingLearnedArgsResolver;
+    private final AddVocabularyArgsResolver addVocabularyArgsResolver;
 
     // todo: custom annotation ForHandler(.class) with reflection
     public CommandWithArguments resolve(String line) {
@@ -32,11 +34,13 @@ public class CommandArgumentsResolver {
             switch (command) {
                 case ADD_LANGUAGE_BEING_LEARNED:
                     return addLanguageBeingLearnedArgsResolver.resolve(args);
+                case ADD_VOCABULARY:
+                    return addVocabularyArgsResolver.resolve(args);
+
                 case HELP:
 
                 case EXIT:
 
-                case ADD_VOCABULARY:
                 case DELETE_VOCABULARY:
                 case LIST_VOCABULARIES:
 

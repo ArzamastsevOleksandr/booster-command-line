@@ -42,4 +42,10 @@ public class LanguageBeingLearnedDao {
                 "where id = ?", id);
     }
 
+    public boolean existsWithId(long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from language_being_learned lbl " +
+                "where lbl.id = ?", Integer.class, id);
+        return count > 0;
+    }
+
 }
