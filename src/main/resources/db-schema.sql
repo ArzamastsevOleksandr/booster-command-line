@@ -8,11 +8,16 @@ create table language_being_learned
 (
     id          serial primary key,
     created_at  timestamp default now(),
-
-    language_id bigint unique,
-
-    foreign key (language_id) references language
+    language_id bigint
 );
+
+create unique index language_being_learned__language_id__index
+    on language_being_learned (language_id);
+
+alter table language_being_learned
+    add constraint language_being_learned__language_id__fkey
+        foreign key (language_id)
+            references language (id);
 
 create table vocabulary
 (
