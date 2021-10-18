@@ -50,4 +50,10 @@ public class VocabularyDao {
         return count > 0;
     }
 
+    public boolean existsWithId(long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from vocabulary v " +
+                "where v.id = ? ", Integer.class, id);
+        return count > 0;
+    }
+
 }

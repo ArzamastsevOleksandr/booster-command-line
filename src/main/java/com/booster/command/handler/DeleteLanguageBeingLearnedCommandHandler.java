@@ -16,7 +16,6 @@ public class DeleteLanguageBeingLearnedCommandHandler {
     private final CommandLineWriter commandLineWriter;
 
     // todo: if the v exists for this lbl - foreign key constraint "vocabulary_language_being_learned_id_fkey" is fired
-    // todo: if no record deleted - notify the user
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (DeleteLanguageBeingLearnedArgs) commandWithArguments.getArgs();
