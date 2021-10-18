@@ -16,6 +16,7 @@ public class ListVocabularyEntriesCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: default pagination + pagination flags
     public void handle() {
         List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
 

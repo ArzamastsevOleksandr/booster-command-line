@@ -16,6 +16,7 @@ public class DeleteVocabularyEntryCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: id flag
     public void handle(CommandWithArguments commandWithArguments) {
         List<String> arguments = commandWithArguments.getArguments();
         String id = arguments.get(0);

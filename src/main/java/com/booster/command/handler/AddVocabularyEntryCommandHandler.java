@@ -23,6 +23,7 @@ public class AddVocabularyEntryCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: FIX can add the same word as separate ves
     public void handle(CommandWithArguments commandWithArguments) {
         List<String> arguments = commandWithArguments.getArguments();
 
@@ -36,7 +37,7 @@ public class AddVocabularyEntryCommandHandler {
             String values = flagAndValues[1];
 
             switch (flag) {
-                case "vid":
+                case "id":
                     vocabularyId = Long.parseLong(values);
                     break;
                 case "w":

@@ -15,6 +15,7 @@ public class UnrecognizedCommandHandler {
 
     public void handle() {
         commandLineWriter.writeLine("Unknown command.");
+        commandLineWriter.newLine();
         commonOperations.help();
     }
 

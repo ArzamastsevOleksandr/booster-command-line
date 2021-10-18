@@ -17,14 +17,32 @@ public class AddVocabularyCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: foreign key constraint "vocabulary_entry_vocabulary_id_fkey" on table "vocabulary_entry"
     public void handle(CommandWithArguments commandWithArguments) {
         List<String> arguments = commandWithArguments.getArguments();
-        String languageBeingLearnedId = arguments.get(0);
-        String vocabularyName = arguments.get(1);
 
+        String name = "";
+        long lblId = -1;
+        for (var arg : arguments) {
+            String[] flagAndValue = arg.split("=");
+            String flag = flagAndValue[0];
+            String value = flagAndValue[1];
+
+            switch (flag) {
+                case "n":
+                    name = value;
+                    break;
+                case "id":
+                    lblId = Long.parseLong(value);
+                    break;
+                default:
+                    // todo: proper error message
+                    System.out.println("ERROR");
+            }
+        }
         var vocabulary = Vocabulary.builder()
-                .name(vocabularyName)
-                .languageBeingLearnedId(Long.parseLong(languageBeingLearnedId))
+                .name(name)
+                .languageBeingLearnedId(lblId)
                 .build();
 
         vocabularyDao.add(vocabulary);
