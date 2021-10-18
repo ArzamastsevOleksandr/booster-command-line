@@ -34,6 +34,8 @@ public class CommandArgumentsResolver {
                     return addLanguageBeingLearnedArgsResolver.resolve(args);
                 case HELP:
 
+                case EXIT:
+
                 case ADD_VOCABULARY:
                 case DELETE_VOCABULARY:
                 case LIST_VOCABULARIES:

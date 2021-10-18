@@ -16,17 +16,17 @@ public class AddLanguageBeingLearnedCommandHandler implements CommandHandler {
     private final CommandLineWriter commandLineWriter;
 
     public void handle(CommandWithArguments commandWithArguments) {
-        if (noErrors(commandWithArguments)) {
+        if (commandWithArguments.hasNoErrors()) {
             var args = (AddLanguageBeingLearnedArgs) commandWithArguments.getArgs();
             languageBeingLearnedDao.add(args.getLanguageId());
             commandLineWriter.writeLine("Done.");
-            commandLineWriter.newLine();
         } else {
             commandLineWriter.writeLine("Errors: ");
             commandLineWriter.newLine();
             commandWithArguments.getArgErrors()
                     .forEach(commandLineWriter::writeLine);
         }
+        commandLineWriter.newLine();
     }
 
 }
