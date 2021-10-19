@@ -17,6 +17,7 @@ public class ListWordsCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    // todo: default pagination + pagination flags
     public void handle(CommandWithArguments commandWithArguments) {
         List<Word> words = wordDao.findAll();
 

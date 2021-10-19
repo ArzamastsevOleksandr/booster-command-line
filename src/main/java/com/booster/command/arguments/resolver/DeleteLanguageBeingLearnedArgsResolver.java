@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.booster.command.Command.ADD_VOCABULARY;
 import static com.booster.command.Command.DELETE_LANGUAGE_BEING_LEARNED;
 
 @Component
@@ -44,7 +43,7 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
 
     @Override
     public String commandString() {
-        return ADD_VOCABULARY.extendedToString();
+        return DELETE_LANGUAGE_BEING_LEARNED.extendedToString();
     }
 
     private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
