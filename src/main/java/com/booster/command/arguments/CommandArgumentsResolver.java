@@ -23,6 +23,7 @@ public class CommandArgumentsResolver {
     private final AddVocabularyArgsResolver addVocabularyArgsResolver;
     private final DeleteVocabularyArgsResolver deleteVocabularyArgsResolver;
 
+    private final AddVocabularyEntryArgsResolver addVocabularyEntryArgsResolver;
     private final DeleteVocabularyEntryArgsResolver deleteVocabularyEntryArgsResolver;
 
     // todo: custom annotation ForHandler(.class) with reflection
@@ -46,6 +47,8 @@ public class CommandArgumentsResolver {
                 case DELETE_VOCABULARY:
                     return deleteVocabularyArgsResolver.resolve(args);
 
+                case ADD_VOCABULARY_ENTRY:
+                    return addVocabularyEntryArgsResolver.resolve(args);
                 case DELETE_VOCABULARY_ENTRY:
                     return deleteVocabularyEntryArgsResolver.resolve(args);
 
@@ -59,7 +62,6 @@ public class CommandArgumentsResolver {
 
                 case LIST_WORDS:
 
-                case ADD_VOCABULARY_ENTRY:
                 case LIST_VOCABULARY_ENTRIES:
 
                 case START_TRAINING_SESSION:
