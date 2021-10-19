@@ -3,6 +3,7 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyDao;
+import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     private static final String NAME_FLAG = "n";
     private static final String ID_FLAG = "id";
 
+    private final VocabularyEntryDao vocabularyEntryDao;
     private final VocabularyDao vocabularyDao;
     private final WordDao wordDao;
 
@@ -34,6 +36,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
             checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
             checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
             long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
+            checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
             List<Long> synonymIds = getSynonymIds(flag2value);
             List<Long> antonymIds = getAntonymIds(flag2value);
 
@@ -69,6 +72,12 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
 
     private long getWordIdByWordName(String name) {
         return wordDao.findByNameOrCreateAndGet(name).getId();
+    }
+
+    private void checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(long wordId, long vocabularyId) {
+        if (vocabularyEntryDao.existsWithWordIdAndVocabularyId(wordId, vocabularyId)) {
+            throw new ArgsValidationException(List.of("Vocabulary entry already exists in vocabulary with id: " + vocabularyId));
+        }
     }
 
     @Override

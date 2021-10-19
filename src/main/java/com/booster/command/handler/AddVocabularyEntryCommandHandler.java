@@ -15,7 +15,6 @@ public class AddVocabularyEntryCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
-    // todo: FIX can add the same word as separate ves
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();

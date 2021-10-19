@@ -6,7 +6,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import org.junit.jupiter.api.Test;
 
-// todo: move to a different module
 public class TestExample {
 
     @Test
