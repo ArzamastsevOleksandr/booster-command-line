@@ -56,4 +56,11 @@ public class VocabularyDao {
         return count > 0;
     }
 
+    public List<Long> findAllIdsForLanguageBeingLearnedId(long id) {
+        return jdbcTemplate.query("select v.id from vocabulary v " +
+                        "where v.language_being_learned_id = ?",
+                (rs, i) -> rs.getLong("id"),
+                id
+        );
+    }
 }
