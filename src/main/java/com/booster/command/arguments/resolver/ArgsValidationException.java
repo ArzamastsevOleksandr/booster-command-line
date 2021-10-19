@@ -1,15 +1,16 @@
 package com.booster.command.arguments.resolver;
 
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
 import java.util.List;
 
-// todo: value class?
-@Getter
+@EqualsAndHashCode(callSuper = true)
+@Value
 @RequiredArgsConstructor
 public class ArgsValidationException extends RuntimeException {
 
-    private final List<String> argErrors;
+    List<String> argErrors;
 
 }
