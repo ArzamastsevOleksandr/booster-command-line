@@ -139,4 +139,11 @@ public class VocabularyEntryDao {
                 "where ve.vocabulary_id = ?", id);
     }
 
+    public boolean existsWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from vocabulary_entry ve " +
+                "where ve.word_id = ? " +
+                "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
+        return count > 0;
+    }
+
 }
