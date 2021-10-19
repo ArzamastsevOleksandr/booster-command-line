@@ -123,4 +123,10 @@ public class VocabularyEntryDao {
                 "where ve.id = ?", cacUpdated, id);
     }
 
+    public boolean existsWithId(long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from vocabulary_entry ve " +
+                "where ve.id = ?", Integer.class, id);
+        return count > 0;
+    }
+
 }

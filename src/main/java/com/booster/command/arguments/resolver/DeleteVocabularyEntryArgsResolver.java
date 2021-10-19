@@ -1,8 +1,8 @@
 package com.booster.command.arguments.resolver;
 
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.DeleteVocabularyArgs;
-import com.booster.dao.VocabularyDao;
+import com.booster.command.arguments.DeleteVocabularyEntryArgs;
+import com.booster.dao.VocabularyEntryDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.booster.command.Command.DELETE_VOCABULARY;
+import static com.booster.command.Command.DELETE_VOCABULARY_ENTRY;
 
 @Component
 @RequiredArgsConstructor
-public class DeleteVocabularyArgsResolver implements ArgsResolver {
+public class DeleteVocabularyEntryArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final VocabularyDao vocabularyDao;
+    private final VocabularyEntryDao vocabularyEntryDao;
 
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getBuilder();
@@ -29,10 +29,10 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
 
             checkIfMandatoryFlagsArePresent(flag2value, Set.of(ID_FLAG));
             checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
-            checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
+            checkIfVocabularyEntryExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
 
             return builder
-                    .args(new DeleteVocabularyArgs(Long.parseLong(flag2value.get(ID_FLAG))))
+                    .args(new DeleteVocabularyEntryArgs(Long.parseLong(flag2value.get(ID_FLAG))))
                     .build();
         } catch (ArgsValidationException e) {
             return builder
@@ -43,17 +43,17 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
 
     @Override
     public String commandString() {
-        return DELETE_VOCABULARY.extendedToString();
+        return DELETE_VOCABULARY_ENTRY.extendedToString();
     }
 
     private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
         return CommandWithArguments.builder()
-                .command(DELETE_VOCABULARY);
+                .command(DELETE_VOCABULARY_ENTRY);
     }
 
-    private void checkIfVocabularyExistsWithId(long id) {
-        if (!vocabularyDao.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " does not exist."));
+    private void checkIfVocabularyEntryExistsWithId(long id) {
+        if (!vocabularyEntryDao.existsWithId(id)) {
+            throw new ArgsValidationException(List.of("Vocabulary entry with id: " + id + " does not exist."));
         }
     }
 
