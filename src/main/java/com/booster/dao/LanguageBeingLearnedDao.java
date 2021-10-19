@@ -48,4 +48,10 @@ public class LanguageBeingLearnedDao {
         return count > 0;
     }
 
+    public boolean existsWithLanguageId(long id) {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from language_being_learned lbl " +
+                "where lbl.language_id = ?", Integer.class, id);
+        return count > 0;
+    }
+
 }

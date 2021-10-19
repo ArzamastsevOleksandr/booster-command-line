@@ -2,6 +2,7 @@ package com.booster.command.arguments.resolver;
 
 import com.booster.command.arguments.AddLanguageBeingLearnedArgs;
 import com.booster.command.arguments.CommandWithArguments;
+import com.booster.dao.LanguageBeingLearnedDao;
 import com.booster.dao.LanguageDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ public class AddLanguageBeingLearnedArgsResolver implements ArgsResolver {
     private static final String ID_FLAG = "id";
 
     private final LanguageDao languageDao;
+    private final LanguageBeingLearnedDao languageBeingLearnedDao;
 
     public CommandWithArguments resolve(List<String> args) {
         var builder = getBuilder();
@@ -29,7 +31,7 @@ public class AddLanguageBeingLearnedArgsResolver implements ArgsResolver {
             checkIfMandatoryFlagsArePresent(flag2value, Set.of(ID_FLAG));
             checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
             checkIfLanguageExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
-            // todo: SQL [insert into language_being_learned (language_id) values (?)]; ERROR: duplicate key value violates unique constraint "language_being_learned__language_id__index"
+            checkIfLanguageBeingLearnedAlreadyExists(Long.parseLong(flag2value.get(ID_FLAG)));
 
             return builder
                     .args(new AddLanguageBeingLearnedArgs(Long.parseLong(flag2value.get(ID_FLAG))))
@@ -54,6 +56,12 @@ public class AddLanguageBeingLearnedArgsResolver implements ArgsResolver {
     private void checkIfLanguageExistsWithId(long languageId) {
         if (!languageDao.existsWithId(languageId)) {
             throw new ArgsValidationException(List.of("Language with id: " + languageId + " does not exist."));
+        }
+    }
+
+    private void checkIfLanguageBeingLearnedAlreadyExists(long id) {
+        if (languageBeingLearnedDao.existsWithLanguageId(id)) {
+            throw new ArgsValidationException(List.of("Language being learned already exists for language id: " + id));
         }
     }
 
