@@ -129,4 +129,14 @@ public class VocabularyEntryDao {
         return count > 0;
     }
 
+    // todo: execute all updates in transaction
+    public void deleteAllForVocabularyId(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry__synonym__jt sjt " +
+                "where sjt.vocabulary_entry_id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry__antonym__jt ajt " +
+                "where ajt.vocabulary_entry_id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry ve " +
+                "where ve.vocabulary_id = ?", id);
+    }
+
 }
