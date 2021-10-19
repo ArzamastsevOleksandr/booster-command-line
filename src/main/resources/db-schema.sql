@@ -51,6 +51,9 @@ create table vocabulary_entry
     vocabulary_id         bigint
 );
 
+create unique index vocabulary_entry__word_id__vocabulary_id__index
+    on vocabulary_entry (word_id, vocabulary_id);
+
 alter table vocabulary_entry
     add constraint vocabulary_entry__word_id__fkey
         foreign key (word_id)
