@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.DeleteLanguageBeingLearnedArgs;
 import com.booster.dao.LanguageBeingLearnedDao;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class DeleteLanguageBeingLearnedCommandHandler {
+public class DeleteLanguageBeingLearnedCommandHandler implements CommandHandler {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyDao vocabularyDao;
@@ -19,6 +20,7 @@ public class DeleteLanguageBeingLearnedCommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (DeleteLanguageBeingLearnedArgs) commandWithArguments.getArgs();
@@ -34,6 +36,11 @@ public class DeleteLanguageBeingLearnedCommandHandler {
             commandWithArguments.getArgErrors()
                     .forEach(commandLineWriter::writeLine);
         }
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.DELETE_LANGUAGE_BEING_LEARNED;
     }
 
 }

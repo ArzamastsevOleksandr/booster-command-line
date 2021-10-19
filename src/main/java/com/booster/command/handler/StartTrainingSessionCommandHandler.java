@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.input.CommandLineReader;
@@ -16,7 +17,7 @@ import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
-public class StartTrainingSessionCommandHandler {
+public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     // todo: configurable db setting
     private static final int MAX_CORRECT_ANSWERS_COUNT = 10;
@@ -27,6 +28,7 @@ public class StartTrainingSessionCommandHandler {
     private final CommandLineWriter commandLineWriter;
     private final CommandLineReader commandLineReader;
 
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
         if (vocabularyEntries.isEmpty()) {
@@ -85,6 +87,11 @@ public class StartTrainingSessionCommandHandler {
         return Arrays.stream(equivalents.split(";"))
                 .map(String::strip)
                 .collect(toSet());
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.START_TRAINING_SESSION;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
@@ -11,13 +12,14 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ListWordsCommandHandler {
+public class ListWordsCommandHandler implements CommandHandler {
 
     private final WordDao wordDao;
 
     private final CommandLineWriter commandLineWriter;
 
     // todo: default pagination + pagination flags
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         List<Word> words = wordDao.findAll();
 
@@ -29,6 +31,11 @@ public class ListWordsCommandHandler {
                 commandLineWriter.writeLine(word.toString());
             }
         }
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.LIST_WORDS;
     }
 
 }

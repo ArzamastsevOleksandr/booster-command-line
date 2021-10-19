@@ -10,10 +10,11 @@ import java.util.Arrays;
 
 @Component
 @RequiredArgsConstructor
-public class HelpCommandHandler {
+public class HelpCommandHandler implements CommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         commandLineWriter.writeLine("Available commands are:");
         commandLineWriter.newLine();
@@ -23,6 +24,11 @@ public class HelpCommandHandler {
                 .forEach(command -> commandLineWriter.writeLine(command.toString() + ": " + command.getEquivalents()));
 
         commandLineWriter.newLine();
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.HELP;
     }
 
 }

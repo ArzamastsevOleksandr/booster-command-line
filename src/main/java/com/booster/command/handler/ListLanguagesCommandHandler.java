@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.LanguageDao;
 import com.booster.model.Language;
@@ -11,13 +12,14 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ListLanguagesCommandHandler {
+public class ListLanguagesCommandHandler implements CommandHandler {
 
     private final LanguageDao languageDao;
 
     private final CommandLineWriter commandLineWriter;
 
     // todo: default pagination + pagination flags
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         List<Language> languages = languageDao.findAll();
 
@@ -31,6 +33,11 @@ public class ListLanguagesCommandHandler {
                 commandLineWriter.writeLine(language.toString());
             }
         }
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.LIST_LANGUAGES;
     }
 
 }

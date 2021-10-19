@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.AddLanguageBeingLearnedArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.LanguageBeingLearnedDao;
@@ -15,6 +16,7 @@ public class AddLanguageBeingLearnedCommandHandler implements CommandHandler {
 
     private final CommandLineWriter commandLineWriter;
 
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddLanguageBeingLearnedArgs) commandWithArguments.getArgs();
@@ -27,6 +29,11 @@ public class AddLanguageBeingLearnedCommandHandler implements CommandHandler {
                     .forEach(commandLineWriter::writeLine);
         }
         commandLineWriter.newLine();
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.ADD_LANGUAGE_BEING_LEARNED;
     }
 
 }

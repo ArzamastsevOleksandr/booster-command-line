@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
@@ -9,12 +10,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AddVocabularyEntryCommandHandler {
+public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
     private final CommandLineWriter commandLineWriter;
 
+    @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();
@@ -27,6 +29,11 @@ public class AddVocabularyEntryCommandHandler {
                     .forEach(commandLineWriter::writeLine);
         }
         commandLineWriter.newLine();
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.ADD_VOCABULARY_ENTRY;
     }
 
 }
