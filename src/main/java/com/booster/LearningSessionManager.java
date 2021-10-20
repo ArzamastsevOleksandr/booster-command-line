@@ -1,7 +1,7 @@
 package com.booster;
 
 import com.booster.command.Command;
-import com.booster.command.CommandHandlerCollectionService;
+import com.booster.command.service.CommandHandlerCollectionService;
 import com.booster.command.arguments.CommandArgumentsResolver;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.input.CommandLineReader;
