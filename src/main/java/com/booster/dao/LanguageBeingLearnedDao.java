@@ -3,10 +3,12 @@ package com.booster.dao;
 import com.booster.model.Language;
 import com.booster.model.LanguageBeingLearned;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -52,6 +54,31 @@ public class LanguageBeingLearnedDao {
         Integer count = jdbcTemplate.queryForObject("select count(*) from language_being_learned lbl " +
                 "where lbl.language_id = ?", Integer.class, id);
         return count > 0;
+    }
+
+    public Optional<LanguageBeingLearned> findById(Long id) {
+        try {
+            var languageBeingLearned = jdbcTemplate.queryForObject(
+                    "select lbl.id as id, l.name, lbl.created_at, l.id as l_id " +
+                            "from language_being_learned lbl " +
+                            "inner join language l " +
+                            "on l.id = lbl.language_id " +
+                            "where lbl.id = ?",
+                    (rs, i) -> LanguageBeingLearned.builder()
+                            .id(rs.getLong("id"))
+                            .createdAt(rs.getTimestamp("created_at"))
+                            .language(Language.builder()
+                                    .id(rs.getLong("l_id"))
+                                    .name(rs.getString("name"))
+                                    .build())
+                            .build(),
+                    id);
+
+            return Optional.ofNullable(languageBeingLearned);
+        } catch (DataAccessException e) {
+            // todo: exception handling
+            return Optional.empty();
+        }
     }
 
 }

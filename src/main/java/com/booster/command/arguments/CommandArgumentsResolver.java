@@ -17,6 +17,7 @@ public class CommandArgumentsResolver {
             .command(Command.UNRECOGNIZED)
             .build();
 
+    private final ListLanguagesBeingLearnedArgsResolver listLanguagesBeingLearnedArgsResolver;
     private final AddLanguageBeingLearnedArgsResolver addLanguageBeingLearnedArgsResolver;
     private final DeleteLanguageBeingLearnedArgsResolver deleteLanguageBeingLearnedArgsResolver;
 
@@ -37,6 +38,8 @@ public class CommandArgumentsResolver {
             List<String> args = getArgs(commandWithArguments);
 
             switch (command) {
+                case LIST_LANGUAGES_BEING_LEARNED:
+                    return listLanguagesBeingLearnedArgsResolver.resolve(args);
                 case ADD_LANGUAGE_BEING_LEARNED:
                     return addLanguageBeingLearnedArgsResolver.resolve(args);
                 case DELETE_LANGUAGE_BEING_LEARNED:
@@ -65,8 +68,6 @@ public class CommandArgumentsResolver {
                 case LIST_VOCABULARY_ENTRIES:
 
                 case START_TRAINING_SESSION:
-
-                case LIST_LANGUAGES_BEING_LEARNED:
                     return CommandWithArguments.builder()
                             .command(command)
                             .build();
