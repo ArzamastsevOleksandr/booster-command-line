@@ -1,5 +1,6 @@
 package com.booster.command.arguments.resolver;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyDao;
@@ -26,7 +27,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     private final WordDao wordDao;
 
     public CommandWithArguments resolve(List<String> args) {
-        CommandWithArguments.CommandWithArgumentsBuilder builder = getBuilder();
+        CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             checkIfArgumentsAreSpecified(args);
 
@@ -48,6 +49,11 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
                     .argErrors(e.getArgErrors())
                     .build();
         }
+    }
+
+    @Override
+    public Command command() {
+        return ADD_VOCABULARY_ENTRY;
     }
 
     private List<Long> getSynonymIds(Map<String, String> flag2value) {
@@ -78,16 +84,6 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
         if (vocabularyEntryDao.existsWithWordIdAndVocabularyId(wordId, vocabularyId)) {
             throw new ArgsValidationException(List.of("Vocabulary entry already exists in vocabulary with id: " + vocabularyId));
         }
-    }
-
-    @Override
-    public String commandString() {
-        return ADD_VOCABULARY_ENTRY.extendedToString();
-    }
-
-    private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
-        return CommandWithArguments.builder()
-                .command(ADD_VOCABULARY_ENTRY);
     }
 
     private void checkIfVocabularyExistsWithId(long id) {

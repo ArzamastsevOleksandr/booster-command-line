@@ -1,6 +1,8 @@
 package com.booster.command.arguments.resolver;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.Args;
+import com.booster.command.arguments.CommandWithArguments;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +12,16 @@ import java.util.stream.Collectors;
 
 public interface ArgsResolver {
 
-    String commandString();
+    Command command();
+
+    default String commandString() {
+        return command().extendedToString();
+    }
+
+    default CommandWithArguments.CommandWithArgumentsBuilder getCommandBuilder() {
+        return CommandWithArguments.builder()
+                .command(command());
+    }
 
     default void checkIfArgumentsAreSpecified(List<String> args) {
         if (args.size() == 0) {

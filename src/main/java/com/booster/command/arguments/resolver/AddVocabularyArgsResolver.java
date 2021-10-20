@@ -1,5 +1,6 @@
 package com.booster.command.arguments.resolver;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.LanguageBeingLearnedDao;
@@ -24,7 +25,7 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     private final VocabularyDao vocabularyDao;
 
     public CommandWithArguments resolve(List<String> args) {
-        CommandWithArguments.CommandWithArgumentsBuilder builder = getBuilder();
+        CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             checkIfArgumentsAreSpecified(args);
 
@@ -46,13 +47,8 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     }
 
     @Override
-    public String commandString() {
-        return ADD_VOCABULARY.extendedToString();
-    }
-
-    private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
-        return CommandWithArguments.builder()
-                .command(ADD_VOCABULARY);
+    public Command command() {
+        return ADD_VOCABULARY;
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
