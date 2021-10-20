@@ -69,7 +69,6 @@ public class CommandArgumentsResolver {
                 case LIST_LANGUAGES_BEING_LEARNED:
                     return CommandWithArguments.builder()
                             .command(command)
-                            .arguments(args)
                             .build();
                 default:
                     return UNRECOGNIZED;
