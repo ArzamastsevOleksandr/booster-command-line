@@ -1,5 +1,6 @@
-package com.booster.command;
+package com.booster.command.service;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.handler.CommandHandler;
 import com.booster.output.CommandLineWriter;

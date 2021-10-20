@@ -16,4 +16,6 @@ public class Vocabulary {
     private String languageName;
     private long languageBeingLearnedId;
 
+    // todo: numberOfEntries
+    // todo: % of entries learned
 }
