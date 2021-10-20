@@ -1,5 +1,6 @@
 package com.booster.command.arguments.resolver;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.DeleteVocabularyArgs;
 import com.booster.dao.VocabularyDao;
@@ -21,7 +22,7 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
     private final VocabularyDao vocabularyDao;
 
     public CommandWithArguments resolve(List<String> args) {
-        CommandWithArguments.CommandWithArgumentsBuilder builder = getBuilder();
+        CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             checkIfArgumentsAreSpecified(args);
 
@@ -42,13 +43,8 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
     }
 
     @Override
-    public String commandString() {
-        return DELETE_VOCABULARY.extendedToString();
-    }
-
-    private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
-        return CommandWithArguments.builder()
-                .command(DELETE_VOCABULARY);
+    public Command command() {
+        return DELETE_VOCABULARY;
     }
 
     private void checkIfVocabularyExistsWithId(long id) {

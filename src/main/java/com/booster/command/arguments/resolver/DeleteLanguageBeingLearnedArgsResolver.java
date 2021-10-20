@@ -1,5 +1,6 @@
 package com.booster.command.arguments.resolver;
 
+import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.DeleteLanguageBeingLearnedArgs;
 import com.booster.dao.LanguageBeingLearnedDao;
@@ -21,7 +22,7 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
 
     public CommandWithArguments resolve(List<String> args) {
-        CommandWithArguments.CommandWithArgumentsBuilder builder = getBuilder();
+        CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             checkIfArgumentsAreSpecified(args);
 
@@ -42,13 +43,8 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
     }
 
     @Override
-    public String commandString() {
-        return DELETE_LANGUAGE_BEING_LEARNED.extendedToString();
-    }
-
-    private CommandWithArguments.CommandWithArgumentsBuilder getBuilder() {
-        return CommandWithArguments.builder()
-                .command(DELETE_LANGUAGE_BEING_LEARNED);
+    public Command command() {
+        return DELETE_LANGUAGE_BEING_LEARNED;
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
