@@ -3,6 +3,7 @@ package com.booster.dao;
 import com.booster.model.VocabularyEntry;
 import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.*;
 
 @Component
@@ -144,6 +146,53 @@ public class VocabularyEntryDao {
                 "where ve.word_id = ? " +
                 "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
         return count > 0;
+    }
+
+    public Optional<VocabularyEntry> findById(Long id) {
+        try {
+            VocabularyEntry vocabularyEntry = jdbcTemplate.queryForObject(
+                    "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, " +
+                            "w.id as w_id, w.name as w_name, " +
+                            "v.name as v_name " +
+                            "from vocabulary_entry ve " +
+                            "join word w " +
+                            "on ve.word_id = w.id " +
+                            "join vocabulary v " +
+                            "on ve.vocabulary_id = v.id " +
+                            "where ve.id = ?",
+                    (rs, i) -> VocabularyEntry.builder()
+                            .id(rs.getLong("ve_id"))
+                            .createdAt(rs.getTimestamp("ve_created_at"))
+                            .correctAnswersCount(rs.getInt("ve_cac"))
+                            .vocabularyName(rs.getString("v_name"))
+                            .word(Word.builder()
+                                    .id(rs.getLong("w_id"))
+                                    .name(rs.getString("w_name"))
+                                    .build())
+                            .build(),
+                    id);
+
+            var veId2Synonyms = jdbcTemplate.query(
+                    "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym__jt ves " +
+                            "join word w on ves.word_id = w.id " +
+                            "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id " +
+                            "where ve.id = ?", new Object[]{id}, new int[]{Types.BIGINT},
+                    createResultSetExtractor("synonym"));
+
+            var veId2Antonyms = jdbcTemplate.query(
+                    "select ve.id as ve_id, w.name as antonym from vocabulary_entry__antonym__jt vea " +
+                            "join word w on vea.word_id = w.id " +
+                            "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id " +
+                            "where ve.id = ?", new Object[]{id}, new int[]{Types.BIGINT},
+                    createResultSetExtractor("antonym"));
+
+            vocabularyEntry.setSynonyms(veId2Synonyms.get(id));
+            vocabularyEntry.setAntonyms(veId2Antonyms.get(id));
+
+            return Optional.of(vocabularyEntry);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
     }
 
 }

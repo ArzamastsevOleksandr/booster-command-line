@@ -24,7 +24,8 @@ public class Main {
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
 
         // todo: help <command>
-        // todo: list ve <id=ve_id>
+        // todo: list ve vid=<> | lblid=<>
+        // todo: list v lblid=<>
         // todo: all commands work with Args.class, remove @Deprecated collection<string>
         // todo: v has numberOfEntries field
         // todo: populate-sample-data.sql must have a variety of data to work with
