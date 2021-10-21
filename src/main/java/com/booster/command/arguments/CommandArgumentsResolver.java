@@ -21,6 +21,7 @@ public class CommandArgumentsResolver {
     private final AddLanguageBeingLearnedArgsResolver addLanguageBeingLearnedArgsResolver;
     private final DeleteLanguageBeingLearnedArgsResolver deleteLanguageBeingLearnedArgsResolver;
 
+    private final ListVocabulariesArgsResolver listVocabulariesArgsResolver;
     private final AddVocabularyArgsResolver addVocabularyArgsResolver;
     private final DeleteVocabularyArgsResolver deleteVocabularyArgsResolver;
 
@@ -45,6 +46,8 @@ public class CommandArgumentsResolver {
                 case DELETE_LANGUAGE_BEING_LEARNED:
                     return deleteLanguageBeingLearnedArgsResolver.resolve(args);
 
+                case LIST_VOCABULARIES:
+                    return listVocabulariesArgsResolver.resolve(args);
                 case ADD_VOCABULARY:
                     return addVocabularyArgsResolver.resolve(args);
                 case DELETE_VOCABULARY:
@@ -59,7 +62,6 @@ public class CommandArgumentsResolver {
 
                 case EXIT:
 
-                case LIST_VOCABULARIES:
 
                 case LIST_LANGUAGES:
 
