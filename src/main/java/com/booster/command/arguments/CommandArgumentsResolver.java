@@ -25,6 +25,7 @@ public class CommandArgumentsResolver {
     private final AddVocabularyArgsResolver addVocabularyArgsResolver;
     private final DeleteVocabularyArgsResolver deleteVocabularyArgsResolver;
 
+    private final ListVocabularyEntriesArgsResolver listVocabularyEntriesArgsResolver;
     private final AddVocabularyEntryArgsResolver addVocabularyEntryArgsResolver;
     private final DeleteVocabularyEntryArgsResolver deleteVocabularyEntryArgsResolver;
 
@@ -53,6 +54,8 @@ public class CommandArgumentsResolver {
                 case DELETE_VOCABULARY:
                     return deleteVocabularyArgsResolver.resolve(args);
 
+                case LIST_VOCABULARY_ENTRIES:
+                    return listVocabularyEntriesArgsResolver.resolve(args);
                 case ADD_VOCABULARY_ENTRY:
                     return addVocabularyEntryArgsResolver.resolve(args);
                 case DELETE_VOCABULARY_ENTRY:
@@ -66,8 +69,6 @@ public class CommandArgumentsResolver {
                 case LIST_LANGUAGES:
 
                 case LIST_WORDS:
-
-                case LIST_VOCABULARY_ENTRIES:
 
                 case START_TRAINING_SESSION:
                     return CommandWithArguments.builder()
