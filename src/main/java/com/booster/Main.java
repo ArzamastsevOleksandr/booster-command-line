@@ -24,7 +24,7 @@ public class Main {
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
 
         // todo: help <command>
-        // todo: list ve | v | lbl <id=lang_id>
+        // todo: list ve <id=ve_id>
         // todo: all commands work with Args.class, remove @Deprecated collection<string>
         // todo: v has numberOfEntries field
         // todo: populate-sample-data.sql must have a variety of data to work with
@@ -35,6 +35,7 @@ public class Main {
         // todo: I can import all my vocabularies from the .xlsx file
 
         // todo: later: statistics collector, which commands are used, how often
+        // todo: distinguish upper-lower case?
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();
