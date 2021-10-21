@@ -37,7 +37,6 @@ public class ListLanguagesBeingLearnedArgsResolver implements ArgsResolver {
             }
         } catch (ArgsValidationException e) {
             return builder
-                    .args(ListLanguagesBeingLearnedArgs.empty())
                     .argErrors(e.getArgErrors())
                     .build();
         }

@@ -37,8 +37,6 @@ public class ListVocabularyEntriesArgsResolver implements ArgsResolver {
             }
         } catch (ArgsValidationException e) {
             return builder
-                    // todo: remove args
-                    .args(ListVocabularyEntriesArgs.empty())
                     .argErrors(e.getArgErrors())
                     .build();
         }

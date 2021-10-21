@@ -37,7 +37,6 @@ public class ListVocabulariesArgsResolver implements ArgsResolver {
             }
         } catch (ArgsValidationException e) {
             return builder
-                    .args(ListVocabulariesArgs.empty())
                     .argErrors(e.getArgErrors())
                     .build();
         }
