@@ -1,7 +1,7 @@
 insert into language
-    (id, name)
-values (1, 'ENGLISH'),
-       (2, 'GERMAN');
+    (name)
+values ('ENGLISH'),
+       ('GERMAN');
 
 -- Create language being learned records for every language
 insert into language_being_learned
@@ -16,22 +16,22 @@ select 'Default', lbl.id
 from language_being_learned lbl;
 
 insert into word
-    (id, name)
-values (1, 'fallacy'),
-       (2, 'misconception'),
-       (3, 'falsehood'),
-       (4, 'heresy'),
-       (5, 'truth'),
-       (6, 'fairness'),
-       (7, 'pundit'),
-       (8, 'expert'),
-       (9, 'intellectual'),
-       (10, 'amateur');
+    (name)
+values ('fallacy'),
+       ('misconception'),
+       ('falsehood'),
+       ('heresy'),
+       ('truth'),
+       ('fairness'),
+       ('pundit'),
+       ('expert'),
+       ('intellectual'),
+       ('amateur');
 
 insert into vocabulary_entry
-    (id, word_id, vocabulary_id, definition)
-values (1, 1, 1, 'fallacy definition'),
-       (2, 7, 1, null);
+    (word_id, vocabulary_id, definition)
+values (1, 1, 'fallacy definition'),
+       (7, 1, null);
 
 insert into vocabulary_entry__synonym__jt
     (vocabulary_entry_id, word_id)
