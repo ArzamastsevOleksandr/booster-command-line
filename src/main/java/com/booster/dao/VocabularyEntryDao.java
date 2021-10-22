@@ -24,7 +24,7 @@ public class VocabularyEntryDao {
     // todo: one sql query?
     public List<VocabularyEntry> findAll() {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, " +
+                "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, ve.definition as ve_definition, " +
                         "w.id as w_id, w.name as w_name, " +
                         "v.name as v_name " +
                         "from vocabulary_entry ve " +
@@ -36,6 +36,7 @@ public class VocabularyEntryDao {
                         .id(rs.getLong("ve_id"))
                         .createdAt(rs.getTimestamp("ve_created_at"))
                         .correctAnswersCount(rs.getInt("ve_cac"))
+                        .definition(rs.getString("ve_definition"))
                         .vocabularyName(rs.getString("v_name"))
                         .word(Word.builder()
                                 .id(rs.getLong("w_id"))
@@ -150,8 +151,9 @@ public class VocabularyEntryDao {
 
     public Optional<VocabularyEntry> findById(Long id) {
         try {
+            // todo: DRY
             VocabularyEntry vocabularyEntry = jdbcTemplate.queryForObject(
-                    "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, " +
+                    "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, ve.definition as ve_definition, " +
                             "w.id as w_id, w.name as w_name, " +
                             "v.name as v_name " +
                             "from vocabulary_entry ve " +
@@ -164,6 +166,7 @@ public class VocabularyEntryDao {
                             .id(rs.getLong("ve_id"))
                             .createdAt(rs.getTimestamp("ve_created_at"))
                             .correctAnswersCount(rs.getInt("ve_cac"))
+                            .definition(rs.getString("ve_definition"))
                             .vocabularyName(rs.getString("v_name"))
                             .word(Word.builder()
                                     .id(rs.getLong("w_id"))
