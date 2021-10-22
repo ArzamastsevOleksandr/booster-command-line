@@ -14,7 +14,6 @@ public class Main {
         // todo: UPDATE_VOCABULARY_ENTRY
         // todo: UPDATE_VOCABULARY
         // todo: add contexts to the vocabulary entry
-        // todo: parameterized training session: synonyms | antonyms | full
         // todo: can exit the training session before it ends
         // todo: training session for v | lbl
 
