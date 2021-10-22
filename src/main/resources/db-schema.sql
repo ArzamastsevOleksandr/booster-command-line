@@ -44,8 +44,10 @@ create table word
 create table vocabulary_entry
 (
     id                    serial primary key,
-    created_at            timestamp default now(),
-    correct_answers_count smallint  default 0,
+    created_at            timestamp default now() not null,
+    correct_answers_count smallint  default 0     not null,
+
+    definition            varchar(255),
 
     word_id               bigint,
     vocabulary_id         bigint

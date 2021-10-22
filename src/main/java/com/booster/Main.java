@@ -37,6 +37,7 @@ public class Main {
 
         // todo: later: statistics collector, which commands are used, how often
         // todo: distinguish upper-lower case?
+        // todo: pretty print of l, lbl, v, ve, w
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();

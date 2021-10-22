@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -18,9 +19,15 @@ public class VocabularyEntry {
     private String vocabularyName;
     private Word word;
 
+    private String definition;
+
     @Builder.Default
     private Set<String> synonyms = Set.of();
     @Builder.Default
     private Set<String> antonyms = Set.of();
+
+    public Optional<String> getDefinition() {
+        return Optional.ofNullable(definition);
+    }
 
 }
