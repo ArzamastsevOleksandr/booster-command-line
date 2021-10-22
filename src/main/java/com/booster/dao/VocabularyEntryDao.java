@@ -67,15 +67,16 @@ public class VocabularyEntryDao {
                 "where id = ?", id);
     }
 
-    public void add(long wordId, long vocabularyId, List<Long> synonymIds, List<Long> antonymIds) {
+    public void add(long wordId, long vocabularyId, List<Long> synonymIds, List<Long> antonymIds, String definition) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     "insert into vocabulary_entry " +
-                            "(word_id, vocabulary_id) " +
-                            "values (?, ?)", new String[]{"id"});
+                            "(word_id, vocabulary_id, definition) " +
+                            "values (?, ?, ?)", new String[]{"id"});
             preparedStatement.setLong(1, wordId);
             preparedStatement.setLong(2, vocabularyId);
+            preparedStatement.setString(3, definition);
             return preparedStatement;
         }, keyHolder);
         long vocabularyEntryId = keyHolder.getKey().longValue();

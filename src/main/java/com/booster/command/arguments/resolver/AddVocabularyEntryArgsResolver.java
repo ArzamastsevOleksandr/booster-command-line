@@ -21,6 +21,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
 
     private static final String NAME_FLAG = "n";
     private static final String ID_FLAG = "id";
+    public static final String DEFINITION = "d";
 
     private final VocabularyEntryDao vocabularyEntryDao;
     private final VocabularyDao vocabularyDao;
@@ -40,9 +41,16 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
             checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
             List<Long> synonymIds = getSynonymIds(flag2value);
             List<Long> antonymIds = getAntonymIds(flag2value);
+            String definition = getDefinition(flag2value);
 
             return builder
-                    .args(new AddVocabularyEntryArgs(wordId, Long.parseLong(flag2value.get(ID_FLAG)), synonymIds, antonymIds))
+                    .args(AddVocabularyEntryArgs.builder()
+                            .wordId(wordId)
+                            .vocabularyId(Long.parseLong(flag2value.get(ID_FLAG)))
+                            .synonymIds(synonymIds)
+                            .antonymIds(antonymIds)
+                            .definition(definition)
+                            .build())
                     .build();
         } catch (ArgsValidationException e) {
             return builder
@@ -90,6 +98,10 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
         if (!vocabularyDao.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " does not exist."));
         }
+    }
+
+    private String getDefinition(Map<String, String> flag2value) {
+        return flag2value.get(DEFINITION);
     }
 
 }
