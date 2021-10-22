@@ -1,9 +1,9 @@
 package com.booster;
 
 import com.booster.command.Command;
-import com.booster.command.service.CommandHandlerCollectionService;
 import com.booster.command.arguments.CommandArgumentsResolver;
 import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.service.CommandHandlerCollectionService;
 import com.booster.input.CommandLineReader;
 import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,10 @@ import org.springframework.stereotype.Component;
 public class LearningSessionManager {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
+    private final CommandArgumentsResolver commandArgumentsResolver;
 
     private final CommandLineReader commandLineReader;
-
     private final CommonOperations commonOperations;
-
-    private final CommandArgumentsResolver commandArgumentsResolver;
 
     public void launch() {
         commonOperations.greeting();

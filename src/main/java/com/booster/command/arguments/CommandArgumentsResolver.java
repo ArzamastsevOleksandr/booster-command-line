@@ -29,6 +29,8 @@ public class CommandArgumentsResolver {
     private final AddVocabularyEntryArgsResolver addVocabularyEntryArgsResolver;
     private final DeleteVocabularyEntryArgsResolver deleteVocabularyEntryArgsResolver;
 
+    private final StartTrainingSessionArgsResolver startTrainingSessionArgsResolver;
+
     // todo: custom annotation ForHandler(.class) with reflection
     public CommandWithArguments resolve(String line) {
         List<String> commandWithArguments = parseCommandAndArguments(line);
@@ -61,16 +63,16 @@ public class CommandArgumentsResolver {
                 case DELETE_VOCABULARY_ENTRY:
                     return deleteVocabularyEntryArgsResolver.resolve(args);
 
+                case START_TRAINING_SESSION:
+                    return startTrainingSessionArgsResolver.resolve(args);
+
                 case HELP:
 
                 case EXIT:
 
-
                 case LIST_LANGUAGES:
 
                 case LIST_WORDS:
-
-                case START_TRAINING_SESSION:
                     return CommandWithArguments.builder()
                             .command(command)
                             .build();
