@@ -29,9 +29,9 @@ values (1, 'fallacy'),
        (10, 'amateur');
 
 insert into vocabulary_entry
-    (id, word_id, vocabulary_id)
-values (1, 1, 1),
-       (2, 7, 1);
+    (id, word_id, vocabulary_id, definition)
+values (1, 1, 1, 'fallacy definition'),
+       (2, 7, 1, null);
 
 insert into vocabulary_entry__synonym__jt
     (vocabulary_entry_id, word_id)
