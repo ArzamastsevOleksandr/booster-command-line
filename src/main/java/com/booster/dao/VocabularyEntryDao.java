@@ -1,7 +1,6 @@
 package com.booster.dao;
 
 import com.booster.model.VocabularyEntry;
-import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -25,7 +24,7 @@ public class VocabularyEntryDao {
     public List<VocabularyEntry> findAll() {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, ve.definition as ve_definition, " +
-                        "w.id as w_id, w.name as w_name, " +
+                        "w.name as w_name, " +
                         "v.name as v_name " +
                         "from vocabulary_entry ve " +
                         "join word w " +
@@ -36,12 +35,9 @@ public class VocabularyEntryDao {
                         .id(rs.getLong("ve_id"))
                         .createdAt(rs.getTimestamp("ve_created_at"))
                         .correctAnswersCount(rs.getInt("ve_cac"))
+                        .name(rs.getString("w_name"))
                         .definition(rs.getString("ve_definition"))
                         .vocabularyName(rs.getString("v_name"))
-                        .word(Word.builder()
-                                .id(rs.getLong("w_id"))
-                                .name(rs.getString("w_name"))
-                                .build())
                         .build());
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym from vocabulary_entry__synonym__jt ves " +
@@ -155,7 +151,7 @@ public class VocabularyEntryDao {
             // todo: DRY
             VocabularyEntry vocabularyEntry = jdbcTemplate.queryForObject(
                     "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, ve.definition as ve_definition, " +
-                            "w.id as w_id, w.name as w_name, " +
+                            "w.name as w_name, " +
                             "v.name as v_name " +
                             "from vocabulary_entry ve " +
                             "join word w " +
@@ -167,12 +163,9 @@ public class VocabularyEntryDao {
                             .id(rs.getLong("ve_id"))
                             .createdAt(rs.getTimestamp("ve_created_at"))
                             .correctAnswersCount(rs.getInt("ve_cac"))
+                            .name(rs.getString("w_name"))
                             .definition(rs.getString("ve_definition"))
                             .vocabularyName(rs.getString("v_name"))
-                            .word(Word.builder()
-                                    .id(rs.getLong("w_id"))
-                                    .name(rs.getString("w_name"))
-                                    .build())
                             .build(),
                     id);
 

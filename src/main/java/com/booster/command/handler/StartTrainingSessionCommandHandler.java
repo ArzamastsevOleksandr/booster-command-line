@@ -38,7 +38,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
             for (var ve : vocabularyEntries) {
                 boolean isCorrectAnswer = true;
-                commandLineWriter.writeLine("Current word: [" + ve.getWord().getName() + "]");
+                commandLineWriter.writeLine("Current word: [" + ve.getName() + "]");
                 commandLineWriter.newLine();
 
                 // todo: separate methods
