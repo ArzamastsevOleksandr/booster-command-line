@@ -20,7 +20,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();
-            vocabularyEntryDao.add(args.getWordId(), args.getVocabularyId(), args.getSynonymIds(), args.getAntonymIds());
+            vocabularyEntryDao.add(args.getWordId(), args.getVocabularyId(), args.getSynonymIds(), args.getAntonymIds(), args.getDefinition());
             commandLineWriter.writeLine("Done.");
         } else {
             commandLineWriter.writeLine("Errors: ");

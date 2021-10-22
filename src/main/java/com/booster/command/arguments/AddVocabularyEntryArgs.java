@@ -1,16 +1,17 @@
 package com.booster.command.arguments;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
 
 @Value
-@RequiredArgsConstructor
+@Builder
 public class AddVocabularyEntryArgs implements Args {
 
     Long wordId;
     Long vocabularyId;
+    String definition;
     List<Long> synonymIds;
     List<Long> antonymIds;
 
