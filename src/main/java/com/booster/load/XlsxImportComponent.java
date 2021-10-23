@@ -1,12 +1,16 @@
 package com.booster.load;
 
-import com.booster.dao.*;
+import com.booster.dao.LanguageBeingLearnedDao;
+import com.booster.dao.LanguageDao;
+import com.booster.dao.VocabularyDao;
+import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
 import com.booster.model.LanguageBeingLearned;
 import com.booster.model.Vocabulary;
 import com.booster.model.Word;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -31,7 +35,7 @@ public class XlsxImportComponent {
     private final VocabularyDao vocabularyDao;
     private final VocabularyEntryDao vocabularyEntryDao;
     private final LanguageDao languageDao;
-    private final WordDao wordDao;
+    private final WordService wordService;
 
     public void load() {
         try (var inputStream = new FileInputStream("import.xlsx");
@@ -75,17 +79,17 @@ public class XlsxImportComponent {
                     .orElseGet(() -> vocabularyDao.add(vocabularyName, languageBeingLearnedId));
 
             String vocabularyEntryName = row.getCell(0).getStringCellValue();
-            long wordId = wordDao.findByNameOrCreateAndGet(vocabularyEntryName).getId();
+            long wordId = wordService.findByNameOrCreateAndGet(vocabularyEntryName).getId();
 
             String definition = row.getCell(1).getStringCellValue();
 
             List<Long> synonymIds = Arrays.stream(row.getCell(2).getStringCellValue().split(";"))
-                    .map(wordDao::findByNameOrCreateAndGet)
+                    .map(wordService::findByNameOrCreateAndGet)
                     .map(Word::getId)
                     .collect(toList());
 
             List<Long> antonymIds = Arrays.stream(row.getCell(3).getStringCellValue().split(";"))
-                    .map(wordDao::findByNameOrCreateAndGet)
+                    .map(wordService::findByNameOrCreateAndGet)
                     .map(Word::getId)
                     .collect(toList());
 
