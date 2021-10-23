@@ -1,7 +1,6 @@
 package com.booster.load;
 
 import com.booster.dao.LanguageBeingLearnedDao;
-import com.booster.dao.LanguageDao;
 import com.booster.dao.VocabularyDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
@@ -10,6 +9,7 @@ import com.booster.model.LanguageBeingLearned;
 import com.booster.model.Vocabulary;
 import com.booster.model.Word;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.LanguageService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -34,8 +34,8 @@ public class XlsxImportComponent {
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyDao vocabularyDao;
     private final VocabularyEntryDao vocabularyEntryDao;
-    private final LanguageDao languageDao;
     private final WordService wordService;
+    private final LanguageService languageService;
 
     public void load() {
         try (var inputStream = new FileInputStream("import.xlsx");
@@ -55,7 +55,7 @@ public class XlsxImportComponent {
     private void importSheet(XSSFSheet sheet) {
         String sheetName = sheet.getSheetName();
 
-        languageDao.findByName(sheetName)
+        languageService.findByName(sheetName)
                 .ifPresentOrElse(language -> {
                     importLanguageBeingLearned(sheet, language);
                 }, () -> {
