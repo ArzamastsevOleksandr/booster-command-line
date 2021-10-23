@@ -6,6 +6,7 @@ import com.booster.command.arguments.ListVocabulariesArgs;
 import com.booster.dao.VocabularyDao;
 import com.booster.model.Vocabulary;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.VocabularyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ListVocabulariesCommandHandler implements CommandHandler {
 
     private final VocabularyDao vocabularyDao;
+    private final VocabularyService vocabularyService;
 
     private final CommandLineWriter commandLineWriter;
 
@@ -38,7 +40,7 @@ public class ListVocabulariesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyById(Long id) {
-        commandLineWriter.writeLine(vocabularyDao.findById(id).get().toString());
+        commandLineWriter.writeLine(vocabularyService.findById(id).get().toString());
     }
 
     private void displayAllVocabularies() {
