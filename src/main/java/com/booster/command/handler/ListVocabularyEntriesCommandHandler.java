@@ -6,6 +6,7 @@ import com.booster.command.arguments.ListVocabularyEntriesArgs;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
 
     private final CommandLineWriter commandLineWriter;
 
@@ -43,7 +45,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        commandLineWriter.writeLine(vocabularyEntryDao.findById(id).get().toString());
+        commandLineWriter.writeLine(vocabularyEntryService.findById(id).get().toString());
     }
 
     private void displayAllVocabularyEntries() {
