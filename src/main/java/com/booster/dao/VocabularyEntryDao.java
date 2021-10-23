@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
+
 @Component
 @RequiredArgsConstructor
 public class VocabularyEntryDao {
@@ -51,11 +53,12 @@ public class VocabularyEntryDao {
                         "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id",
                 createResultSetExtractor("antonym"));
 
-        for (var ve : vocabularyEntries) {
-            ve.setSynonyms(veId2Synonyms.get(ve.getId()));
-            ve.setAntonyms(veId2Antonyms.get(ve.getId()));
-        }
-        return vocabularyEntries;
+        return vocabularyEntries.stream()
+                .map(ve -> ve.toBuilder()
+                        .synonyms(veId2Synonyms.get(ve.getId()))
+                        .antonyms(veId2Antonyms.get(ve.getId()))
+                        .build())
+                .collect(toList());
     }
 
     public void delete(long id) {
@@ -183,10 +186,10 @@ public class VocabularyEntryDao {
                             "where ve.id = ?", new Object[]{id}, new int[]{Types.BIGINT},
                     createResultSetExtractor("antonym"));
 
-            vocabularyEntry.setSynonyms(veId2Synonyms.get(id));
-            vocabularyEntry.setAntonyms(veId2Antonyms.get(id));
-
-            return Optional.of(vocabularyEntry);
+            return Optional.of(vocabularyEntry.toBuilder()
+                    .synonyms(veId2Synonyms.get(id))
+                    .antonyms(veId2Antonyms.get(id))
+                    .build());
         } catch (DataAccessException e) {
             return Optional.empty();
         }
@@ -218,10 +221,11 @@ public class VocabularyEntryDao {
                         "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id",
                 createResultSetExtractor("synonym"));
 
-        for (var ve : vocabularyEntries) {
-            ve.setSynonyms(veId2Synonyms.get(ve.getId()));
-        }
-        return vocabularyEntries;
+        return vocabularyEntries.stream()
+                .map(ve -> ve.toBuilder()
+                        .synonyms(veId2Synonyms.get(ve.getId()))
+                        .build())
+                .collect(toList());
     }
 
     public List<VocabularyEntry> findAllWithAntonyms() {
@@ -250,10 +254,11 @@ public class VocabularyEntryDao {
                         "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id",
                 createResultSetExtractor("antonym"));
 
-        for (var ve : vocabularyEntries) {
-            ve.setAntonyms(veId2Antonyms.get(ve.getId()));
-        }
-        return vocabularyEntries;
+        return vocabularyEntries.stream()
+                .map(ve -> ve.toBuilder()
+                        .antonyms(veId2Antonyms.get(ve.getId()))
+                        .build())
+                .collect(toList());
     }
 
 }

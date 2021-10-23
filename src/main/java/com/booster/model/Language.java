@@ -1,13 +1,13 @@
 package com.booster.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
+@Value
 @Builder
-@Data
 public class Language {
 
-    private long id;
-    private String name;
+    long id;
+    String name;
 
 }

@@ -1,30 +1,30 @@
 package com.booster.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.Set;
 
-@Data
-@Builder
+@Value
+@Builder(toBuilder = true)
 public class VocabularyEntry {
 
-    private long id;
-    private String name;
-    private Timestamp createdAt;
-    private int correctAnswersCount;
+    long id;
+    String name;
+    Timestamp createdAt;
+    int correctAnswersCount;
 
     // todo: feat 1 ve can belong to N v
-    private String vocabularyName;
+    String vocabularyName;
 
-    private String definition;
+    String definition;
 
     @Builder.Default
-    private Set<String> synonyms = Set.of();
+    Set<String> synonyms = Set.of();
     @Builder.Default
-    private Set<String> antonyms = Set.of();
+    Set<String> antonyms = Set.of();
 
     public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);

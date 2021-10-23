@@ -25,9 +25,7 @@ public class Main {
         // todo: help <command>
         // todo: list ve vid=<> | lblid=<>
         // todo: list v lblid=<>
-        // todo: all commands work with Args.class, remove @Deprecated collection<string>
         // todo: v has numberOfEntries field
-        // todo: populate-sample-data.sql must have a variety of data to work with
 
         // todo: I can export all my vocabularies into the .xlsx file
         // todo: I can export all my vocabularies into the .pdf file

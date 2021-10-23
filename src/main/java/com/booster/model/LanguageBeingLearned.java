@@ -1,17 +1,17 @@
 package com.booster.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.sql.Timestamp;
 
-@Data
+@Value
 @Builder
 public class LanguageBeingLearned {
 
-    private long id;
-    private Timestamp createdAt;
+    long id;
+    Timestamp createdAt;
 
-    private Language language;
+    Language language;
 
 }
