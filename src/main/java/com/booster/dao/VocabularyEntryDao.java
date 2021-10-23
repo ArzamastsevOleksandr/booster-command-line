@@ -1,5 +1,6 @@
 package com.booster.dao;
 
+import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.VocabularyEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -66,29 +67,57 @@ public class VocabularyEntryDao {
                 "where id = ?", id);
     }
 
-    public void add(long wordId, long vocabularyId, List<Long> synonymIds, List<Long> antonymIds, String definition) {
+    public void addWithDefaultValues(AddVocabularyEntryDaoParams params) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement preparedStatement = connection.prepareStatement(
+            PreparedStatement ps = connection.prepareStatement(
                     "insert into vocabulary_entry " +
                             "(word_id, vocabulary_id, definition) " +
                             "values (?, ?, ?)", new String[]{"id"});
-            preparedStatement.setLong(1, wordId);
-            preparedStatement.setLong(2, vocabularyId);
-            preparedStatement.setString(3, definition);
-            return preparedStatement;
+            ps.setLong(1, params.getWordId());
+            ps.setLong(2, params.getVocabularyId());
+            ps.setString(3, params.getDefinition());
+            return ps;
         }, keyHolder);
         long vocabularyEntryId = keyHolder.getKey().longValue();
         jdbcTemplate.batchUpdate(
                 "insert into vocabulary_entry__synonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
-                createBatchPreparedStatementSetter(synonymIds, vocabularyEntryId));
+                createBatchPreparedStatementSetter(params.getSynonymIds(), vocabularyEntryId));
         jdbcTemplate.batchUpdate(
                 "insert into vocabulary_entry__antonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
-                createBatchPreparedStatementSetter(antonymIds, vocabularyEntryId));
+                createBatchPreparedStatementSetter(params.getAntonymIds(), vocabularyEntryId));
+    }
+
+    // todo: DRY
+    public void addWithAllValues(AddVocabularyEntryDaoParams params) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "insert into vocabulary_entry " +
+                            "(word_id, vocabulary_id, definition, created_at, correct_answers_count) " +
+                            "values (?, ?, ?, ?, ?)", new String[]{"id"});
+            ps.setLong(1, params.getWordId());
+            ps.setLong(2, params.getVocabularyId());
+            ps.setString(3, params.getDefinition());
+            ps.setTimestamp(4, params.getCreatedAt());
+            ps.setInt(5, params.getCorrectAnswersCount());
+            return ps;
+        }, keyHolder);
+        long vocabularyEntryId = keyHolder.getKey().longValue();
+        jdbcTemplate.batchUpdate(
+                "insert into vocabulary_entry__synonym__jt " +
+                        "(vocabulary_entry_id, word_id) " +
+                        "values (?, ?)",
+                createBatchPreparedStatementSetter(params.getSynonymIds(), vocabularyEntryId));
+        jdbcTemplate.batchUpdate(
+                "insert into vocabulary_entry__antonym__jt " +
+                        "(vocabulary_entry_id, word_id) " +
+                        "values (?, ?)",
+                createBatchPreparedStatementSetter(params.getAntonymIds(), vocabularyEntryId));
     }
 
     private ResultSetExtractor<Map<Long, Set<String>>> createResultSetExtractor(String columnName) {

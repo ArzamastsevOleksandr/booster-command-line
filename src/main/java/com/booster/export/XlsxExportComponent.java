@@ -72,7 +72,7 @@ public class XlsxExportComponent {
         row.createCell(2).setCellValue(String.join(";", vocabularyEntry.getSynonyms()));
         row.createCell(3).setCellValue(String.join(";", vocabularyEntry.getAntonyms()));
         row.createCell(4).setCellValue(vocabularyEntry.getCorrectAnswersCount());
-        row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt());
+        row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt().toString());
         row.createCell(6).setCellValue(vocabularyEntry.getVocabularyName());
     }
 

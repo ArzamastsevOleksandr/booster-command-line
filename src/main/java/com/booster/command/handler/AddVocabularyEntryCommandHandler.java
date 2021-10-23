@@ -4,6 +4,7 @@ import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
+import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,14 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();
-            vocabularyEntryDao.add(args.getWordId(), args.getVocabularyId(), args.getSynonymIds(), args.getAntonymIds(), args.getDefinition());
+            var params = AddVocabularyEntryDaoParams.builder()
+                    .wordId(args.getWordId())
+                    .vocabularyId(args.getVocabularyId())
+                    .synonymIds(args.getSynonymIds())
+                    .antonymIds(args.getAntonymIds())
+                    .definition(args.getDefinition())
+                    .build();
+            vocabularyEntryDao.addWithDefaultValues(params);
             commandLineWriter.writeLine("Done.");
         } else {
             commandLineWriter.writeLine("Errors: ");

@@ -23,6 +23,7 @@ public class WordDao {
                 .build());
     }
 
+    // todo: separate service that checks if the word/ve/v/lbl exists and creates if false
     public Word findByNameOrCreateAndGet(String name) {
         Optional<Word> optionalWord = findByName(name);
         if (optionalWord.isPresent()) {
