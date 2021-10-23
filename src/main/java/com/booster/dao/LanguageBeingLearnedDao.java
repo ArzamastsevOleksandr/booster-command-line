@@ -1,6 +1,5 @@
 package com.booster.dao;
 
-import com.booster.model.Language;
 import com.booster.model.LanguageBeingLearned;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -18,17 +17,14 @@ public class LanguageBeingLearnedDao {
 
     public List<LanguageBeingLearned> findAll() {
         return jdbcTemplate.query(
-                "select lbl.id as id, l.name, lbl.created_at, l.id as l_id " +
+                "select lbl.id as id, l.name as name, lbl.created_at " +
                         "from language_being_learned lbl " +
                         "inner join language l " +
                         "on l.id = lbl.language_id",
                 (rs, i) -> LanguageBeingLearned.builder()
                         .id(rs.getLong("id"))
                         .createdAt(rs.getTimestamp("created_at"))
-                        .language(Language.builder()
-                                .id(rs.getLong("l_id"))
-                                .name(rs.getString("name"))
-                                .build())
+                        .languageName(rs.getString("name"))
                         .build());
     }
 
@@ -59,7 +55,7 @@ public class LanguageBeingLearnedDao {
     public Optional<LanguageBeingLearned> findById(Long id) {
         try {
             var languageBeingLearned = jdbcTemplate.queryForObject(
-                    "select lbl.id as id, l.name, lbl.created_at, l.id as l_id " +
+                    "select lbl.id as id, l.name as name, lbl.created_at " +
                             "from language_being_learned lbl " +
                             "inner join language l " +
                             "on l.id = lbl.language_id " +
@@ -67,10 +63,7 @@ public class LanguageBeingLearnedDao {
                     (rs, i) -> LanguageBeingLearned.builder()
                             .id(rs.getLong("id"))
                             .createdAt(rs.getTimestamp("created_at"))
-                            .language(Language.builder()
-                                    .id(rs.getLong("l_id"))
-                                    .name(rs.getString("name"))
-                                    .build())
+                            .languageName(rs.getString("name"))
                             .build(),
                     id);
 

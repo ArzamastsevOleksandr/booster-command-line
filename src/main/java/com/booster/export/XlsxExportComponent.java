@@ -38,7 +38,7 @@ public class XlsxExportComponent {
     }
 
     private void exportLanguageBeingLearned(XSSFWorkbook workbook, LanguageBeingLearned languageToExport) {
-        XSSFSheet sheet = workbook.createSheet(languageToExport.getLanguage().getName());
+        XSSFSheet sheet = workbook.createSheet(languageToExport.getLanguageName());
 
         createHeaderRow(sheet);
         createVocabularyEntryRows(languageToExport, sheet);
