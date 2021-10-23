@@ -5,8 +5,8 @@ import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyDao;
 import com.booster.dao.VocabularyEntryDao;
-import com.booster.dao.WordDao;
 import com.booster.model.Word;
+import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
 
     private final VocabularyEntryDao vocabularyEntryDao;
     private final VocabularyDao vocabularyDao;
-    private final WordDao wordDao;
+    private final WordService wordService;
 
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
@@ -79,13 +79,13 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     private List<Long> getWordIds(String values) {
         return Arrays.stream(values.split(";"))
                 .map(String::strip)
-                .map(wordDao::findByNameOrCreateAndGet)
+                .map(wordService::findByNameOrCreateAndGet)
                 .map(Word::getId)
                 .collect(toList());
     }
 
     private long getWordIdByWordName(String name) {
-        return wordDao.findByNameOrCreateAndGet(name).getId();
+        return wordService.findByNameOrCreateAndGet(name).getId();
     }
 
     private void checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(long wordId, long vocabularyId) {
