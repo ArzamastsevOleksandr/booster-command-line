@@ -3,7 +3,6 @@ package com.booster.service;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,6 +12,7 @@ import java.util.Optional;
 public class WordService {
 
     private final WordDao wordDao;
+    private final WrapperService<Word> wrapperService;
 
     public Word findByNameOrCreateAndGet(String name) {
         return findByName(name)
@@ -20,12 +20,7 @@ public class WordService {
     }
 
     public Optional<Word> findByName(String name) {
-        try {
-            return Optional.ofNullable(wordDao.findByName(name));
-        } catch (DataAccessException e) {
-            // todo: handle exceptions
-            return Optional.empty();
-        }
+        return wrapperService.wrapDataAccessException(() -> wordDao.findByName(name));
     }
 
 }

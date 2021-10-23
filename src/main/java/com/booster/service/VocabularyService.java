@@ -3,7 +3,6 @@ package com.booster.service;
 import com.booster.dao.VocabularyDao;
 import com.booster.model.Vocabulary;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,23 +12,14 @@ import java.util.Optional;
 public class VocabularyService {
 
     private final VocabularyDao vocabularyDao;
+    private final WrapperService<Vocabulary> wrapperService;
 
     public Optional<Vocabulary> findById(long id) {
-        try {
-            Vocabulary vocabulary = vocabularyDao.findById(id);
-            return Optional.ofNullable(vocabulary);
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return wrapperService.wrapDataAccessException(() -> vocabularyDao.findById(id));
     }
 
     public Optional<Vocabulary> findByNameAndLanguageBeingLearnedId(String name, long id) {
-        try {
-            Vocabulary vocabulary = vocabularyDao.findByNameAndLanguageBeingLearnedId(name, id);
-            return Optional.ofNullable(vocabulary);
-        } catch (DataAccessException e) {
-            return Optional.empty();
-        }
+        return wrapperService.wrapDataAccessException(() -> vocabularyDao.findByNameAndLanguageBeingLearnedId(name, id));
     }
 
 }

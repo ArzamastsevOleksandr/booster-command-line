@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
@@ -61,11 +62,21 @@ public class VocabularyEntryDao {
                 createResultSetExtractor("antonym"));
 
         return vocabularyEntries.stream()
-                .map(ve -> ve.toBuilder()
-                        .synonyms(veId2Synonyms.get(ve.getId()))
-                        .antonyms(veId2Antonyms.get(ve.getId()))
-                        .build())
+                .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
                 .collect(toList());
+    }
+
+    private Function<VocabularyEntry, VocabularyEntry> withSynonymsAndAntonyms(Map<Long, Set<String>> veId2Synonyms, Map<Long, Set<String>> veId2Antonyms) {
+        return ve -> {
+            var builder = ve.toBuilder();
+            if (veId2Synonyms.containsKey(ve.getId())) {
+                builder = builder.synonyms(veId2Synonyms.get(ve.getId()));
+            }
+            if (veId2Antonyms.containsKey(ve.getId())) {
+                builder = builder.antonyms(veId2Antonyms.get(ve.getId()));
+            }
+            return builder.build();
+        };
     }
 
     public void delete(long id) {
@@ -315,10 +326,7 @@ public class VocabularyEntryDao {
                 createResultSetExtractor("antonym"), id);
 
         return vocabularyEntries.stream()
-                .map(ve -> ve.toBuilder()
-                        .synonyms(veId2Synonyms.get(ve.getId()))
-                        .antonyms(veId2Antonyms.get(ve.getId()))
-                        .build())
+                .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
                 .collect(toList());
     }
 
