@@ -9,6 +9,7 @@ import com.booster.model.LanguageBeingLearned;
 import com.booster.model.Vocabulary;
 import com.booster.model.Word;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.LanguageBeingLearnedService;
 import com.booster.service.LanguageService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class XlsxImportComponent {
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
     private final LanguageService languageService;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
 
     public void load() {
         try (var inputStream = new FileInputStream("import.xlsx");
@@ -65,7 +67,7 @@ public class XlsxImportComponent {
 
     private void importLanguageBeingLearned(XSSFSheet sheet, Language language) {
         final long languageId = language.getId();
-        final long languageBeingLearnedId = languageBeingLearnedDao.findByLanguageId(languageId)
+        final long languageBeingLearnedId = languageBeingLearnedService.findByLanguageId(languageId)
                 .map(LanguageBeingLearned::getId)
                 .orElseGet(() -> languageBeingLearnedDao.add(languageId));
 

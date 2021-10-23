@@ -6,6 +6,7 @@ import com.booster.command.arguments.ListLanguagesBeingLearnedArgs;
 import com.booster.dao.LanguageBeingLearnedDao;
 import com.booster.model.LanguageBeingLearned;
 import com.booster.output.CommandLineWriter;
+import com.booster.service.LanguageBeingLearnedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class ListLanguagesBeingLearnedCommandHandler implements CommandHandler {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
 
     private final CommandLineWriter commandLineWriter;
 
@@ -38,7 +40,7 @@ public class ListLanguagesBeingLearnedCommandHandler implements CommandHandler {
     }
 
     private void displayLanguageBeingLearnedById(Long id) {
-        commandLineWriter.writeLine(languageBeingLearnedDao.findById(id).get().toString());
+        commandLineWriter.writeLine(languageBeingLearnedService.findById(id).get().toString());
     }
 
     private void displayAllLanguagesBeingLearned() {
