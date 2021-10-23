@@ -1,20 +1,20 @@
 package com.booster.model;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.sql.Timestamp;
 
-@Data
+@Value
 @Builder
 public class Vocabulary {
 
-    private long id;
-    private String name;
-    private Timestamp createdAt;
+    long id;
+    String name;
+    Timestamp createdAt;
 
-    private String languageName;
-    private long languageBeingLearnedId;
+    String languageName;
+    long languageBeingLearnedId;
 
     // todo: numberOfEntries
     // todo: % of entries learned
