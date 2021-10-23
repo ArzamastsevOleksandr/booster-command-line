@@ -3,6 +3,7 @@ package com.booster.service;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class WordService {
     public Optional<Word> findByName(String name) {
         try {
             return Optional.ofNullable(wordDao.findByName(name));
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             // todo: handle exceptions
             return Optional.empty();
         }
