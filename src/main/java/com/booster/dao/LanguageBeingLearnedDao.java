@@ -4,8 +4,10 @@ import com.booster.model.LanguageBeingLearned;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +30,18 @@ public class LanguageBeingLearnedDao {
                         .build());
     }
 
-    public void add(long languageId) {
-        jdbcTemplate.update("insert into language_being_learned " +
-                "(language_id) " +
-                "values " +
-                "(?)", languageId);
+    public long add(long languageId) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "insert into language_being_learned " +
+                            "(language_id) " +
+                            "values " +
+                            "(?)", new String[]{"id"});
+            preparedStatement.setLong(1, languageId);
+            return preparedStatement;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     public void delete(long id) {
@@ -60,6 +69,28 @@ public class LanguageBeingLearnedDao {
                             "inner join language l " +
                             "on l.id = lbl.language_id " +
                             "where lbl.id = ?",
+                    (rs, i) -> LanguageBeingLearned.builder()
+                            .id(rs.getLong("id"))
+                            .createdAt(rs.getTimestamp("created_at"))
+                            .languageName(rs.getString("name"))
+                            .build(),
+                    id);
+
+            return Optional.ofNullable(languageBeingLearned);
+        } catch (DataAccessException e) {
+            // todo: exception handling
+            return Optional.empty();
+        }
+    }
+
+    public Optional<LanguageBeingLearned> findByLanguageId(Long id) {
+        try {
+            var languageBeingLearned = jdbcTemplate.queryForObject(
+                    "select lbl.id as id, l.name as name, lbl.created_at " +
+                            "from language_being_learned lbl " +
+                            "inner join language l " +
+                            "on l.id = lbl.language_id " +
+                            "where l.id = ?",
                     (rs, i) -> LanguageBeingLearned.builder()
                             .id(rs.getLong("id"))
                             .createdAt(rs.getTimestamp("created_at"))

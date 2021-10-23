@@ -4,8 +4,10 @@ import com.booster.model.Vocabulary;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +38,18 @@ public class VocabularyDao {
                 "where id = ?", id);
     }
 
-    public void add(String name, long id) {
-        jdbcTemplate.update("insert into vocabulary " +
-                "(name, language_being_learned_id) " +
-                "values (?, ?)", name, id);
+    public long add(String name, long id) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "insert into vocabulary " +
+                            "(name, language_being_learned_id) " +
+                            "values (?, ?)", new String[]{"id"});
+            preparedStatement.setString(1, name);
+            preparedStatement.setLong(2, id);
+            return preparedStatement;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     public boolean existsWithNameForLanguageBeingLearned(String name, long id) {
@@ -83,6 +93,31 @@ public class VocabularyDao {
                             .languageBeingLearnedId(rs.getLong("lbl_id"))
                             .build(),
                     id);
+
+            return Optional.ofNullable(vocabulary);
+        } catch (DataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Vocabulary> findByNameAndLanguageBeingLearnedId(String name, Long id) {
+        try {
+            Vocabulary vocabulary = jdbcTemplate.queryForObject(
+                    "select v.id, v.name, v.created_at, lbl.id as lbl_id, l.name as l_name from vocabulary v " +
+                            "join language_being_learned lbl " +
+                            "on v.language_being_learned_id = lbl.id " +
+                            "join language l " +
+                            "on lbl.language_id = l.id " +
+                            "where v.name = ? " +
+                            "and lbl.id = ?",
+                    (rs, i) -> Vocabulary.builder()
+                            .id(rs.getLong("id"))
+                            .createdAt(rs.getTimestamp("created_at"))
+                            .name(rs.getString("name"))
+                            .languageName(rs.getString("l_name"))
+                            .languageBeingLearnedId(rs.getLong("lbl_id"))
+                            .build(),
+                    name, id);
 
             return Optional.ofNullable(vocabulary);
         } catch (DataAccessException e) {
