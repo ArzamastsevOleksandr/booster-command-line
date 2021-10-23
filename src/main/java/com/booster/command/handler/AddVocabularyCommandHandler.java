@@ -4,6 +4,7 @@ import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyDao;
+import com.booster.dao.params.AddVocabularyDaoParams;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,11 @@ public class AddVocabularyCommandHandler implements CommandHandler {
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddVocabularyArgs) commandWithArguments.getArgs();
-            vocabularyDao.add(args.getName(), args.getLanguageBeingLearnedId());
+            var params = AddVocabularyDaoParams.builder()
+                    .name(args.getName())
+                    .languageBeingLearnedId(args.getLanguageBeingLearnedId())
+                    .build();
+            vocabularyDao.add(params);
             commandLineWriter.writeLine("Done.");
         } else {
             commandLineWriter.writeLine("Errors: ");
