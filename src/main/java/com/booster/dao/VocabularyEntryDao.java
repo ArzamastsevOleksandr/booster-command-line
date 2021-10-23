@@ -261,4 +261,56 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
+    public List<VocabularyEntry> findAllForLanguageBeingLearned(long id) {
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
+                "select ve.id as ve_id, ve.created_at as ve_created_at, ve.correct_answers_count as ve_cac, ve.definition as ve_definition, " +
+                        "w.name as w_name, " +
+                        "v.name as v_name " +
+                        "from vocabulary_entry ve " +
+                        "join word w " +
+                        "on ve.word_id = w.id " +
+                        "join vocabulary v " +
+                        "on ve.vocabulary_id = v.id " +
+                        "where v.language_being_learned_id = ?",
+                (rs, i) -> VocabularyEntry.builder()
+                        .id(rs.getLong("ve_id"))
+                        .createdAt(rs.getTimestamp("ve_created_at"))
+                        .correctAnswersCount(rs.getInt("ve_cac"))
+                        .name(rs.getString("w_name"))
+                        .definition(rs.getString("ve_definition"))
+                        .vocabularyName(rs.getString("v_name"))
+                        .build(),
+                id);
+        var veId2Synonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as synonym " +
+                        "from vocabulary_entry__synonym__jt ves " +
+                        "join word w " +
+                        "on ves.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on ves.vocabulary_entry_id = ve.id " +
+                        "join vocabulary v " +
+                        "on v.id = ve.vocabulary_id " +
+                        "where v.language_being_learned_id = ?",
+                createResultSetExtractor("synonym"), id);
+
+        var veId2Antonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as antonym " +
+                        "from vocabulary_entry__antonym__jt vea " +
+                        "join word w " +
+                        "on vea.word_id = w.id " +
+                        "join vocabulary_entry ve on " +
+                        "vea.vocabulary_entry_id = ve.id " +
+                        "join vocabulary v " +
+                        "on v.id = ve.vocabulary_id " +
+                        "where v.language_being_learned_id = ?",
+                createResultSetExtractor("antonym"), id);
+
+        return vocabularyEntries.stream()
+                .map(ve -> ve.toBuilder()
+                        .synonyms(veId2Synonyms.get(ve.getId()))
+                        .antonyms(veId2Antonyms.get(ve.getId()))
+                        .build())
+                .collect(toList());
+    }
+
 }
