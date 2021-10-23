@@ -11,7 +11,6 @@ public class LanguageBeingLearned {
 
     long id;
     Timestamp createdAt;
-
-    Language language;
+    String languageName;
 
 }

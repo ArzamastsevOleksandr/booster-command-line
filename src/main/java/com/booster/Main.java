@@ -27,7 +27,6 @@ public class Main {
         // todo: list v lblid=<>
         // todo: v has numberOfEntries field
 
-        // todo: I can export all my vocabularies into the .xlsx file
         // todo: I can export all my vocabularies into the .pdf file
 
         // todo: I can import all my vocabularies from the .xlsx file
