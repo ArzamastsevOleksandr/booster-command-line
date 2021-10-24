@@ -29,8 +29,6 @@ public class Main {
 
         // todo: I can export all my vocabularies into the .pdf file
 
-        // todo: I can import all my vocabularies from the .xlsx file
-
         // todo: later: statistics collector, which commands are used, how often
         // todo: distinguish upper-lower case?
         // todo: pretty print of l, lbl, v, ve, w

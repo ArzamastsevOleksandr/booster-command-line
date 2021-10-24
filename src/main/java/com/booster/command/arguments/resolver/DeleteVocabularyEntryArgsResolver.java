@@ -21,6 +21,7 @@ public class DeleteVocabularyEntryArgsResolver implements ArgsResolver {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {

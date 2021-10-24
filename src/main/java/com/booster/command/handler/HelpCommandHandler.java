@@ -2,6 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.HelpArgs;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,24 @@ public class HelpCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
-        commandLineWriter.writeLine("Available commands are:");
-        commandLineWriter.newLine();
+        if (commandWithArguments.hasNoErrors()) {
+            var args = (HelpArgs) commandWithArguments.getArgs();
 
-        Arrays.stream(Command.values())
-                .filter(Command::isRecognizable)
-                .forEach(command -> commandLineWriter.writeLine(command.toString() + ": " + command.getEquivalents()));
+            commandLineWriter.newLine();
+            commandLineWriter.writeLine("Available commands are:");
+            commandLineWriter.newLine();
 
-        commandLineWriter.newLine();
+            Arrays.stream(Command.values())
+                    .filter(Command::isRecognizable)
+                    .forEach(command -> commandLineWriter.writeLine(command.toString() + ": " + command.getEquivalents()));
+
+            commandLineWriter.newLine();
+        } else {
+            commandLineWriter.writeLine("Errors: ");
+            commandLineWriter.newLine();
+            commandWithArguments.getArgErrors()
+                    .forEach(commandLineWriter::writeLine);
+        }
     }
 
     @Override

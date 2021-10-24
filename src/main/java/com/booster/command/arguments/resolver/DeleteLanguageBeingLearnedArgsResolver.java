@@ -21,6 +21,7 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {

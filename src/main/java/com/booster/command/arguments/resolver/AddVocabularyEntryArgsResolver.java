@@ -27,6 +27,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     private final VocabularyDao vocabularyDao;
     private final WordService wordService;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {

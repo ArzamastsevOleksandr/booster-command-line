@@ -24,6 +24,7 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyDao vocabularyDao;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {

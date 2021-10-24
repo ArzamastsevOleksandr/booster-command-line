@@ -35,6 +35,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         if (commandWithArguments.hasNoErrors()) {
             var args = (StartTrainingSessionArgs) commandWithArguments.getArgs();
             TrainingSessionMode mode = args.getMode();
+            // todo: fix: FULL mode will load ves with no ant/syn
             List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
 
             if (vocabularyEntries.isEmpty()) {
