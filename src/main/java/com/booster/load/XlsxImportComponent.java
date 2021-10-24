@@ -42,8 +42,8 @@ public class XlsxImportComponent {
     private final LanguageBeingLearnedService languageBeingLearnedService;
     private final VocabularyService vocabularyService;
 
-    public void load() {
-        try (var inputStream = new FileInputStream("import.xlsx");
+    public void load(String filename) {
+        try (var inputStream = new FileInputStream(filename);
              var workbook = new XSSFWorkbook(inputStream);
         ) {
             int numberOfSheets = workbook.getNumberOfSheets();

@@ -9,6 +9,7 @@ import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+// todo: rename
 @Component
 @RequiredArgsConstructor
 public class LearningSessionManager {

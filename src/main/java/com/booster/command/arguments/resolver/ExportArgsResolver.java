@@ -27,7 +27,7 @@ public class ExportArgsResolver implements ArgsResolver {
         try {
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
             if (flag2value.isEmpty()) {
-                return builder.args(new ExportArgs(DEFAULT_EXPORT_FILE)).build();
+                return builder.args(new ExportArgs(formatFilename(DEFAULT_EXPORT_FILE))).build();
             }
             checkIfMandatoryFlagsArePresent(flag2value, Set.of(FILE_FLAG));
 
