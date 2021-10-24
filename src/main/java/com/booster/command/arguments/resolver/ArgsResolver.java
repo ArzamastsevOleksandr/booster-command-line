@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public interface ArgsResolver {
 
+    CommandWithArguments resolve(List<String> args);
+
     Command command();
 
     default String commandString() {

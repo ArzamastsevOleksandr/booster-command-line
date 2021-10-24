@@ -21,15 +21,22 @@ public class ListWordsCommandHandler implements CommandHandler {
     // todo: default pagination + pagination flags
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
-        List<Word> words = wordDao.findAll();
+        if (commandWithArguments.hasNoErrors()) {
+            List<Word> words = wordDao.findAll();
 
-        if (words.isEmpty()) {
-            commandLineWriter.writeLine("There are no words in the system yet.");
-        } else {
-            commandLineWriter.writeLine("All words:");
-            for (var word : words) {
-                commandLineWriter.writeLine(word.toString());
+            if (words.isEmpty()) {
+                commandLineWriter.writeLine("There are no words in the system yet.");
+            } else {
+                commandLineWriter.writeLine("All words:");
+                for (var word : words) {
+                    commandLineWriter.writeLine(word.toString());
+                }
             }
+        } else {
+            commandLineWriter.writeLine("Errors: ");
+            commandLineWriter.newLine();
+            commandWithArguments.getArgErrors()
+                    .forEach(commandLineWriter::writeLine);
         }
     }
 

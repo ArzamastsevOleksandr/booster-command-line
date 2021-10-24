@@ -21,17 +21,24 @@ public class ListLanguagesCommandHandler implements CommandHandler {
     // todo: default pagination + pagination flags
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
-        List<Language> languages = languageDao.findAll();
+        if (commandWithArguments.hasNoErrors()) {
+            List<Language> languages = languageDao.findAll();
 
-        if (languages.isEmpty()) {
-            commandLineWriter.writeLine("There are no languages in the system now.");
-        } else {
-            commandLineWriter.writeLine("All languages:");
-            commandLineWriter.newLine();
+            if (languages.isEmpty()) {
+                commandLineWriter.writeLine("There are no languages in the system now.");
+            } else {
+                commandLineWriter.writeLine("All languages:");
+                commandLineWriter.newLine();
 
-            for (var language : languages) {
-                commandLineWriter.writeLine(language.toString());
+                for (var language : languages) {
+                    commandLineWriter.writeLine(language.toString());
+                }
             }
+        } else {
+            commandLineWriter.writeLine("Errors: ");
+            commandLineWriter.newLine();
+            commandWithArguments.getArgErrors()
+                    .forEach(commandLineWriter::writeLine);
         }
     }
 

@@ -20,6 +20,7 @@ public class ListLanguagesBeingLearnedArgsResolver implements ArgsResolver {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         var builder = getCommandBuilder();
         try {

@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+import java.util.Collections;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,5 +13,9 @@ import java.util.List;
 public class ArgsValidationException extends RuntimeException {
 
     List<String> argErrors;
+
+    public List<String> getArgErrors() {
+        return Collections.unmodifiableList(argErrors);
+    }
 
 }

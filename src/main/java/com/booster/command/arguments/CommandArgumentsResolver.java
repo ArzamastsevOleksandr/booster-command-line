@@ -1,7 +1,7 @@
 package com.booster.command.arguments;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.resolver.*;
+import com.booster.command.service.ArgumentsResolverCollectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,69 +17,24 @@ public class CommandArgumentsResolver {
             .command(Command.UNRECOGNIZED)
             .build();
 
-    private final ListLanguagesBeingLearnedArgsResolver listLanguagesBeingLearnedArgsResolver;
-    private final AddLanguageBeingLearnedArgsResolver addLanguageBeingLearnedArgsResolver;
-    private final DeleteLanguageBeingLearnedArgsResolver deleteLanguageBeingLearnedArgsResolver;
+    private static final CommandWithArguments EXIT = CommandWithArguments.builder()
+            .command(Command.EXIT)
+            .build();
 
-    private final ListVocabulariesArgsResolver listVocabulariesArgsResolver;
-    private final AddVocabularyArgsResolver addVocabularyArgsResolver;
-    private final DeleteVocabularyArgsResolver deleteVocabularyArgsResolver;
+    private final ArgumentsResolverCollectionService argumentsResolverCollectionService;
 
-    private final ListVocabularyEntriesArgsResolver listVocabularyEntriesArgsResolver;
-    private final AddVocabularyEntryArgsResolver addVocabularyEntryArgsResolver;
-    private final DeleteVocabularyEntryArgsResolver deleteVocabularyEntryArgsResolver;
-
-    private final StartTrainingSessionArgsResolver startTrainingSessionArgsResolver;
-
-    // todo: custom annotation ForHandler(.class) with reflection
+    // todo: custom annotation ForHandler(.class) with reflection?
     public CommandWithArguments resolve(String line) {
         List<String> commandWithArguments = parseCommandAndArguments(line);
-
         if (commandWithArguments.isEmpty()) {
             return UNRECOGNIZED;
-        } else {
-            Command command = getCommand(commandWithArguments);
-            List<String> args = getArgs(commandWithArguments);
-
-            switch (command) {
-                case LIST_LANGUAGES_BEING_LEARNED:
-                    return listLanguagesBeingLearnedArgsResolver.resolve(args);
-                case ADD_LANGUAGE_BEING_LEARNED:
-                    return addLanguageBeingLearnedArgsResolver.resolve(args);
-                case DELETE_LANGUAGE_BEING_LEARNED:
-                    return deleteLanguageBeingLearnedArgsResolver.resolve(args);
-
-                case LIST_VOCABULARIES:
-                    return listVocabulariesArgsResolver.resolve(args);
-                case ADD_VOCABULARY:
-                    return addVocabularyArgsResolver.resolve(args);
-                case DELETE_VOCABULARY:
-                    return deleteVocabularyArgsResolver.resolve(args);
-
-                case LIST_VOCABULARY_ENTRIES:
-                    return listVocabularyEntriesArgsResolver.resolve(args);
-                case ADD_VOCABULARY_ENTRY:
-                    return addVocabularyEntryArgsResolver.resolve(args);
-                case DELETE_VOCABULARY_ENTRY:
-                    return deleteVocabularyEntryArgsResolver.resolve(args);
-
-                case START_TRAINING_SESSION:
-                    return startTrainingSessionArgsResolver.resolve(args);
-
-                case HELP:
-
-                case EXIT:
-
-                case LIST_LANGUAGES:
-
-                case LIST_WORDS:
-                    return CommandWithArguments.builder()
-                            .command(command)
-                            .build();
-                default:
-                    return UNRECOGNIZED;
-            }
         }
+        Command command = getCommand(commandWithArguments);
+        if (Command.isExit(command)) {
+            return EXIT;
+        }
+        List<String> args = getArgs(commandWithArguments);
+        return argumentsResolverCollectionService.resolve(command, args);
     }
 
     private List<String> parseCommandAndArguments(String line) {

@@ -20,6 +20,7 @@ public class ListVocabularyEntriesArgsResolver implements ArgsResolver {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         var builder = getCommandBuilder();
         try {

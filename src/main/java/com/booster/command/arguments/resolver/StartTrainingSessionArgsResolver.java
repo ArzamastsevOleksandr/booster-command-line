@@ -18,6 +18,7 @@ public class StartTrainingSessionArgsResolver implements ArgsResolver {
 
     private static final String MODE_FLAG = "m";
 
+    @Override
     public CommandWithArguments resolve(List<String> args) {
         var builder = getCommandBuilder();
         try {
