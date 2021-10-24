@@ -35,11 +35,6 @@ public class Main {
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();
-//        XlsxImportComponent xlsxImportComponent = applicationContext.getBean("xlsxImportComponent", XlsxImportComponent.class);
-//        xlsxImportComponent.load();
-
-//        XlsxExportComponent xlsxExportComponent = applicationContext.getBean("xlsxExportComponent", XlsxExportComponent.class);
-//        xlsxExportComponent.export();
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);

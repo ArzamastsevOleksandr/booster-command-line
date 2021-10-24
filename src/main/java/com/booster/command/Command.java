@@ -30,6 +30,7 @@ public enum Command {
     START_TRAINING_SESSION(Set.of("t")),
 
     EXPORT(Set.of("exp")),
+    IMPORT(Set.of("imp")),
 
     EXIT(Set.of("e")),
 
