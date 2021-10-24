@@ -29,6 +29,8 @@ public enum Command {
 
     START_TRAINING_SESSION(Set.of("t")),
 
+    EXPORT(Set.of("exp")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));

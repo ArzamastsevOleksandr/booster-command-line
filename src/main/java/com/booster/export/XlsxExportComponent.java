@@ -24,9 +24,9 @@ public class XlsxExportComponent {
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyEntryDao vocabularyEntryDao;
 
-    public void export() {
+    public void export(String filename) {
         try (var workbook = new XSSFWorkbook();
-             var outputStream = new FileOutputStream("export.xlsx")
+             var outputStream = new FileOutputStream(filename)
         ) {
             languageBeingLearnedDao.findAll()
                     .forEach(lbl -> exportLanguageBeingLearned(workbook, lbl));
