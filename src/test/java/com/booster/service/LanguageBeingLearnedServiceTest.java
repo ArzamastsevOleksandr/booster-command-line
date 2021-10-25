@@ -3,6 +3,7 @@ package com.booster.service;
 import com.booster.dao.LanguageBeingLearnedDao;
 import com.booster.model.LanguageBeingLearned;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,7 +39,7 @@ class LanguageBeingLearnedServiceTest {
     @BeforeEach
     void beforeEach() {
         languageBeingLearnedDao = Mockito.spy(new LanguageBeingLearnedDao(jdbcTemplate));
-        languageBeingLearnedService = new LanguageBeingLearnedService(languageBeingLearnedDao, wrapperService);
+        languageBeingLearnedService = new LanguageBeingLearnedService(languageBeingLearnedDao, null, wrapperService);
     }
 
     @Test
@@ -67,6 +68,12 @@ class LanguageBeingLearnedServiceTest {
 
         verify(wrapperService).wrapDataAccessException(any(Supplier.class));
         verify(languageBeingLearnedDao).findByLanguageId(ID);
+    }
+
+    @Test
+    @Disabled
+    void shouldCreateLanguageBeingLearnedWithDefaultVocabulary() {
+
     }
 
     private LanguageBeingLearned getLanguageBeingLearned() {

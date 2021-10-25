@@ -7,7 +7,10 @@ import lombok.Value;
 @Builder
 public class AddVocabularyDaoParams {
 
-    String name;
+    // todo: extract to configurable setting?
+    @Builder.Default
+    String name = "DEFAULT";
+
     long languageBeingLearnedId;
 
 }
