@@ -1,6 +1,5 @@
 package com.booster.load;
 
-import com.booster.dao.LanguageBeingLearnedDao;
 import com.booster.dao.VocabularyDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyDaoParams;
@@ -34,7 +33,6 @@ public class XlsxImportComponent {
 
     private final CommandLineWriter commandLineWriter;
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyDao vocabularyDao;
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
@@ -72,7 +70,7 @@ public class XlsxImportComponent {
         final long languageId = language.getId();
         final long languageBeingLearnedId = languageBeingLearnedService.findByLanguageId(languageId)
                 .map(LanguageBeingLearned::getId)
-                .orElseGet(() -> languageBeingLearnedDao.add(languageId));
+                .orElseGet(() -> languageBeingLearnedService.addWithDefaultVocabulary(languageId));
 
         for (int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
