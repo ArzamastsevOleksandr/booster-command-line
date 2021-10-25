@@ -31,6 +31,7 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
 
             checkIfMandatoryFlagsArePresent(flag2value, Set.of(ID_FLAG));
             checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
+            checkIfIdBelongsToDefaultVocabulary(Long.parseLong(flag2value.get(ID_FLAG)));
             checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
 
             return builder
@@ -51,6 +52,12 @@ public class DeleteVocabularyArgsResolver implements ArgsResolver {
     private void checkIfVocabularyExistsWithId(long id) {
         if (!vocabularyDao.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " does not exist."));
+        }
+    }
+
+    private void checkIfIdBelongsToDefaultVocabulary(long id) {
+        if (vocabularyDao.existsDefaultWithId(id)) {
+            throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " is DEFAULT and can not be deleted."));
         }
     }
 

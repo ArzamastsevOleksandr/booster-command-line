@@ -35,8 +35,9 @@ public class VocabularyDao {
     }
 
     public void delete(long id) {
-        jdbcTemplate.update("delete from vocabulary " +
-                "where id = ?", id);
+        jdbcTemplate.update(
+                "delete from vocabulary " +
+                        "where id = ?", id);
     }
 
     public long add(AddVocabularyDaoParams params) {
@@ -54,23 +55,26 @@ public class VocabularyDao {
     }
 
     public boolean existsWithNameForLanguageBeingLearned(String name, long id) {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from (" +
-                "select * from vocabulary v " +
-                "join language_being_learned lbl " +
-                "on v.language_being_learned_id = lbl.id " +
-                "and v.name = ? " +
-                "and lbl.id = ?) v_count", Integer.class, name, id);
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(*) from (" +
+                        "select * from vocabulary v " +
+                        "join language_being_learned lbl " +
+                        "on v.language_being_learned_id = lbl.id " +
+                        "and v.name = ? " +
+                        "and lbl.id = ?) v_count", Integer.class, name, id);
         return count > 0;
     }
 
     public boolean existsWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from vocabulary v " +
-                "where v.id = ? ", Integer.class, id);
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(*) from vocabulary v " +
+                        "where v.id = ? ", Integer.class, id);
         return count > 0;
     }
 
     public List<Long> findAllIdsForLanguageBeingLearnedId(long id) {
-        return jdbcTemplate.query("select v.id from vocabulary v " +
+        return jdbcTemplate.query(
+                "select v.id from vocabulary v " +
                         "where v.language_being_learned_id = ?",
                 (rs, i) -> rs.getLong("id"), id);
     }
@@ -94,6 +98,14 @@ public class VocabularyDao {
                         "on lbl.language_id = l.id " +
                         "where v.name = ? " +
                         "and lbl.id = ?", rs2Vocabulary, name, id);
+    }
+
+    public boolean existsDefaultWithId(long id) {
+        Integer count = jdbcTemplate.queryForObject(
+                "select count(*) from vocabulary v " +
+                        "where v.name = 'DEFAULT' " +
+                        "and v.id = ? ", Integer.class, id);
+        return count > 0;
     }
 
 }
