@@ -7,18 +7,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,23 +26,21 @@ class LanguageBeingLearnedServiceTest {
     LanguageBeingLearnedService languageBeingLearnedService;
 
     @Mock
-    JdbcTemplate jdbcTemplate;
-
     LanguageBeingLearnedDao languageBeingLearnedDao;
     @Spy
     WrapperService<LanguageBeingLearned> wrapperService;
 
+    final LanguageBeingLearned languageBeingLearned = LanguageBeingLearned.builder().build();
+
     @BeforeEach
     void beforeEach() {
-        languageBeingLearnedDao = Mockito.spy(new LanguageBeingLearnedDao(jdbcTemplate));
         languageBeingLearnedService = new LanguageBeingLearnedService(languageBeingLearnedDao, null, wrapperService);
     }
 
     @Test
     void shouldFindLanguageBeingLearnedById() {
         // given
-        LanguageBeingLearned languageBeingLearned = getLanguageBeingLearned();
-        when(jdbcTemplate.queryForObject(any(String.class), any(RowMapper.class), eq(ID))).thenReturn(languageBeingLearned);
+        when(languageBeingLearnedDao.findById(ID)).thenReturn(languageBeingLearned);
         // when
         Optional<LanguageBeingLearned> optionalLanguageBeingLearned = languageBeingLearnedService.findById(ID);
         // then
@@ -59,8 +53,7 @@ class LanguageBeingLearnedServiceTest {
     @Test
     void shouldFindLanguageBeingLearnedByLanguageId() {
         // given
-        LanguageBeingLearned languageBeingLearned = getLanguageBeingLearned();
-        when(jdbcTemplate.queryForObject(any(String.class), any(RowMapper.class), eq(ID))).thenReturn(languageBeingLearned);
+        when(languageBeingLearnedDao.findByLanguageId(ID)).thenReturn(languageBeingLearned);
         // when
         Optional<LanguageBeingLearned> optionalLanguageBeingLearned = languageBeingLearnedService.findByLanguageId(ID);
         // then
@@ -74,10 +67,6 @@ class LanguageBeingLearnedServiceTest {
     @Disabled
     void shouldCreateLanguageBeingLearnedWithDefaultVocabulary() {
 
-    }
-
-    private LanguageBeingLearned getLanguageBeingLearned() {
-        return LanguageBeingLearned.builder().build();
     }
 
 }

@@ -66,6 +66,7 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
+    // todo: FunctionalInterface
     private Function<VocabularyEntry, VocabularyEntry> withSynonymsAndAntonyms(Map<Long, Set<String>> veId2Synonyms, Map<Long, Set<String>> veId2Antonyms) {
         return ve -> {
             var builder = ve.toBuilder();
