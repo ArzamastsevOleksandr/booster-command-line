@@ -35,8 +35,9 @@ public class Main {
         // todo: I can move the ve from one v to the other
         // todo: I can copy the ve from one v to the other
         // todo: I can create a new ve without specifying the vid - it should appear for the DEFAULT vocabulary
-        // todo: the DEFAULT vocabulary can not be renamed/deleted
         // todo: upgrade to latest Java
+        // todo: fix: ave command: description of > 1 word can not be recognized
+        // todo: custom command grammar and parser?
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();
@@ -50,9 +51,7 @@ public class Main {
 // todo: learn javac
 // todo: java flame graphs
         // todo: inline types: stack gives more cache-friendliness vs heap
-
 // todo: Chapter 33: crash JVM examples
     }
-
 
 }
