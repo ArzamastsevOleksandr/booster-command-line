@@ -6,7 +6,6 @@ import com.booster.command.arguments.ExportArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,8 +53,9 @@ public class ExportArgsResolver implements ArgsResolver {
     }
 
     private String addDateToFilename(String filename) {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        return filename + "_" + timestamp;
+//        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+//        return filename + "_" + timestamp;
+        return filename;
     }
 
 }
