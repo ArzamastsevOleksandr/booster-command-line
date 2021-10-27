@@ -36,6 +36,7 @@ public class Main {
         // todo: I can copy the ve from one v to the other
         // todo: I can create a new ve without specifying the vid - it should appear for the DEFAULT vocabulary
         // todo: the DEFAULT vocabulary can not be renamed/deleted
+        // todo: upgrade to latest Java
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();
@@ -43,6 +44,7 @@ public class Main {
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);
         //  custom data structures
+        // todo: organize packages by features, having private/default access modifiers for most methods
 //        ===============================================
 // todo: standardize maven builds with maven wrapper
 // todo: learn javac
