@@ -3,8 +3,8 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddLanguageBeingLearnedArgs;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.dao.LanguageBeingLearnedDao;
-import com.booster.dao.LanguageDao;
+import com.booster.service.LanguageBeingLearnedService;
+import com.booster.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,8 @@ public class AddLanguageBeingLearnedArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final LanguageDao languageDao;
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
+    private final LanguageService languageService;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -51,13 +51,13 @@ public class AddLanguageBeingLearnedArgsResolver implements ArgsResolver {
     }
 
     private void checkIfLanguageExistsWithId(long languageId) {
-        if (!languageDao.existsWithId(languageId)) {
+        if (!languageService.existsWithId(languageId)) {
             throw new ArgsValidationException(List.of("Language with id: " + languageId + " does not exist."));
         }
     }
 
     private void checkIfLanguageBeingLearnedAlreadyExists(long id) {
-        if (languageBeingLearnedDao.existsWithLanguageId(id)) {
+        if (languageBeingLearnedService.existsWithLanguageId(id)) {
             throw new ArgsValidationException(List.of("Language being learned already exists for language id: " + id));
         }
     }

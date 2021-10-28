@@ -3,7 +3,7 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.ListLanguagesBeingLearnedArgs;
-import com.booster.dao.LanguageBeingLearnedDao;
+import com.booster.service.LanguageBeingLearnedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class ListLanguagesBeingLearnedArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -45,7 +45,7 @@ public class ListLanguagesBeingLearnedArgsResolver implements ArgsResolver {
 
     // todo: an aggregate validator component with all possible validation methods?
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
-        if (!languageBeingLearnedDao.existsWithId(id)) {
+        if (!languageBeingLearnedService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Language being learned does not exist with id: " + id));
         }
     }

@@ -54,24 +54,6 @@ public class VocabularyDao {
         return keyHolder.getKey().longValue();
     }
 
-    public boolean existsWithNameForLanguageBeingLearned(String name, long id) {
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(*) from (" +
-                        "select * from vocabulary v " +
-                        "join language_being_learned lbl " +
-                        "on v.language_being_learned_id = lbl.id " +
-                        "and v.name = ? " +
-                        "and lbl.id = ?) v_count", Integer.class, name, id);
-        return count > 0;
-    }
-
-    public boolean existsWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(*) from vocabulary v " +
-                        "where v.id = ? ", Integer.class, id);
-        return count > 0;
-    }
-
     public List<Long> findAllIdsForLanguageBeingLearnedId(long id) {
         return jdbcTemplate.query(
                 "select v.id from vocabulary v " +
@@ -100,12 +82,27 @@ public class VocabularyDao {
                         "and lbl.id = ?", rs2Vocabulary, name, id);
     }
 
-    public boolean existsDefaultWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject(
+    public int countWithNameAndLanguageBeingLearnedId(String name, long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) from (" +
+                        "select * from vocabulary v " +
+                        "join language_being_learned lbl " +
+                        "on v.language_being_learned_id = lbl.id " +
+                        "and v.name = ? " +
+                        "and lbl.id = ?) v_count", Integer.class, name, id);
+    }
+
+    public int countWithId(long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) from vocabulary v " +
+                        "where v.id = ? ", Integer.class, id);
+    }
+
+    public int countDefaultWithId(long id) {
+        return jdbcTemplate.queryForObject(
                 "select count(*) from vocabulary v " +
                         "where v.name = 'DEFAULT' " +
                         "and v.id = ? ", Integer.class, id);
-        return count > 0;
     }
 
 }

@@ -20,18 +20,23 @@ public class LanguageDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Language> findAll() {
-        return jdbcTemplate.query("select * from language l", rs2Language);
+        return jdbcTemplate.query(
+                "select * " +
+                        "from language", rs2Language);
     }
 
-    public boolean existsWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from language l " +
-                "where l.id = ?", Integer.class, id);
-
-        return count > 0;
+    public int countWithId(long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from language l " +
+                        "where l.id = ?", Integer.class, id);
     }
 
     public Language findByName(String name) {
-        return jdbcTemplate.queryForObject("select * from language l where l.name = ?", rs2Language, name);
+        return jdbcTemplate.queryForObject(
+                "select * " +
+                        "from language l " +
+                        "where l.name = ?", rs2Language, name);
     }
 
 }

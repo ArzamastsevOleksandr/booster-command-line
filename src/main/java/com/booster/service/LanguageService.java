@@ -18,4 +18,9 @@ public class LanguageService {
         return wrapperService.wrapDataAccessException(() -> languageDao.findByName(name));
     }
 
+    public boolean existsWithId(long id) {
+        int count = languageDao.countWithId(id);
+        return count > 0;
+    }
+
 }

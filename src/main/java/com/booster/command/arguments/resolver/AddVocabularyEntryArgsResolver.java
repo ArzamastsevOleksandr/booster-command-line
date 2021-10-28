@@ -3,9 +3,9 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.dao.VocabularyDao;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Word;
+import com.booster.service.VocabularyEntryService;
+import com.booster.service.VocabularyService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,8 +23,8 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     private static final String ID_FLAG = "id";
     public static final String DEFINITION = "d";
 
-    private final VocabularyEntryDao vocabularyEntryDao;
-    private final VocabularyDao vocabularyDao;
+    private final VocabularyEntryService vocabularyEntryService;
+    private final VocabularyService vocabularyService;
     private final WordService wordService;
 
     @Override
@@ -90,13 +90,13 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     }
 
     private void checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(long wordId, long vocabularyId) {
-        if (vocabularyEntryDao.existsWithWordIdAndVocabularyId(wordId, vocabularyId)) {
+        if (vocabularyEntryService.existsWithWordIdAndVocabularyId(wordId, vocabularyId)) {
             throw new ArgsValidationException(List.of("Vocabulary entry already exists in vocabulary with id: " + vocabularyId));
         }
     }
 
     private void checkIfVocabularyExistsWithId(long id) {
-        if (!vocabularyDao.existsWithId(id)) {
+        if (!vocabularyService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " does not exist."));
         }
     }

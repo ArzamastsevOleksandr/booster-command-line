@@ -3,7 +3,7 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.DeleteVocabularyEntryArgs;
-import com.booster.dao.VocabularyEntryDao;
+import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class DeleteVocabularyEntryArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -49,7 +49,7 @@ public class DeleteVocabularyEntryArgsResolver implements ArgsResolver {
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
-        if (!vocabularyEntryDao.existsWithId(id)) {
+        if (!vocabularyEntryService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary entry with id: " + id + " does not exist."));
         }
     }

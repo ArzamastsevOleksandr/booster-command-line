@@ -18,4 +18,14 @@ public class VocabularyEntryService {
         return wrapperService.wrapDataAccessException(() -> vocabularyEntryDao.findById(id));
     }
 
+    public boolean existsWithId(long id) {
+        int count = vocabularyEntryDao.countWithId(id);
+        return count > 0;
+    }
+
+    public boolean existsWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
+        int count = vocabularyEntryDao.countWithWordIdAndVocabularyId(wordId, vocabularyId);
+        return count > 0;
+    }
+
 }

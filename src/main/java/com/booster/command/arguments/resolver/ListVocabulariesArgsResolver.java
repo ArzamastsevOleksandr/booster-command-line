@@ -3,7 +3,7 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.ListVocabulariesArgs;
-import com.booster.dao.VocabularyDao;
+import com.booster.service.VocabularyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,7 @@ public class ListVocabulariesArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final VocabularyDao vocabularyDao;
+    private final VocabularyService vocabularyService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -44,7 +44,7 @@ public class ListVocabulariesArgsResolver implements ArgsResolver {
     }
 
     private void checkIfVocabularyExistsWithId(long id) {
-        if (!vocabularyDao.existsWithId(id)) {
+        if (!vocabularyService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary does not exist with id: " + id));
         }
     }
