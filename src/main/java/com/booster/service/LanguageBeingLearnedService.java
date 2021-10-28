@@ -15,7 +15,7 @@ public class LanguageBeingLearnedService {
 
     private final LanguageBeingLearnedDao languageBeingLearnedDao;
     private final VocabularyDao vocabularyDao;
-    private final WrapperService<LanguageBeingLearned> wrapperService;
+    private final WrapperService wrapperService;
 
     public Optional<LanguageBeingLearned> findById(long id) {
         return wrapperService.wrapDataAccessException(() -> languageBeingLearnedDao.findById(id));

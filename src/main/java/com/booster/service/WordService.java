@@ -12,7 +12,7 @@ import java.util.Optional;
 public class WordService {
 
     private final WordDao wordDao;
-    private final WrapperService<Word> wrapperService;
+    private final WrapperService wrapperService;
 
     public Word findByNameOrCreateAndGet(String name) {
         return findByName(name)

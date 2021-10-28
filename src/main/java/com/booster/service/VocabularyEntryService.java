@@ -12,7 +12,7 @@ import java.util.Optional;
 public class VocabularyEntryService {
 
     private final VocabularyEntryDao vocabularyEntryDao;
-    private final WrapperService<VocabularyEntry> wrapperService;
+    private final WrapperService wrapperService;
 
     public Optional<VocabularyEntry> findById(long id) {
         return wrapperService.wrapDataAccessException(() -> vocabularyEntryDao.findById(id));

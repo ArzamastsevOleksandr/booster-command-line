@@ -28,7 +28,7 @@ class LanguageBeingLearnedServiceTest {
     @Mock
     LanguageBeingLearnedDao languageBeingLearnedDao;
     @Spy
-    WrapperService<LanguageBeingLearned> wrapperService;
+    WrapperService wrapperService;
 
     final LanguageBeingLearned languageBeingLearned = LanguageBeingLearned.builder().build();
 

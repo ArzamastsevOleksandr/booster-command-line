@@ -12,7 +12,7 @@ import java.util.Optional;
 public class LanguageService {
 
     private final LanguageDao languageDao;
-    private final WrapperService<Language> wrapperService;
+    private final WrapperService wrapperService;
 
     public Optional<Language> findByName(String name) {
         return wrapperService.wrapDataAccessException(() -> languageDao.findByName(name));
