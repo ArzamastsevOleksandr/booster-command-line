@@ -15,6 +15,10 @@ insert into vocabulary
 select 'Default', lbl.id
 from language_being_learned lbl;
 
+insert into settings
+    (language_being_learned_id, vocabulary_id)
+values (null, null);
+
 insert into word
     (name)
 values ('fallacy'),
