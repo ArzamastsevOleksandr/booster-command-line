@@ -2,7 +2,6 @@ package com.booster.command.arguments.resolver;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.List;
 import static com.booster.command.Command.LIST_WORDS;
 
 @Component
-@RequiredArgsConstructor
 public class ListWordsArgsResolver implements ArgsResolver {
 
     @Override

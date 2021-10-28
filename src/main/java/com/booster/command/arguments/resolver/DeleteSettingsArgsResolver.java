@@ -6,20 +6,19 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.booster.command.Command.LIST_LANGUAGES;
+import static com.booster.command.Command.DELETE_SETTINGS;
 
 @Component
-public class ListLanguagesArgsResolver implements ArgsResolver {
+public class DeleteSettingsArgsResolver implements ArgsResolver {
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
-        // for now no args exist
         return getCommandBuilder().build();
     }
 
     @Override
     public Command command() {
-        return LIST_LANGUAGES;
+        return DELETE_SETTINGS;
     }
 
 }

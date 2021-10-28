@@ -34,6 +34,7 @@ public enum Command {
 
     DISPLAY_SETTINGS(Set.of("ds")),
     ADD_SETTINGS(Set.of("as")),
+    DELETE_SETTINGS(Set.of("rs")),
 
     EXIT(Set.of("e")),
 

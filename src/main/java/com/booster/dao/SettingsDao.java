@@ -39,4 +39,10 @@ public class SettingsDao {
                 params.getLanguageBeingLearnedId(), params.getVocabularyId());
     }
 
+    public void deleteAll() {
+        jdbcTemplate.update(
+                "delete from settings " +
+                        "where id in (select s.id from settings s)");
+    }
+
 }
