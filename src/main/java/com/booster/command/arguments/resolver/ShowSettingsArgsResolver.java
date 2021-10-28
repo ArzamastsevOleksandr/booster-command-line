@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.booster.command.Command.DISPLAY_SETTINGS;
+import static com.booster.command.Command.SHOW_SETTINGS;
 
 @Component
 @RequiredArgsConstructor
-public class DisplaySettingsArgsResolver implements ArgsResolver {
+public class ShowSettingsArgsResolver implements ArgsResolver {
 
     // todo: a default method
     @Override
@@ -21,7 +21,7 @@ public class DisplaySettingsArgsResolver implements ArgsResolver {
 
     @Override
     public Command command() {
-        return DISPLAY_SETTINGS;
+        return SHOW_SETTINGS;
     }
 
 }

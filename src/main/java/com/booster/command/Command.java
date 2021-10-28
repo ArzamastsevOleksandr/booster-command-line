@@ -32,7 +32,7 @@ public enum Command {
     EXPORT(Set.of("exp")),
     IMPORT(Set.of("imp")),
 
-    DISPLAY_SETTINGS(Set.of("ds")),
+    SHOW_SETTINGS(Set.of("ss")),
     ADD_SETTINGS(Set.of("as")),
     DELETE_SETTINGS(Set.of("rs")),
 
