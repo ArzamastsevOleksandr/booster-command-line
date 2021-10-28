@@ -20,6 +20,7 @@ public interface ArgsResolver {
         return command().extendedToString();
     }
 
+//    todo: rename
     default CommandWithArguments.CommandWithArgumentsBuilder getCommandBuilder() {
         return CommandWithArguments.builder()
                 .command(command());

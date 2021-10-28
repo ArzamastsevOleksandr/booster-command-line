@@ -33,6 +33,7 @@ public enum Command {
     IMPORT(Set.of("imp")),
 
     DISPLAY_SETTINGS(Set.of("ds")),
+    ADD_SETTINGS(Set.of("as")),
 
     EXIT(Set.of("e")),
 
