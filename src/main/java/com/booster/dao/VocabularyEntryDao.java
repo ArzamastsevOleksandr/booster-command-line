@@ -167,14 +167,6 @@ public class VocabularyEntryDao {
                         "where ve.id = ?", cacUpdated, id);
     }
 
-    public boolean existsWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from vocabulary_entry ve " +
-                        "where ve.id = ?", Integer.class, id);
-        return count > 0;
-    }
-
     // todo: execute all updates in transaction
     public void deleteAllForVocabularyId(long id) {
         jdbcTemplate.update(
@@ -186,15 +178,6 @@ public class VocabularyEntryDao {
         jdbcTemplate.update(
                 "delete from vocabulary_entry ve " +
                         "where ve.vocabulary_id = ?", id);
-    }
-
-    public boolean existsWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from vocabulary_entry ve " +
-                        "where ve.word_id = ? " +
-                        "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
-        return count > 0;
     }
 
     public VocabularyEntry findById(long id) {
@@ -329,6 +312,21 @@ public class VocabularyEntryDao {
         return vocabularyEntries.stream()
                 .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
                 .collect(toList());
+    }
+
+    public int countWithId(long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from vocabulary_entry ve " +
+                        "where ve.id = ?", Integer.class, id);
+    }
+
+    public int countWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from vocabulary_entry ve " +
+                        "where ve.word_id = ? " +
+                        "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
     }
 
 }

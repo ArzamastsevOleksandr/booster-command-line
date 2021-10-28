@@ -3,8 +3,8 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyArgs;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.dao.LanguageBeingLearnedDao;
-import com.booster.dao.VocabularyDao;
+import com.booster.service.LanguageBeingLearnedService;
+import com.booster.service.VocabularyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,8 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     private static final String NAME_FLAG = "n";
     private static final String ID_FLAG = "id";
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
-    private final VocabularyDao vocabularyDao;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
+    private final VocabularyService vocabularyService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -53,7 +53,7 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
-        if (!languageBeingLearnedDao.existsWithId(id)) {
+        if (!languageBeingLearnedService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Language being learned with id: " + id + " does not exist."));
         }
     }
@@ -61,7 +61,7 @@ public class AddVocabularyArgsResolver implements ArgsResolver {
     private void checkIfVocabularyNameIsAlreadyInUse(Map<String, String> flag2value) {
         long id = Long.parseLong(flag2value.get(ID_FLAG));
         String name = flag2value.get(NAME_FLAG);
-        if (vocabularyDao.existsWithNameForLanguageBeingLearned(name, id)) {
+        if (vocabularyService.existsWithNameForLanguageBeingLearnedId(name, id)) {
             var argErrors = List.of(
                     "Vocabulary with name: " + name + " already exists for the language being learned with id: " + id + "."
             );

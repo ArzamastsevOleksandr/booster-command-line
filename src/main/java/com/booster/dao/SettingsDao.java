@@ -21,7 +21,10 @@ public class SettingsDao {
     private final JdbcTemplate jdbcTemplate;
 
     public Settings findOne() {
-        return jdbcTemplate.queryForObject("select * from settings limit 1", RS_TO_SETTINGS);
+        return jdbcTemplate.queryForObject(
+                "select * " +
+                        "from settings " +
+                        "limit 1", RS_TO_SETTINGS);
     }
 
     private static Long getLongValueOrNull(Object obj) {

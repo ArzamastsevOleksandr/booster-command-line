@@ -22,4 +22,19 @@ public class VocabularyService {
         return wrapperService.wrapDataAccessException(() -> vocabularyDao.findByNameAndLanguageBeingLearnedId(name, id));
     }
 
+    public boolean existsWithNameForLanguageBeingLearnedId(String name, long id) {
+        int count = vocabularyDao.countWithNameAndLanguageBeingLearnedId(name, id);
+        return count > 0;
+    }
+
+    public boolean existsWithId(long id) {
+        int count = vocabularyDao.countWithId(id);
+        return count > 0;
+    }
+
+    public boolean existsDefaultWithId(long id) {
+        int count = vocabularyDao.countDefaultWithId(id);
+        return count > 0;
+    }
+
 }

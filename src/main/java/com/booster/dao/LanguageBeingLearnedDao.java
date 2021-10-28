@@ -50,18 +50,10 @@ public class LanguageBeingLearnedDao {
                         "where id = ?", id);
     }
 
-    public boolean existsWithId(long id) {
-        Integer count = jdbcTemplate.queryForObject(
+    public int countWithId(long id) {
+        return jdbcTemplate.queryForObject(
                 "select count(*) from language_being_learned lbl " +
                         "where lbl.id = ?", Integer.class, id);
-        return count > 0;
-    }
-
-    public boolean existsWithLanguageId(long id) {
-        Integer count = jdbcTemplate.queryForObject(
-                "select count(*) from language_being_learned lbl " +
-                        "where lbl.language_id = ?", Integer.class, id);
-        return count > 0;
     }
 
     public LanguageBeingLearned findById(long id) {
@@ -80,6 +72,12 @@ public class LanguageBeingLearnedDao {
                         "inner join language l " +
                         "on l.id = lbl.language_id " +
                         "where l.id = ?", rs2LanguageBeingLearned, id);
+    }
+
+    public int countWithLanguageId(long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) from language_being_learned lbl " +
+                        "where lbl.language_id = ?", Integer.class, id);
     }
 
 }

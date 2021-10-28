@@ -3,8 +3,8 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddSettingsArgs;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.dao.LanguageBeingLearnedDao;
-import com.booster.dao.VocabularyDao;
+import com.booster.service.LanguageBeingLearnedService;
+import com.booster.service.VocabularyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +22,8 @@ public class AddSettingsArgsResolver implements ArgsResolver {
     private static final String LANGUAGE_BEING_LEARNED_ID_FLAG = "lblid";
     private static final String VOCABULARY_ID_FLAG = "vid";
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
-    private final VocabularyDao vocabularyDao;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
+    private final VocabularyService vocabularyService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -58,13 +58,13 @@ public class AddSettingsArgsResolver implements ArgsResolver {
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
-        if (!languageBeingLearnedDao.existsWithId(id)) {
+        if (!languageBeingLearnedService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Language being learned with id: " + id + " does not exist."));
         }
     }
 
     private void checkIfVocabularyExistsWithId(long id) {
-        if (!vocabularyDao.existsWithId(id)) {
+        if (!vocabularyService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Vocabulary does not exist with id: " + id));
         }
     }

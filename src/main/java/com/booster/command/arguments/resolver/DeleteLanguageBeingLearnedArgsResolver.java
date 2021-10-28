@@ -3,7 +3,7 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.DeleteLanguageBeingLearnedArgs;
-import com.booster.dao.LanguageBeingLearnedDao;
+import com.booster.service.LanguageBeingLearnedService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
 
     private static final String ID_FLAG = "id";
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
+    private final LanguageBeingLearnedService languageBeingLearnedService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -49,7 +49,7 @@ public class DeleteLanguageBeingLearnedArgsResolver implements ArgsResolver {
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
-        if (!languageBeingLearnedDao.existsWithId(id)) {
+        if (!languageBeingLearnedService.existsWithId(id)) {
             throw new ArgsValidationException(List.of("Language being learned with id: " + id + " does not exist."));
         }
     }

@@ -34,4 +34,14 @@ public class LanguageBeingLearnedService {
         return languageBeingLearnedId;
     }
 
+    public boolean existsWithId(long id) {
+        int count = languageBeingLearnedDao.countWithId(id);
+        return count > 0;
+    }
+
+    public boolean existsWithLanguageId(long id) {
+        int count = languageBeingLearnedDao.countWithLanguageId(id);
+        return count > 0;
+    }
+
 }
