@@ -32,6 +32,8 @@ public enum Command {
     EXPORT(Set.of("exp")),
     IMPORT(Set.of("imp")),
 
+    DISPLAY_SETTINGS(Set.of("ds")),
+
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
