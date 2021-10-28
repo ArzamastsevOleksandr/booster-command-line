@@ -81,3 +81,20 @@ create table vocabulary_entry__antonym__jt
 
     primary key (vocabulary_entry_id, word_id)
 );
+
+create table settings
+(
+    id                        serial primary key,
+    language_being_learned_id bigint,
+    vocabulary_id             bigint
+);
+
+alter table settings
+    add constraint settings__language_being_learned_id__fkey
+        foreign key (language_being_learned_id)
+            references language_being_learned (id);
+
+alter table settings
+    add constraint settings__vocabulary_id__fkey
+        foreign key (vocabulary_id)
+            references vocabulary (id);
