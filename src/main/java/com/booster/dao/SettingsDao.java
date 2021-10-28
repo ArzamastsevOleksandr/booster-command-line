@@ -1,5 +1,6 @@
 package com.booster.dao;
 
+import com.booster.dao.params.AddSettingsDaoParams;
 import com.booster.model.Settings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +29,14 @@ public class SettingsDao {
                 .filter(Long.class::isInstance)
                 .map(Long.class::cast)
                 .orElse(null);
+    }
+
+    public void add(AddSettingsDaoParams params) {
+        jdbcTemplate.update(
+                "insert into settings " +
+                        "(language_being_learned_id, vocabulary_id) " +
+                        "values (?, ?)",
+                params.getLanguageBeingLearnedId(), params.getVocabularyId());
     }
 
 }

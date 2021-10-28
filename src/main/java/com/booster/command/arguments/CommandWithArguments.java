@@ -6,12 +6,14 @@ import lombok.Data;
 
 import java.util.List;
 
+// todo: VO?
 @Data
 @Builder
 public class CommandWithArguments {
 
     private Command command;
 
+    // todo: forbid null values
     private Args args;
 
     @Builder.Default
