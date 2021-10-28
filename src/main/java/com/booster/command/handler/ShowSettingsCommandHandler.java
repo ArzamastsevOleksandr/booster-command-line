@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class DisplaySettingsCommandHandler implements CommandHandler {
+public class ShowSettingsCommandHandler implements CommandHandler {
 
     private final SettingsService settingsService;
 
@@ -33,7 +33,7 @@ public class DisplaySettingsCommandHandler implements CommandHandler {
 
     @Override
     public Command getCommand() {
-        return Command.DISPLAY_SETTINGS;
+        return Command.SHOW_SETTINGS;
     }
 
 }
