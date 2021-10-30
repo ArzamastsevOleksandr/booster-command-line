@@ -8,12 +8,17 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: I can mark the word as learned for it not to appear in the training sessions
-        // todo: I can mark the word as hard for it to always appear in the training sessions
-        // todo: I can search for the vocabulary entry by a substring
+        // todo: get rid of the LanguageBeingLearned concept
+        // todo: I can create a tag
+        // todo: I can tag the ve
+        // todo: Add validation on startup to forbid >1 Command with the same string value
+        // todo: I can search for words by tags
+        // todo: I can mark the ve as learned for it not to appear in the training sessions
+        // todo: I can mark the ve as hard for it to always appear in the training sessions
+        // todo: I can search for the ve by a substring
         // todo: I can move the ve from one v to the other
         // todo: I can copy the ve from one v to the other
-        // todo: add contexts to the vocabulary entry
+        // todo: add contexts to the ve
         // todo: can exit the training session before it ends
         // todo: training session for v | lbl
         // todo: a strategy for which words can be a part of the training session.
@@ -21,6 +26,15 @@ public class Main {
         // todo: list ve vid=<> | lblid=<>
         // todo: list v lblid=<>
         // todo: v has numberOfEntries field
+        // todo: I can add notes
+        // todo: I can see all notes
+        // todo: I can delete a note
+        // todo: I can tag the note
+        // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
+        // todo: I can have a calc training session
+        // todo: I have a level in calc
+        // todo: Correct calc answers increase level and complexity of all subsequent calcs
+        // todo: I can have a mul/div/sub/add/mixed training sessions in calc
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
         learningSessionManager.launch();
@@ -33,7 +47,7 @@ public class Main {
         // todo: learn javac
         // todo: java flame graphs
         // todo: inline types: stack gives more cache-friendliness vs heap
-        // todo: Chapter 33: crash JVM examples
+        // todo: Chapter 33: crash JVM examples, Chapter 68, 79
         // todo: custom command grammar and parser?
         // todo: fix: ave command: description of > 1 word can not be recognized
         // todo: UPDATE_VOCABULARY_ENTRY command
@@ -45,6 +59,12 @@ public class Main {
         // todo: HELP <command>
         // todo: pretty print of l, lbl, v, ve, w
         // todo: upgrade to latest Java
+        // todo: value objects with no getters an setters, having public final fields
+        // todo: check deps upgrades with mvn versions:display-dependency-updates (plugin)
+        // todo: As soon as you see, or think, the word “and” in the description of a function, method, or class,
+        //  you should hear alarm bells ringing inside your head.
+        // todo: a task to add fractions (1/3 + 4/8 + 3/2)
+        // todo: play with JShell
     }
 
 }
