@@ -329,11 +329,11 @@ public class VocabularyEntryDao {
                         "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
     }
 
-    public void markDifficult(long id) {
+    public void markDifficult(long id, boolean isDifficult) {
         jdbcTemplate.update(
                 "update vocabulary_entry " +
-                        "set is_difficult = true " +
-                        "where id = ?", id);
+                        "set is_difficult = ? " +
+                        "where id = ?", isDifficult, id);
     }
 
 }

@@ -18,6 +18,7 @@ public class LanguageService {
         return wrapperService.wrapDataAccessException(() -> languageDao.findByName(name));
     }
 
+//    todo: check that only 1 item is present?
     public boolean existsWithId(long id) {
         int count = languageDao.countWithId(id);
         return count > 0;
