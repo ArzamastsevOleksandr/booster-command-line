@@ -47,4 +47,10 @@ public class SettingsDao {
                         "where id in (select s.id from settings s)");
     }
 
+    public int count() {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from settings", Integer.class);
+    }
+
 }
