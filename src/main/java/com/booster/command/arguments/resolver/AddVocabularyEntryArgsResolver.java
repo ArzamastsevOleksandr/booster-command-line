@@ -3,7 +3,9 @@ package com.booster.command.arguments.resolver;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
+import com.booster.model.Settings;
 import com.booster.model.Word;
+import com.booster.service.SettingsService;
 import com.booster.service.VocabularyEntryService;
 import com.booster.service.VocabularyService;
 import com.booster.service.WordService;
@@ -25,6 +27,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
 
     private final VocabularyEntryService vocabularyEntryService;
     private final VocabularyService vocabularyService;
+    private final SettingsService settingsService;
     private final WordService wordService;
 
     @Override
@@ -35,24 +38,54 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
 
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
 
-            checkIfMandatoryFlagsArePresent(flag2value, Set.of(NAME_FLAG, ID_FLAG));
-            checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
-            checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
-            long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
-            checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
-            List<Long> synonymIds = getSynonymIds(flag2value);
-            List<Long> antonymIds = getAntonymIds(flag2value);
-            String definition = getDefinition(flag2value);
+            checkIfMandatoryFlagsArePresent(flag2value, Set.of(NAME_FLAG));
+            if (!flag2value.containsKey(ID_FLAG)) {
+                Settings settings = settingsService.findOne()
+                        .orElseThrow(() -> new ArgsValidationException(List.of(
+                                "No vocabulary id was provided and no settings with default vocabulary id exist"
+                        )));
+//                todo: DRY
+                return settings.getVocabularyId()
+                        .map(vid -> {
+                            checkIfVocabularyExistsWithId(vid);
 
-            return builder
-                    .args(AddVocabularyEntryArgs.builder()
-                            .wordId(wordId)
-                            .vocabularyId(Long.parseLong(flag2value.get(ID_FLAG)))
-                            .synonymIds(synonymIds)
-                            .antonymIds(antonymIds)
-                            .definition(definition)
-                            .build())
-                    .build();
+                            long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
+                            checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, vid);
+                            List<Long> synonymIds = getSynonymIds(flag2value);
+                            List<Long> antonymIds = getAntonymIds(flag2value);
+                            String definition = getDefinition(flag2value);
+
+                            return builder
+                                    .args(AddVocabularyEntryArgs.builder()
+                                            .wordId(wordId)
+                                            .vocabularyId(vid)
+                                            .synonymIds(synonymIds)
+                                            .antonymIds(antonymIds)
+                                            .definition(definition)
+                                            .build())
+                                    .build();
+                        }).orElseThrow(() -> new ArgsValidationException(List.of(
+                                "No vocabulary id was provided and no settings with default vocabulary id exist"
+                        )));
+            } else {
+                checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
+                checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
+                long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
+                checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
+                List<Long> synonymIds = getSynonymIds(flag2value);
+                List<Long> antonymIds = getAntonymIds(flag2value);
+                String definition = getDefinition(flag2value);
+
+                return builder
+                        .args(AddVocabularyEntryArgs.builder()
+                                .wordId(wordId)
+                                .vocabularyId(Long.parseLong(flag2value.get(ID_FLAG)))
+                                .synonymIds(synonymIds)
+                                .antonymIds(antonymIds)
+                                .definition(definition)
+                                .build())
+                        .build();
+            }
         } catch (ArgsValidationException e) {
             return builder
                     .argErrors(e.getArgErrors())
