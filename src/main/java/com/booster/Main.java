@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: UPDATE_VOCABULARY_ENTRY
-        // todo: UPDATE_VOCABULARY
+        // todo: UPDATE_VOCABULARY_ENTRY command
+        // todo: UPDATE_VOCABULARY command
+        // todo: UPDATE_SETTINGS command?
         // todo: add contexts to the vocabulary entry
         // todo: can exit the training session before it ends
         // todo: training session for v | lbl
@@ -19,7 +20,8 @@ public class Main {
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
 
-        // todo: help <command>
+        // todo: list_flags command
+        // todo: HELP <command>
         // todo: list ve vid=<> | lblid=<>
         // todo: list v lblid=<>
         // todo: v has numberOfEntries field
@@ -34,7 +36,6 @@ public class Main {
         // todo: I can search for the vocabulary entry by a substring
         // todo: I can move the ve from one v to the other
         // todo: I can copy the ve from one v to the other
-        // todo: I can create a new ve without specifying the vid - it should appear for the DEFAULT vocabulary
         // todo: upgrade to latest Java
         // todo: fix: ave command: description of > 1 word can not be recognized
         // todo: custom command grammar and parser?

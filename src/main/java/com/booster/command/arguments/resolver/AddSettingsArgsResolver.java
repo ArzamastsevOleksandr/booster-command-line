@@ -25,6 +25,7 @@ public class AddSettingsArgsResolver implements ArgsResolver {
     private final LanguageBeingLearnedService languageBeingLearnedService;
     private final VocabularyService vocabularyService;
 
+//    todo: if lblid is provided, but no vid is provided - use the id of the DEFAULT vocabulary
     @Override
     public CommandWithArguments resolve(List<String> args) {
         var commandWithArgumentsBuilder = getCommandBuilder();

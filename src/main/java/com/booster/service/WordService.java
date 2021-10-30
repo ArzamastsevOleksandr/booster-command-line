@@ -19,6 +19,7 @@ public class WordService {
                 .orElseGet(() -> wordDao.createWordWithName(name));
     }
 
+//    todo: if exists - findByName, else - empty optional
     public Optional<Word> findByName(String name) {
         return wrapperService.wrapDataAccessException(() -> wordDao.findByName(name));
     }
