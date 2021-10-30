@@ -4,6 +4,9 @@ create table language
     name varchar(50) not null
 );
 
+create unique index language__name__index
+    on language (name);
+
 create table word
 (
     id   serial primary key,

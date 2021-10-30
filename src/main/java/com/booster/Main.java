@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: fix: language name must be unique
         // todo: I can add a new language to the system
         // todo: I can delete a language from the system
         // todo: fix: can add multiple settings
