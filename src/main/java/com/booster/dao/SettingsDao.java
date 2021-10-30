@@ -14,8 +14,7 @@ import static java.util.Optional.ofNullable;
 public class SettingsDao {
 
     private static final RowMapper<Settings> RS_TO_SETTINGS = (rs, i) -> Settings.builder()
-            .languageBeingLearnedId(getLongValueOrNull(rs.getObject("language_being_learned_id")))
-            .vocabularyId(getLongValueOrNull(rs.getObject("vocabulary_id")))
+            .languageId(getLongValueOrNull(rs.getObject("language_id")))
             .build();
 
     private final JdbcTemplate jdbcTemplate;
@@ -37,9 +36,9 @@ public class SettingsDao {
     public void add(AddSettingsDaoParams params) {
         jdbcTemplate.update(
                 "insert into settings " +
-                        "(language_being_learned_id, vocabulary_id) " +
-                        "values (?, ?)",
-                params.getLanguageBeingLearnedId(), params.getVocabularyId());
+                        "(language_id) " +
+                        "values (?)",
+                params.getLanguageId());
     }
 
     public void deleteAll() {

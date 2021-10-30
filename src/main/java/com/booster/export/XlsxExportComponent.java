@@ -1,8 +1,8 @@
 package com.booster.export;
 
-import com.booster.dao.LanguageBeingLearnedDao;
+import com.booster.dao.LanguageDao;
 import com.booster.dao.VocabularyEntryDao;
-import com.booster.model.LanguageBeingLearned;
+import com.booster.model.Language;
 import com.booster.model.VocabularyEntry;
 import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +21,15 @@ public class XlsxExportComponent {
 
     private final CommandLineWriter commandLineWriter;
 
-    private final LanguageBeingLearnedDao languageBeingLearnedDao;
+    private final LanguageDao languageDao;
     private final VocabularyEntryDao vocabularyEntryDao;
 
     public void export(String filename) {
         try (var workbook = new XSSFWorkbook();
              var outputStream = new FileOutputStream(filename)
         ) {
-            languageBeingLearnedDao.findAll()
-                    .forEach(lbl -> exportLanguageBeingLearned(workbook, lbl));
+            languageDao.findAll()
+                    .forEach(language -> exportLanguage(workbook, language));
 
             workbook.write(outputStream);
         } catch (IOException e) {
@@ -37,11 +37,11 @@ public class XlsxExportComponent {
         }
     }
 
-    private void exportLanguageBeingLearned(XSSFWorkbook workbook, LanguageBeingLearned languageToExport) {
-        XSSFSheet sheet = workbook.createSheet(languageToExport.getLanguageName());
+    private void exportLanguage(XSSFWorkbook workbook, Language language) {
+        XSSFSheet sheet = workbook.createSheet(language.getName());
 
         createHeaderRow(sheet);
-        createVocabularyEntryRows(languageToExport, sheet);
+        createVocabularyEntryRows(language, sheet);
     }
 
     private void createHeaderRow(XSSFSheet sheet) {
@@ -53,11 +53,10 @@ public class XlsxExportComponent {
         row.createCell(3).setCellValue("Antonyms");
         row.createCell(4).setCellValue("Correct answer count");
         row.createCell(5).setCellValue("Created at");
-        row.createCell(6).setCellValue("Vocabulary name");
     }
 
-    private void createVocabularyEntryRows(LanguageBeingLearned languageToExport, XSSFSheet sheet) {
-        List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAllForLanguageBeingLearned(languageToExport.getId());
+    private void createVocabularyEntryRows(Language languageToExport, XSSFSheet sheet) {
+        List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAllForLanguageId(languageToExport.getId());
 
         for (int rowNumber = 0; rowNumber < vocabularyEntries.size(); ++rowNumber) {
             VocabularyEntry vocabularyEntry = vocabularyEntries.get(rowNumber);
@@ -73,7 +72,6 @@ public class XlsxExportComponent {
         row.createCell(3).setCellValue(String.join(";", vocabularyEntry.getAntonyms()));
         row.createCell(4).setCellValue(vocabularyEntry.getCorrectAnswersCount());
         row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt().toString());
-        row.createCell(6).setCellValue(vocabularyEntry.getVocabularyName());
     }
 
 }

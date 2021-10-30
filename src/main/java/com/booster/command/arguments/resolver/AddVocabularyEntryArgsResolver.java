@@ -5,9 +5,9 @@ import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.model.Settings;
 import com.booster.model.Word;
+import com.booster.service.LanguageService;
 import com.booster.service.SettingsService;
 import com.booster.service.VocabularyEntryService;
-import com.booster.service.VocabularyService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,9 +26,9 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
     public static final String DEFINITION = "d";
 
     private final VocabularyEntryService vocabularyEntryService;
-    private final VocabularyService vocabularyService;
     private final SettingsService settingsService;
     private final WordService wordService;
+    private final LanguageService languageService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
@@ -42,15 +42,15 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
             if (!flag2value.containsKey(ID_FLAG)) {
                 Settings settings = settingsService.findOne()
                         .orElseThrow(() -> new ArgsValidationException(List.of(
-                                "No vocabulary id was provided and no settings with default vocabulary id exist"
+                                "No language id was provided and no settings with default language id exist"
                         )));
 //                todo: DRY
-                return settings.getVocabularyId()
-                        .map(vid -> {
-                            checkIfVocabularyExistsWithId(vid);
+                return settings.getLanguageId()
+                        .map(lid -> {
+                            checkIfLanguageExistsWithId(lid);
 
                             long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
-                            checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, vid);
+                            checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, lid);
                             List<Long> synonymIds = getSynonymIds(flag2value);
                             List<Long> antonymIds = getAntonymIds(flag2value);
                             String definition = getDefinition(flag2value);
@@ -58,20 +58,20 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
                             return builder
                                     .args(AddVocabularyEntryArgs.builder()
                                             .wordId(wordId)
-                                            .vocabularyId(vid)
+                                            .languageId(lid)
                                             .synonymIds(synonymIds)
                                             .antonymIds(antonymIds)
                                             .definition(definition)
                                             .build())
                                     .build();
                         }).orElseThrow(() -> new ArgsValidationException(List.of(
-                                "No vocabulary id was provided and no settings with default vocabulary id exist"
+                                "No language id was provided and no settings with default language id exist"
                         )));
             } else {
                 checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
-                checkIfVocabularyExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
+                checkIfLanguageExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
                 long wordId = getWordIdByWordName(flag2value.get(NAME_FLAG));
-                checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
+                checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, Long.parseLong(flag2value.get(ID_FLAG)));
                 List<Long> synonymIds = getSynonymIds(flag2value);
                 List<Long> antonymIds = getAntonymIds(flag2value);
                 String definition = getDefinition(flag2value);
@@ -79,7 +79,7 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
                 return builder
                         .args(AddVocabularyEntryArgs.builder()
                                 .wordId(wordId)
-                                .vocabularyId(Long.parseLong(flag2value.get(ID_FLAG)))
+                                .languageId(Long.parseLong(flag2value.get(ID_FLAG)))
                                 .synonymIds(synonymIds)
                                 .antonymIds(antonymIds)
                                 .definition(definition)
@@ -122,15 +122,15 @@ public class AddVocabularyEntryArgsResolver implements ArgsResolver {
         return wordService.findByNameOrCreateAndGet(name).getId();
     }
 
-    private void checkIfVocabularyEntryAlreadyExistsWithWordForVocabulary(long wordId, long vocabularyId) {
-        if (vocabularyEntryService.existsWithWordIdAndVocabularyId(wordId, vocabularyId)) {
-            throw new ArgsValidationException(List.of("Vocabulary entry already exists in vocabulary with id: " + vocabularyId));
+    private void checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(long wordId, long languageId) {
+        if (vocabularyEntryService.existsWithWordIdAndLanguageId(wordId, languageId)) {
+            throw new ArgsValidationException(List.of("Vocabulary entry already exists for language with id: " + languageId));
         }
     }
 
-    private void checkIfVocabularyExistsWithId(long id) {
-        if (!vocabularyService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Vocabulary with id: " + id + " does not exist."));
+    private void checkIfLanguageExistsWithId(long id) {
+        if (!languageService.existsWithId(id)) {
+            throw new ArgsValidationException(List.of("Language with id: " + id + " does not exist."));
         }
     }
 

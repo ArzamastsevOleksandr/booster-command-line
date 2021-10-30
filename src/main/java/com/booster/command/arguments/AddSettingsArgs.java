@@ -7,7 +7,6 @@ import lombok.Value;
 @Builder
 public class AddSettingsArgs implements Args {
 
-    Long languageBeingLearnedId;
-    Long vocabularyId;
+    Long languageId;
 
 }

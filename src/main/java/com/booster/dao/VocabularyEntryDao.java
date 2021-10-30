@@ -25,7 +25,8 @@ public class VocabularyEntryDao {
             .correctAnswersCount(rs.getInt("cac"))
             .name(rs.getString("w_name"))
             .definition(rs.getString("definition"))
-            .vocabularyName(rs.getString("v_name"))
+            .languageId(rs.getLong("l_id"))
+            .languageName(rs.getString("l_name"))
             .build();
 
     private final JdbcTemplate jdbcTemplate;
@@ -36,12 +37,12 @@ public class VocabularyEntryDao {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, " +
-                        "v.name as v_name " +
+                        "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
-                        "join vocabulary v " +
-                        "on ve.vocabulary_id = v.id", rs2VocabularyEntry);
+                        "join language l " +
+                        "on ve.language_id = l.id", rs2VocabularyEntry);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
@@ -90,10 +91,10 @@ public class VocabularyEntryDao {
         add(params, connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "insert into vocabulary_entry " +
-                            "(word_id, vocabulary_id, definition) " +
+                            "(word_id, language_id, definition) " +
                             "values (?, ?, ?)", new String[]{"id"});
             ps.setLong(1, params.getWordId());
-            ps.setLong(2, params.getVocabularyId());
+            ps.setLong(2, params.getLanguageId());
             ps.setString(3, params.getDefinition());
             return ps;
         });
@@ -103,10 +104,10 @@ public class VocabularyEntryDao {
         add(params, connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "insert into vocabulary_entry " +
-                            "(word_id, vocabulary_id, definition, created_at, correct_answers_count) " +
+                            "(word_id, language_id, definition, created_at, correct_answers_count) " +
                             "values (?, ?, ?, ?, ?)", new String[]{"id"});
             ps.setLong(1, params.getWordId());
-            ps.setLong(2, params.getVocabularyId());
+            ps.setLong(2, params.getLanguageId());
             ps.setString(3, params.getDefinition());
             ps.setTimestamp(4, params.getCreatedAt());
             ps.setInt(5, params.getCorrectAnswersCount());
@@ -167,29 +168,16 @@ public class VocabularyEntryDao {
                         "where ve.id = ?", cacUpdated, id);
     }
 
-    // todo: execute all updates in transaction
-    public void deleteAllForVocabularyId(long id) {
-        jdbcTemplate.update(
-                "delete from vocabulary_entry__synonym__jt sjt " +
-                        "where sjt.vocabulary_entry_id = ?", id);
-        jdbcTemplate.update(
-                "delete from vocabulary_entry__antonym__jt ajt " +
-                        "where ajt.vocabulary_entry_id = ?", id);
-        jdbcTemplate.update(
-                "delete from vocabulary_entry ve " +
-                        "where ve.vocabulary_id = ?", id);
-    }
-
     public VocabularyEntry findById(long id) {
         VocabularyEntry vocabularyEntry = jdbcTemplate.queryForObject(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, " +
-                        "v.name as v_name " +
+                        "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
-                        "join vocabulary v " +
-                        "on ve.vocabulary_id = v.id " +
+                        "join language l " +
+                        "on l.id = ve.language_id " +
                         "where ve.id = ?", rs2VocabularyEntry, id);
 
         var veId2Synonyms = jdbcTemplate.query(
@@ -222,12 +210,12 @@ public class VocabularyEntryDao {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, " +
-                        "v.name as v_name " +
+                        "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
-                        "join vocabulary v " +
-                        "on ve.vocabulary_id = v.id " +
+                        "join language l " +
+                        "on l.id = ve.language_id " +
                         "where exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)",
                 rs2VocabularyEntry);
 
@@ -251,12 +239,12 @@ public class VocabularyEntryDao {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, " +
-                        "v.name as v_name " +
+                        "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
-                        "join vocabulary v " +
-                        "on ve.vocabulary_id = v.id " +
+                        "join language l " +
+                        "on ve.language_id = l.id " +
                         "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id)",
                 rs2VocabularyEntry);
 
@@ -274,17 +262,17 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
-    public List<VocabularyEntry> findAllForLanguageBeingLearned(long id) {
+    public List<VocabularyEntry> findAllForLanguageId(long id) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, " +
-                        "v.name as v_name " +
+                        "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
-                        "join vocabulary v " +
-                        "on ve.vocabulary_id = v.id " +
-                        "where v.language_being_learned_id = ?", rs2VocabularyEntry, id);
+                        "join language l " +
+                        "on ve.language_id = l.id " +
+                        "where l.id = ?", rs2VocabularyEntry, id);
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
                         "from vocabulary_entry__synonym__jt ves " +
@@ -292,9 +280,9 @@ public class VocabularyEntryDao {
                         "on ves.word_id = w.id " +
                         "join vocabulary_entry ve " +
                         "on ves.vocabulary_entry_id = ve.id " +
-                        "join vocabulary v " +
-                        "on v.id = ve.vocabulary_id " +
-                        "where v.language_being_learned_id = ?",
+                        "join language l " +
+                        "on l.id = ve.language_id " +
+                        "where l.id = ?",
                 createResultSetExtractor("synonym"), id);
 
         var veId2Antonyms = jdbcTemplate.query(
@@ -304,9 +292,9 @@ public class VocabularyEntryDao {
                         "on vea.word_id = w.id " +
                         "join vocabulary_entry ve on " +
                         "vea.vocabulary_entry_id = ve.id " +
-                        "join vocabulary v " +
-                        "on v.id = ve.vocabulary_id " +
-                        "where v.language_being_learned_id = ?",
+                        "join language l " +
+                        "on l.id = ve.language_id " +
+                        "where l.id = ?",
                 createResultSetExtractor("antonym"), id);
 
         return vocabularyEntries.stream()
@@ -321,12 +309,12 @@ public class VocabularyEntryDao {
                         "where ve.id = ?", Integer.class, id);
     }
 
-    public int countWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
+    public int countWithWordIdAndLanguageId(long wordId, long languageId) {
         return jdbcTemplate.queryForObject(
                 "select count(*) " +
                         "from vocabulary_entry ve " +
                         "where ve.word_id = ? " +
-                        "and ve.vocabulary_id = ?", Integer.class, wordId, vocabularyId);
+                        "and ve.language_id = ?", Integer.class, wordId, languageId);
     }
 
     public void markDifficult(long id, boolean isDifficult) {

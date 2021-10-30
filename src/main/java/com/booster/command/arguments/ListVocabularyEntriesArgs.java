@@ -5,6 +5,7 @@ import lombok.ToString;
 
 import java.util.Optional;
 
+// todo: simplify
 public abstract class ListVocabularyEntriesArgs implements Args {
 
     public abstract Optional<Long> getId();

@@ -23,7 +23,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
             var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();
             var params = AddVocabularyEntryDaoParams.builder()
                     .wordId(args.getWordId())
-                    .vocabularyId(args.getVocabularyId())
+                    .languageId(args.getLanguageId())
                     .synonymIds(args.getSynonymIds())
                     .antonymIds(args.getAntonymIds())
                     .definition(args.getDefinition())

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+// todo: 1 adapter for console interactions
 @Configuration
 public class InputOutputConfig {
 

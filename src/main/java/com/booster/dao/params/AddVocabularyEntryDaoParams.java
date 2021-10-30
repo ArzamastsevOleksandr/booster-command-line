@@ -11,7 +11,7 @@ import java.util.List;
 public class AddVocabularyEntryDaoParams {
 
     long wordId;
-    long vocabularyId;
+    long languageId;
     String definition;
 
     @Builder.Default

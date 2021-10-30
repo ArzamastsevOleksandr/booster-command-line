@@ -10,7 +10,7 @@ import java.util.List;
 public class AddVocabularyEntryArgs implements Args {
 
     Long wordId;
-    Long vocabularyId;
+    Long languageId;
     String definition;
     List<Long> synonymIds;
     List<Long> antonymIds;

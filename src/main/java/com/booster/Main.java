@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: get rid of the LanguageBeingLearned concept
+        // todo: I can add a new language to the system
+        // todo: I can delete a language from the system
+        // todo: fix: can add multiple settings
         // todo: I can create a tag
         // todo: I can tag the ve
         // todo: Add validation on startup to forbid >1 Command with the same string value
@@ -51,7 +53,6 @@ public class Main {
         // todo: custom command grammar and parser?
         // todo: fix: ave command: description of > 1 word can not be recognized
         // todo: UPDATE_VOCABULARY_ENTRY command
-        // todo: UPDATE_VOCABULARY command
         // todo: UPDATE_SETTINGS command?
         // todo: distinguish upper-lower case?
         // todo: if I add the same ve, ask if I want to merge the result

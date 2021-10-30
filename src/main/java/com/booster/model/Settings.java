@@ -9,15 +9,10 @@ import java.util.Optional;
 @Builder
 public class Settings {
 
-    Long languageBeingLearnedId;
-    Long vocabularyId;
+    Long languageId;
 
-    public Optional<Long> getVocabularyId() {
-        return Optional.ofNullable(vocabularyId);
-    }
-
-    public Optional<Long> getLanguageBeingLearnedId() {
-        return Optional.ofNullable(languageBeingLearnedId);
+    public Optional<Long> getLanguageId() {
+        return Optional.ofNullable(languageId);
     }
 
 }

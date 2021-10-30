@@ -23,8 +23,7 @@ public class AddSettingsCommandHandler implements CommandHandler {
         if (commandWithArguments.hasNoErrors()) {
             var args = (AddSettingsArgs) commandWithArguments.getArgs();
             var params = AddSettingsDaoParams.builder()
-                    .vocabularyId(args.getVocabularyId())
-                    .languageBeingLearnedId(args.getLanguageBeingLearnedId())
+                    .languageId(args.getLanguageId())
                     .build();
 
             settingsDao.add(params);

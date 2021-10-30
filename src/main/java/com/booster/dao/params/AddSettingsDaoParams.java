@@ -7,7 +7,6 @@ import lombok.Value;
 @Builder
 public class AddSettingsDaoParams {
 
-    Long languageBeingLearnedId;
-    Long vocabularyId;
+    Long languageId;
 
 }
