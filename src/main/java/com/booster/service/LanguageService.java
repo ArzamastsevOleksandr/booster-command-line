@@ -12,16 +12,17 @@ import java.util.Optional;
 public class LanguageService {
 
     private final LanguageDao languageDao;
-    private final WrapperService wrapperService;
 
     public Optional<Language> findByName(String name) {
-        return wrapperService.wrapDataAccessException(() -> languageDao.findByName(name));
+        if (languageDao.countWithName(name) == 1) {
+            return Optional.of(languageDao.findByName(name));
+        }
+        return Optional.empty();
     }
 
-//    todo: check that only 1 item is present?
+    // todo: fail fast if >1 rows returned
     public boolean existsWithId(long id) {
-        int count = languageDao.countWithId(id);
-        return count > 0;
+        return languageDao.countWithId(id) == 1;
     }
 
 }

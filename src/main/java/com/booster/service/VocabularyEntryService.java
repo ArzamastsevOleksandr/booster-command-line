@@ -12,20 +12,20 @@ import java.util.Optional;
 public class VocabularyEntryService {
 
     private final VocabularyEntryDao vocabularyEntryDao;
-    private final WrapperService wrapperService;
 
     public Optional<VocabularyEntry> findById(long id) {
-        return wrapperService.wrapDataAccessException(() -> vocabularyEntryDao.findById(id));
+        if (vocabularyEntryDao.countWithId(id) == 1) {
+            return Optional.of(vocabularyEntryDao.findById(id));
+        }
+        return Optional.empty();
     }
 
     public boolean existsWithId(long id) {
-        int count = vocabularyEntryDao.countWithId(id);
-        return count > 0;
+        return vocabularyEntryDao.countWithId(id) == 1;
     }
 
     public boolean existsWithWordIdAndLanguageId(long wordId, long languageId) {
-        int count = vocabularyEntryDao.countWithWordIdAndLanguageId(wordId, languageId);
-        return count > 0;
+        return vocabularyEntryDao.countWithWordIdAndLanguageId(wordId, languageId) == 1;
     }
 
 }

@@ -39,4 +39,11 @@ public class LanguageDao {
                         "where l.name = ?", rs2Language, name);
     }
 
+    public int countWithName(String name) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from language l " +
+                        "where l.name = ?", Integer.class, name);
+    }
+
 }

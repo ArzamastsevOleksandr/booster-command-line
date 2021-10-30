@@ -12,16 +12,17 @@ import java.util.Optional;
 public class WordService {
 
     private final WordDao wordDao;
-    private final WrapperService wrapperService;
 
     public Word findByNameOrCreateAndGet(String name) {
         return findByName(name)
                 .orElseGet(() -> wordDao.createWordWithName(name));
     }
 
-//    todo: if exists - findByName, else - empty optional
     public Optional<Word> findByName(String name) {
-        return wrapperService.wrapDataAccessException(() -> wordDao.findByName(name));
+        if (wordDao.countWithName(name) == 1) {
+            return Optional.of(wordDao.findByName(name));
+        }
+        return Optional.empty();
     }
 
 }

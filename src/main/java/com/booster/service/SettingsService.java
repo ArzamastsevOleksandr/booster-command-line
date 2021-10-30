@@ -12,10 +12,12 @@ import java.util.Optional;
 public class SettingsService {
 
     private final SettingsDao settingsDao;
-    private final WrapperService wrapperService;
 
     public Optional<Settings> findOne() {
-        return wrapperService.wrapDataAccessException(settingsDao::findOne);
+        if (settingsDao.count() == 1) {
+            return Optional.of(settingsDao.findOne());
+        }
+        return Optional.empty();
     }
 
 }
