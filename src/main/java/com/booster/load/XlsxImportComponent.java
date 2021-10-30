@@ -1,10 +1,10 @@
 package com.booster.load;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
 import com.booster.model.Word;
-import com.booster.output.CommandLineWriter;
 import com.booster.service.LanguageService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 public class XlsxImportComponent {
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
@@ -41,7 +41,7 @@ public class XlsxImportComponent {
                 importSheet(sheet);
             }
         } catch (IOException e) {
-            commandLineWriter.writeLine("Error during export process: " + e.getMessage());
+            adapter.writeLine("Error during export process: " + e.getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ public class XlsxImportComponent {
                 .ifPresentOrElse(language -> {
                     importLanguage(sheet, language);
                 }, () -> {
-                    commandLineWriter.writeLine("No language exists with name: " + sheetName);
+                    adapter.writeLine("No language exists with name: " + sheetName);
                 });
     }
 

@@ -1,9 +1,9 @@
 package com.booster.command.service;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.resolver.ArgsResolver;
-import com.booster.output.CommandLineWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +21,11 @@ public class ArgumentsResolverCollectionService {
             .build();
 
     private final Map<Command, ArgsResolver> argResolvers;
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     @Autowired
-    public ArgumentsResolverCollectionService(List<ArgsResolver> argResolvers, CommandLineWriter commandLineWriter) {
-        this.commandLineWriter = commandLineWriter;
+    public ArgumentsResolverCollectionService(List<ArgsResolver> argResolvers, CommandLineAdapter adapter) {
+        this.adapter = adapter;
         this.argResolvers = argResolvers.stream()
                 .map(ch -> Map.entry(ch.command(), ch))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -39,12 +39,12 @@ public class ArgumentsResolverCollectionService {
 
     //    @PostConstruct
     public void postConstruct() {
-        commandLineWriter.writeLine("Registered the following command arg resolvers: ");
-        commandLineWriter.newLine();
+        adapter.writeLine("Registered the following command arg resolvers: ");
+        adapter.newLine();
 
         argResolvers.keySet()
-                .forEach(command -> commandLineWriter.writeLine(command.toString()));
-        commandLineWriter.newLine();
+                .forEach(command -> adapter.writeLine(command.toString()));
+        adapter.newLine();
     }
 
 

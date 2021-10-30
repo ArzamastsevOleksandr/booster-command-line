@@ -1,11 +1,11 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
@@ -29,14 +29,14 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
                     .definition(args.getDefinition())
                     .build();
             vocabularyEntryDao.addWithDefaultValues(params);
-            commandLineWriter.writeLine("Done.");
+            adapter.writeLine("Done.");
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
-        commandLineWriter.newLine();
+        adapter.newLine();
     }
 
     @Override

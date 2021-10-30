@@ -1,11 +1,11 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.AddSettingsArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.SettingsDao;
 import com.booster.dao.params.AddSettingsDaoParams;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class AddSettingsCommandHandler implements CommandHandler {
     // todo: use dao in the service layer only?
     private final SettingsDao settingsDao;
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
@@ -27,14 +27,14 @@ public class AddSettingsCommandHandler implements CommandHandler {
                     .build();
 
             settingsDao.add(params);
-            commandLineWriter.writeLine("Done.");
+            adapter.writeLine("Done.");
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
-        commandLineWriter.newLine();
+        adapter.newLine();
     }
 
     @Override

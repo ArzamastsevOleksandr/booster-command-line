@@ -1,13 +1,12 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.StartTrainingSessionArgs;
 import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.dao.VocabularyEntryDao;
-import com.booster.input.CommandLineReader;
 import com.booster.model.VocabularyEntry;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +26,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
-    private final CommandLineWriter commandLineWriter;
-    private final CommandLineReader commandLineReader;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
@@ -39,19 +37,19 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
 
             if (vocabularyEntries.isEmpty()) {
-                commandLineWriter.writeLine("There are no entries to practice.");
+                adapter.writeLine("There are no entries to practice.");
             } else {
-                commandLineWriter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
+                adapter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
                 executeTrainingSession(vocabularyEntries, mode);
-                commandLineWriter.writeLine("Training session finished!");
+                adapter.writeLine("Training session finished!");
             }
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
-        commandLineWriter.newLine();
+        adapter.newLine();
     }
 
     @Override
@@ -98,21 +96,21 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private void printCurrentWord(VocabularyEntry vocabularyEntry) {
-        commandLineWriter.writeLine("Current word: [" + vocabularyEntry.getName() + "]");
-        commandLineWriter.newLine();
+        adapter.writeLine("Current word: [" + vocabularyEntry.getName() + "]");
+        adapter.newLine();
     }
 
     private boolean checkSynonyms(VocabularyEntry ve) {
-        commandLineWriter.write("Enter synonyms: ");
-        String enteredSynonyms = commandLineReader.readLine();
+        adapter.write("Enter synonyms: ");
+        String enteredSynonyms = adapter.readLine();
         Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
 
         return synonymsAnswer.equals(ve.getSynonyms());
     }
 
     private boolean checkAntonyms(VocabularyEntry ve) {
-        commandLineWriter.write("Enter antonyms: ");
-        String enteredAntonyms = commandLineReader.readLine();
+        adapter.write("Enter antonyms: ");
+        String enteredAntonyms = adapter.readLine();
         Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
 
         return antonymsAnswer.equals(ve.getAntonyms());
@@ -120,11 +118,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private void handleAnswer(boolean isCorrectAnswer) {
         if (isCorrectAnswer) {
-            commandLineWriter.writeLine("Correct!");
+            adapter.writeLine("Correct!");
         } else {
-            commandLineWriter.writeLine("Wrong!");
+            adapter.writeLine("Wrong!");
         }
-        commandLineWriter.newLine();
+        adapter.newLine();
     }
 
     private void executeSynonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {

@@ -1,9 +1,9 @@
 package com.booster.command.service;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.handler.CommandHandler;
-import com.booster.output.CommandLineWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,11 @@ import static java.util.stream.Collectors.toMap;
 public class CommandHandlerCollectionService {
 
     private final Map<Command, CommandHandler> commandHandlers;
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     @Autowired
-    public CommandHandlerCollectionService(List<CommandHandler> commandHandlers, CommandLineWriter commandLineWriter) {
-        this.commandLineWriter = commandLineWriter;
+    public CommandHandlerCollectionService(List<CommandHandler> commandHandlers, CommandLineAdapter adapter) {
+        this.adapter = adapter;
         this.commandHandlers = commandHandlers.stream()
                 .map(ch -> Map.entry(ch.getCommand(), ch))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -32,18 +32,18 @@ public class CommandHandlerCollectionService {
         Optional.ofNullable(commandHandlers.get(command))
                 .ifPresentOrElse(
                         commandHandler -> commandHandler.handle(commandWithArguments),
-                        () -> commandLineWriter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
+                        () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
                 );
     }
 
     //    @PostConstruct
     public void postConstruct() {
-        commandLineWriter.writeLine("Registered the following commands: ");
-        commandLineWriter.newLine();
+        adapter.writeLine("Registered the following commands: ");
+        adapter.newLine();
 
         commandHandlers.keySet()
-                .forEach(command -> commandLineWriter.writeLine(command.toString()));
-        commandLineWriter.newLine();
+                .forEach(command -> adapter.writeLine(command.toString()));
+        adapter.newLine();
     }
 
 }
