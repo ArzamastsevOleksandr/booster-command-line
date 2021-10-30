@@ -48,6 +48,7 @@ create table vocabulary_entry
     correct_answers_count smallint  default 0     not null,
 
     definition            varchar(255),
+    is_difficult          boolean   default false not null,
 
     word_id               bigint,
     vocabulary_id         bigint
