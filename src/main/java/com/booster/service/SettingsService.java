@@ -20,4 +20,8 @@ public class SettingsService {
         return Optional.empty();
     }
 
+    public boolean existAny() {
+        return settingsDao.count() > 0;
+    }
+
 }

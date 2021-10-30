@@ -10,23 +10,16 @@ public class Main {
     public static void main(String[] args) {
         // todo: I can add a new language to the system
         // todo: I can delete a language from the system
-        // todo: fix: can add multiple settings
         // todo: I can create a tag
         // todo: I can tag the ve
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
         // todo: I can search for the ve by a substring
-        // todo: I can move the ve from one v to the other
-        // todo: I can copy the ve from one v to the other
         // todo: add contexts to the ve
         // todo: can exit the training session before it ends
-        // todo: training session for v | lbl
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
-        // todo: list ve vid=<> | lblid=<>
-        // todo: list v lblid=<>
-        // todo: v has numberOfEntries field
         // todo: I can add notes
         // todo: I can see all notes
         // todo: I can delete a note
@@ -57,7 +50,7 @@ public class Main {
         // todo: if I add the same ve, ask if I want to merge the result
         // todo: list_flags command
         // todo: HELP <command>
-        // todo: pretty print of l, lbl, v, ve, w
+        // todo: pretty print of l, ve, w
         // todo: upgrade to latest Java
         // todo: value objects with no getters an setters, having public final fields
         // todo: check deps upgrades with mvn versions:display-dependency-updates (plugin)

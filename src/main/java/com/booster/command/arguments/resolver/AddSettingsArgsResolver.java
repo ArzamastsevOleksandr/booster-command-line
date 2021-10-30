@@ -4,6 +4,7 @@ import com.booster.command.Command;
 import com.booster.command.arguments.AddSettingsArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.service.LanguageService;
+import com.booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +22,13 @@ public class AddSettingsArgsResolver implements ArgsResolver {
     private static final String LANGUAGE_ID_FLAG = "lid";
 
     private final LanguageService languageService;
+    private final SettingsService settingsService;
 
     @Override
     public CommandWithArguments resolve(List<String> args) {
         var commandWithArgumentsBuilder = getCommandBuilder();
         try {
+            checkIfSettingsAlreadyExist();
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
             var addSettingsArgsBuilder = AddSettingsArgs.builder();
 //            todo: FP
@@ -47,6 +50,12 @@ public class AddSettingsArgsResolver implements ArgsResolver {
     @Override
     public Command command() {
         return ADD_SETTINGS;
+    }
+
+    private void checkIfSettingsAlreadyExist() {
+        if (settingsService.existAny()) {
+            throw new ArgsValidationException(List.of("Settings already exist."));
+        }
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
