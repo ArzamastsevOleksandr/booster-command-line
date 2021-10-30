@@ -1,10 +1,10 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.arguments.ExportArgs;
 import com.booster.export.XlsxExportComponent;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ExportCommandHandler implements CommandHandler {
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     private final XlsxExportComponent exportComponent;
 
@@ -22,10 +22,10 @@ public class ExportCommandHandler implements CommandHandler {
             var args = (ExportArgs) commandWithArguments.getArgs();
             exportComponent.export(args.getFilename());
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
     }
 

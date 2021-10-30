@@ -1,11 +1,11 @@
 package com.booster;
 
+import com.booster.adapter.CommandLineAdapter;
+import com.booster.adapter.CommonOperations;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandArgumentsResolver;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.service.CommandHandlerCollectionService;
-import com.booster.input.CommandLineReader;
-import com.booster.output.CommonOperations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class LearningSessionManager {
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandArgumentsResolver commandArgumentsResolver;
 
-    private final CommandLineReader commandLineReader;
+    private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
 
     public void launch() {
@@ -38,7 +38,7 @@ public class LearningSessionManager {
     }
 
     private CommandWithArguments nextCommandWithArguments() {
-        String line = commandLineReader.readLine();
+        String line = adapter.readLine();
         return commandArgumentsResolver.resolve(line);
     }
 

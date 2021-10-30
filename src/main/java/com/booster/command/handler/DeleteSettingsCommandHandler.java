@@ -1,9 +1,9 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.SettingsDao;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,20 +13,20 @@ public class DeleteSettingsCommandHandler implements CommandHandler {
 
     private final SettingsDao settingsDao;
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             settingsDao.deleteAll();
-            commandLineWriter.writeLine("Done.");
+            adapter.writeLine("Done.");
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
-        commandLineWriter.newLine();
+        adapter.newLine();
     }
 
     @Override

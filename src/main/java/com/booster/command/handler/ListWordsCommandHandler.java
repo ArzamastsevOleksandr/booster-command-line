@@ -1,10 +1,10 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.WordDao;
 import com.booster.model.Word;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,27 +16,26 @@ public class ListWordsCommandHandler implements CommandHandler {
 
     private final WordDao wordDao;
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
-    // todo: default pagination + pagination flags
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
             List<Word> words = wordDao.findAll();
 
             if (words.isEmpty()) {
-                commandLineWriter.writeLine("There are no words in the system yet.");
+                adapter.writeLine("There are no words in the system yet.");
             } else {
-                commandLineWriter.writeLine("All words:");
+                adapter.writeLine("All words:");
                 for (var word : words) {
-                    commandLineWriter.writeLine(word.toString());
+                    adapter.writeLine(word.toString());
                 }
             }
         } else {
-            commandLineWriter.writeLine("Errors: ");
-            commandLineWriter.newLine();
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
             commandWithArguments.getArgErrors()
-                    .forEach(commandLineWriter::writeLine);
+                    .forEach(adapter::writeLine);
         }
     }
 

@@ -1,10 +1,10 @@
 package com.booster.export;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.LanguageDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Language;
 import com.booster.model.VocabularyEntry;
-import com.booster.output.CommandLineWriter;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class XlsxExportComponent {
 
-    private final CommandLineWriter commandLineWriter;
+    private final CommandLineAdapter adapter;
 
     private final LanguageDao languageDao;
     private final VocabularyEntryDao vocabularyEntryDao;
@@ -33,7 +33,7 @@ public class XlsxExportComponent {
 
             workbook.write(outputStream);
         } catch (IOException e) {
-            commandLineWriter.writeLine("Error during export process: " + e.getMessage());
+            adapter.writeLine("Error during export process: " + e.getMessage());
         }
     }
 
