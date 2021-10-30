@@ -13,14 +13,6 @@ public enum Command {
 
     LIST_LANGUAGES(Set.of("l")),
 
-    LIST_LANGUAGES_BEING_LEARNED(Set.of("lbl")),
-    ADD_LANGUAGE_BEING_LEARNED(Set.of("albl")),
-    DELETE_LANGUAGE_BEING_LEARNED(Set.of("dlbl")),
-
-    LIST_VOCABULARIES(Set.of("v")),
-    ADD_VOCABULARY(Set.of("av")),
-    DELETE_VOCABULARY(Set.of("dv")),
-
     LIST_WORDS(Set.of("w")),
 
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),

@@ -4,37 +4,6 @@ create table language
     name varchar(50) not null
 );
 
-create table language_being_learned
-(
-    id          serial primary key,
-    created_at  timestamp default now(),
-    language_id bigint
-);
-
-create unique index language_being_learned__language_id__index
-    on language_being_learned (language_id);
-
-alter table language_being_learned
-    add constraint language_being_learned__language_id__fkey
-        foreign key (language_id)
-            references language (id);
-
-create table vocabulary
-(
-    id                        serial primary key,
-    name                      varchar(50)             not null,
-    created_at                timestamp default now() not null,
-    language_being_learned_id bigint
-);
-
-create unique index vocabulary__name__language_being_learned_id__index
-    on vocabulary (name, language_being_learned_id);
-
-alter table vocabulary
-    add constraint vocabulary__language_being_learned_id__fkey
-        foreign key (language_being_learned_id)
-            references language_being_learned (id);
-
 create table word
 (
     id   serial primary key,
@@ -51,11 +20,8 @@ create table vocabulary_entry
     is_difficult          boolean   default false not null,
 
     word_id               bigint,
-    vocabulary_id         bigint
+    language_id           bigint
 );
-
-create unique index vocabulary_entry__word_id__vocabulary_id__index
-    on vocabulary_entry (word_id, vocabulary_id);
 
 alter table vocabulary_entry
     add constraint vocabulary_entry__word_id__fkey
@@ -63,9 +29,12 @@ alter table vocabulary_entry
             references word (id);
 
 alter table vocabulary_entry
-    add constraint vocabulary_entry__vocabulary_id__fkey
-        foreign key (vocabulary_id)
-            references vocabulary (id);
+    add constraint vocabulary_entry__language_id__fkey
+        foreign key (language_id)
+            references language (id);
+
+create unique index vocabulary_entry__word_id__language_id__index
+    on vocabulary_entry (word_id, language_id);
 
 create table vocabulary_entry__synonym__jt
 (
@@ -85,17 +54,11 @@ create table vocabulary_entry__antonym__jt
 
 create table settings
 (
-    id                        serial primary key,
-    language_being_learned_id bigint,
-    vocabulary_id             bigint
+    id          serial primary key,
+    language_id bigint
 );
 
 alter table settings
-    add constraint settings__language_being_learned_id__fkey
-        foreign key (language_being_learned_id)
-            references language_being_learned (id);
-
-alter table settings
-    add constraint settings__vocabulary_id__fkey
-        foreign key (vocabulary_id)
-            references vocabulary (id);
+    add constraint settings__language_id__fkey
+        foreign key (language_id)
+            references language (id);

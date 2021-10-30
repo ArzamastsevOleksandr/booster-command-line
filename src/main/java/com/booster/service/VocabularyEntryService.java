@@ -23,8 +23,8 @@ public class VocabularyEntryService {
         return count > 0;
     }
 
-    public boolean existsWithWordIdAndVocabularyId(long wordId, long vocabularyId) {
-        int count = vocabularyEntryDao.countWithWordIdAndVocabularyId(wordId, vocabularyId);
+    public boolean existsWithWordIdAndLanguageId(long wordId, long languageId) {
+        int count = vocabularyEntryDao.countWithWordIdAndLanguageId(wordId, languageId);
         return count > 0;
     }
 

@@ -1,17 +1,11 @@
 package com.booster.load;
 
-import com.booster.dao.VocabularyDao;
 import com.booster.dao.VocabularyEntryDao;
-import com.booster.dao.params.AddVocabularyDaoParams;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
-import com.booster.model.LanguageBeingLearned;
-import com.booster.model.Vocabulary;
 import com.booster.model.Word;
 import com.booster.output.CommandLineWriter;
-import com.booster.service.LanguageBeingLearnedService;
 import com.booster.service.LanguageService;
-import com.booster.service.VocabularyService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -33,12 +27,9 @@ public class XlsxImportComponent {
 
     private final CommandLineWriter commandLineWriter;
 
-    private final VocabularyDao vocabularyDao;
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
     private final LanguageService languageService;
-    private final LanguageBeingLearnedService languageBeingLearnedService;
-    private final VocabularyService vocabularyService;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -60,29 +51,17 @@ public class XlsxImportComponent {
 
         languageService.findByName(sheetName)
                 .ifPresentOrElse(language -> {
-                    importLanguageBeingLearned(sheet, language);
+                    importLanguage(sheet, language);
                 }, () -> {
                     commandLineWriter.writeLine("No language exists with name: " + sheetName);
                 });
     }
 
-    private void importLanguageBeingLearned(XSSFSheet sheet, Language language) {
+    private void importLanguage(XSSFSheet sheet, Language language) {
         final long languageId = language.getId();
-        final long languageBeingLearnedId = languageBeingLearnedService.findByLanguageId(languageId)
-                .map(LanguageBeingLearned::getId)
-                .orElseGet(() -> languageBeingLearnedService.addWithDefaultVocabulary(languageId));
 
         for (int rowNumber = 1; rowNumber <= sheet.getLastRowNum(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
-
-            String vocabularyName = row.getCell(6).getStringCellValue();
-
-            Long vocabularyId = vocabularyService.findByNameAndLanguageBeingLearnedId(vocabularyName, languageBeingLearnedId)
-                    .map(Vocabulary::getId)
-                    .orElseGet(() -> vocabularyDao.add(AddVocabularyDaoParams.builder()
-                            .name(vocabularyName)
-                            .languageBeingLearnedId(languageBeingLearnedId)
-                            .build()));
 
             String vocabularyEntryName = row.getCell(0).getStringCellValue();
             long wordId = wordService.findByNameOrCreateAndGet(vocabularyEntryName).getId();
@@ -104,7 +83,7 @@ public class XlsxImportComponent {
 
             var params = AddVocabularyEntryDaoParams.builder()
                     .wordId(wordId)
-                    .vocabularyId(vocabularyId)
+                    .languageId(languageId)
                     .synonymIds(synonymIds)
                     .antonymIds(antonymIds)
                     .correctAnswersCount(correctAnswersCount)

@@ -16,8 +16,9 @@ public class VocabularyEntry {
     Timestamp createdAt;
     int correctAnswersCount;
 
-    // todo: feat 1 ve can belong to N v
-    String vocabularyName;
+//    todo: custom ds
+    Long languageId;
+    String languageName;
 
     String definition;
 
