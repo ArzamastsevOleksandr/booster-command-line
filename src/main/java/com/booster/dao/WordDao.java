@@ -25,6 +25,7 @@ public class WordDao {
         return jdbcTemplate.query("select * from word w", rs2Word);
     }
 
+//    todo: unique name in db
     public Word createWordWithName(String name) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
