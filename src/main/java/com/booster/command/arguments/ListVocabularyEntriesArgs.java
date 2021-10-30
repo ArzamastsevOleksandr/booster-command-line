@@ -1,42 +1,22 @@
 package com.booster.command.arguments;
 
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Value;
 
 import java.util.Optional;
 
-// todo: simplify
-public abstract class ListVocabularyEntriesArgs implements Args {
+@Value
+@RequiredArgsConstructor
+public class ListVocabularyEntriesArgs implements Args {
 
-    public abstract Optional<Long> getId();
+    Long id;
 
-    @ToString
-    @RequiredArgsConstructor
-    private static class NonEmptyArgs extends ListVocabularyEntriesArgs {
-
-        private final long vocabularyEntryId;
-
-        @Override
-        public Optional<Long> getId() {
-            return Optional.of(vocabularyEntryId);
-        }
-
-    }
-
-    @ToString
-    private static class EmptyArgs extends ListVocabularyEntriesArgs {
-        @Override
-        public Optional<Long> getId() {
-            return Optional.empty();
-        }
-    }
-
-    public static ListVocabularyEntriesArgs of(long id) {
-        return new NonEmptyArgs(id);
+    public Optional<Long> getId() {
+        return Optional.ofNullable(id);
     }
 
     public static ListVocabularyEntriesArgs empty() {
-        return new EmptyArgs();
+        return new ListVocabularyEntriesArgs(null);
     }
 
 }
