@@ -3,7 +3,11 @@ package com.booster.command;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.*;
 
 // todo: group commands based on functionality (HELP command will use it to print data expressively).
 @RequiredArgsConstructor
@@ -34,6 +38,22 @@ public enum Command {
     EXIT(Set.of("e")),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
+
+    static {
+        Map<String, Long> distinctEquivalent2Count = Arrays.stream(values())
+                .map(Command::getEquivalents)
+                .flatMap(Set::stream)
+                .collect(groupingBy(Function.identity(), counting()));
+
+        Map<String, Long> violations = distinctEquivalent2Count.entrySet()
+                .stream()
+                .filter(e -> e.getValue() > 1)
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (!violations.isEmpty()) {
+            throw new AssertionError("Duplicate commands detected: " + violations);
+        }
+    }
 
     private final Set<String> equivalents;
 
