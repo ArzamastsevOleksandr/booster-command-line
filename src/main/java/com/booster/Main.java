@@ -13,7 +13,6 @@ public class Main {
         // todo: fix: can add multiple settings
         // todo: I can create a tag
         // todo: I can tag the ve
-        // todo: Add validation on startup to forbid >1 Command with the same string value
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
