@@ -29,7 +29,7 @@ public class ListVocabularyEntriesArgsResolver implements ArgsResolver {
                 checkIfIdIsCorrectNumber(flag2value.get(ID_FLAG));
                 checkIfVocabularyEntryExistsWithId(Long.parseLong(flag2value.get(ID_FLAG)));
                 return builder
-                        .args(ListVocabularyEntriesArgs.of(Long.parseLong(flag2value.get(ID_FLAG))))
+                        .args(new ListVocabularyEntriesArgs(Long.parseLong(flag2value.get(ID_FLAG))))
                         .build();
             } else {
                 return builder
