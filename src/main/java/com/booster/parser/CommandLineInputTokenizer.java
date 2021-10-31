@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.booster.parser.Token.FLAG_MARKER;
+import static com.booster.parser.Token.SEPARATOR;
+
 public class CommandLineInputTokenizer {
     // "   ave \n= n  \s =s  \a=a "
     // COMMAND, FLAG, =, TEXT, FLAG, =, TEXT, FLAG, =, TEXT
@@ -95,13 +98,13 @@ public class CommandLineInputTokenizer {
     }
 
     private boolean isSeparator(char character) {
-        return character == '=';
+        return Character.toString(character).equals(SEPARATOR);
     }
 
     private char[] eatFrontFlagOrText(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
-        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || chars[i] == '\\')) {
+        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || FLAG_MARKER.equals(Character.toString(chars[i])))) {
             sb.append(chars[i++]);
         }
         addFlagOrText(tokens, sb);
@@ -117,7 +120,7 @@ public class CommandLineInputTokenizer {
     }
 
     private boolean isFlagMarker(char character) {
-        return character == '\\';
+        return FLAG_MARKER.equals(Character.toString(character));
     }
 
     private char[] eatFrontWhileLettersOrDigitsOrWhitespaces(char[] chars, List<Token> tokens) {

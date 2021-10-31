@@ -6,6 +6,7 @@ import lombok.Value;
 public class Token {
 
     public static final String SEPARATOR = "=";
+    public static final String FLAG_MARKER = "\\";
 
     String value;
     TokenType type;
