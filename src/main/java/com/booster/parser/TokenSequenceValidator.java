@@ -1,8 +1,11 @@
 package com.booster.parser;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class TokenSequenceValidator {
 
     public TokenValidationResult validate(List<Token> tokens) {

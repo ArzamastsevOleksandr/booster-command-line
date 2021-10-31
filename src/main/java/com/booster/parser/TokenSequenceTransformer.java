@@ -1,19 +1,22 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
+import com.booster.command.arguments.CommandWithArguments;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class TokenSequenceTransformer {
 
-    public CommandArguments transform(List<Token> tokens) {
+    public CommandWithArguments transform(List<Token> tokens) {
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {
-            return CommandArguments.builder().command(command).build();
+            return CommandWithArguments.builder().command(command).build();
         }
 
-        var argumentsBuilder = CommandArguments.builder()
+        var argumentsBuilder = CommandWithArguments.builder()
                 .command(command);
 
         List<Token> copy = tokens.subList(1, tokens.size());
@@ -31,7 +34,7 @@ public class TokenSequenceTransformer {
                     argumentsBuilder = argumentsBuilder.name(value.getValue());
                     break;
                 case DESCRIPTION:
-                    argumentsBuilder = argumentsBuilder.description(value.getValue());
+                    argumentsBuilder = argumentsBuilder.definition(value.getValue());
                     break;
                 case SYNONYMS:
                 case ANTONYMS:

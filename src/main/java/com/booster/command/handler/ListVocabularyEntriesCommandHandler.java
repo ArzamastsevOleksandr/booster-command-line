@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.ListVocabularyEntriesArgs;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import com.booster.service.VocabularyEntryService;
@@ -25,12 +24,8 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            var args = (ListVocabularyEntriesArgs) commandWithArguments.getArgs();
-
-            args.getId().ifPresentOrElse(
-                    this::displayVocabularyEntryById,
-                    this::displayAllVocabularyEntries
-            );
+            commandWithArguments.getId()
+                    .ifPresentOrElse(this::displayVocabularyEntryById, this::displayAllVocabularyEntries);
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();

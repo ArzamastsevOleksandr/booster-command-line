@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.DeleteVocabularyEntryArgs;
 import com.booster.dao.VocabularyEntryDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,8 @@ public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            var args = (DeleteVocabularyEntryArgs) commandWithArguments.getArgs();
-            vocabularyEntryDao.delete(args.getId());
+            commandWithArguments.getId()
+                    .ifPresent(vocabularyEntryDao::delete);
             adapter.writeLine("Done.");
         } else {
             adapter.writeLine("Errors: ");

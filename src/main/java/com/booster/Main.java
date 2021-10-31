@@ -1,9 +1,6 @@
 package com.booster;
 
-import com.booster.parser.CommandLineInputTokenizer;
-import com.booster.parser.TokenSequenceTransformer;
-import com.booster.parser.TokenSequenceValidator;
-import com.booster.parser.TokenValidationResult;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,31 +30,31 @@ public class Main {
         // todo: I have a level in calc
         // todo: Correct calc answers increase level and complexity of all subsequent calcs
         // todo: I can have a mul/div/sub/add/mixed training sessions in calc
-//        var applicationContext = new AnnotationConfigApplicationContext(Main.class);
-//        var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
-//        learningSessionManager.launch();
+        var applicationContext = new AnnotationConfigApplicationContext(Main.class);
+        var learningSessionManager = applicationContext.getBean("practiceSessionLauncher", PracticeSessionLauncher.class);
+        learningSessionManager.launch();
 //        String s = "";
 //        String s = " ^ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
 //        String s = " ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
 //        String s = " ave \\n=1 a a \\n";
-        String s = "  ave \\n=s;ss;sss";
-        System.out.println(s);
-        System.out.println();
-        var tokenizer = new CommandLineInputTokenizer();
-        tokenizer
-                .parseIntoTokens(s)
-                .forEach(System.out::println);
-        System.out.println();
-        var validator = new TokenSequenceValidator();
-        TokenValidationResult result = validator.validate(tokenizer.parseIntoTokens(s));
-        System.out.println(result);
-
-        var transformer = new TokenSequenceTransformer();
-        if (result.hasNoErrors()) {
-            System.out.println(transformer.transform(tokenizer.parseIntoTokens(s)));
-        } else {
-            System.out.println("Errors");
-        }
+//        String s = "  ave \\n=s;ss;sss";
+//        System.out.println(s);
+//        System.out.println();
+//        var tokenizer = new CommandLineInputTokenizer();
+//        tokenizer
+//                .parseIntoTokens(s)
+//                .forEach(System.out::println);
+//        System.out.println();
+//        var validator = new TokenSequenceValidator();
+//        TokenValidationResult result = validator.validate(tokenizer.parseIntoTokens(s));
+//        System.out.println(result);
+//
+//        var transformer = new TokenSequenceTransformer();
+//        if (result.hasNoErrors()) {
+//            System.out.println(transformer.transform(tokenizer.parseIntoTokens(s)));
+//        } else {
+//            System.out.println("Errors");
+//        }
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);

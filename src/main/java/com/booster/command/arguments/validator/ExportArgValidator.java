@@ -1,4 +1,4 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
@@ -14,14 +14,15 @@ import static com.booster.command.Command.EXPORT;
 
 @Component
 @RequiredArgsConstructor
-public class ExportArgsResolver implements ArgsResolver {
+public class ExportArgValidator implements ArgValidator {
 
     private static final String FILE_FLAG = "f";
     private static final String XLSX = ".xlsx";
     private static final String DEFAULT_EXPORT_FILE = "export" + XLSX;
 
+//    todo: implement a flag
     @Override
-    public CommandWithArguments resolve(List<String> args) {
+    public CommandWithArguments validate(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
@@ -38,6 +39,11 @@ public class ExportArgsResolver implements ArgsResolver {
                     .argErrors(e.getArgErrors())
                     .build();
         }
+    }
+
+    @Override
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        return null;
     }
 
     @Override

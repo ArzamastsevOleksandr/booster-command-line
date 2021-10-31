@@ -38,7 +38,7 @@ public class SettingsDao {
                 "insert into settings " +
                         "(language_id) " +
                         "values (?)",
-                params.getLanguageId());
+                params.getLanguageId().orElse(null));
     }
 
     public void deleteAll() {

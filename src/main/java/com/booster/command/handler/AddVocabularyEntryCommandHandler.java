@@ -2,32 +2,52 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.AddVocabularyEntryArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
+import com.booster.model.Settings;
+import com.booster.model.Word;
+import com.booster.service.SettingsService;
+import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 @RequiredArgsConstructor
 public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
+    private final WordService wordService;
+    private final SettingsService settingsService;
 
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            var args = (AddVocabularyEntryArgs) commandWithArguments.getArgs();
-            var params = AddVocabularyEntryDaoParams.builder()
-                    .wordId(args.getWordId())
-                    .languageId(args.getLanguageId())
-                    .synonymIds(args.getSynonymIds())
-                    .antonymIds(args.getAntonymIds())
-                    .definition(args.getDefinition())
-                    .build();
+            var params = new AddVocabularyEntryDaoParams();
+
+            commandWithArguments.getName().ifPresent(name -> {
+                long wordId = wordService.findByNameOrCreateAndGet(name).getId();
+                params.setWordId(wordId);
+            });
+
+            commandWithArguments.getId().ifPresentOrElse(params::setLanguageId, () -> {
+                settingsService.findOne()
+                        .flatMap(Settings::getLanguageId)
+                        .ifPresent(params::setLanguageId);
+            });
+
+            commandWithArguments.getDefinition().ifPresent(params::setDefinition);
+
+            // todo: set synonyms and antonyms
             vocabularyEntryDao.addWithDefaultValues(params);
             adapter.writeLine("Done.");
         } else {
@@ -42,6 +62,26 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     @Override
     public Command getCommand() {
         return Command.ADD_VOCABULARY_ENTRY;
+    }
+
+    private List<Long> getSynonymIds(Map<String, String> flag2value) {
+        return Optional.ofNullable(flag2value.get("s"))
+                .map(this::getWordIds)
+                .orElse(List.of());
+    }
+
+    private List<Long> getAntonymIds(Map<String, String> flag2value) {
+        return Optional.ofNullable(flag2value.get("a"))
+                .map(this::getWordIds)
+                .orElse(List.of());
+    }
+
+    private List<Long> getWordIds(String values) {
+        return Arrays.stream(values.split(";"))
+                .map(String::strip)
+                .map(wordService::findByNameOrCreateAndGet)
+                .map(Word::getId)
+                .collect(toList());
     }
 
 }

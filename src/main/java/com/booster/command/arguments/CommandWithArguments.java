@@ -2,25 +2,52 @@ package com.booster.command.arguments;
 
 import com.booster.command.Command;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
 
 import java.util.List;
+import java.util.Optional;
 
-// todo: VO?
-@Data
+@Value
 @Builder
 public class CommandWithArguments {
 
-    private Command command;
+    Command command;
 
-    // todo: forbid null values
-    private Args args;
+    Long id;
+    String name;
+    String definition;
 
     @Builder.Default
-    private List<String> argErrors = List.of();
+    List<String> argErrors = List.of();
+
+    public Optional<Long> getId() {
+        return Optional.ofNullable(id);
+    }
+
+    public Optional<String> getName() {
+        return Optional.ofNullable(name);
+    }
+
+    public Optional<String> getDefinition() {
+        return Optional.ofNullable(definition);
+    }
+
+    public static CommandWithArguments withErrors(List<String> errors) {
+        return CommandWithArguments.builder()
+                .argErrors(errors)
+                .build();
+    }
+
+    @Deprecated
+    // todo: forbid null values
+    Args args;
 
     public boolean hasNoErrors() {
         return argErrors == null || argErrors.isEmpty();
+    }
+
+    public boolean hasErrors() {
+        return !hasNoErrors();
     }
 
 }

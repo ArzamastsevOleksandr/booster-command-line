@@ -1,4 +1,4 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArgsValidationException extends RuntimeException {
 
+    // todo: constructor with var args
     List<String> argErrors;
 
     public List<String> getArgErrors() {
