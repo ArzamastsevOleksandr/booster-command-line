@@ -1,7 +1,6 @@
 package com.booster;
 
-import com.booster.parser.LexicalAnalyzer;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.booster.parser.CommandLineInputTokenizer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,11 +32,11 @@ public class Main {
 //        var applicationContext = new AnnotationConfigApplicationContext(Main.class);
 //        var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
 //        learningSessionManager.launch();
-        String s = " ave \\n=12\\s=s \\a=a \\d=d d d d d  ";
+        String s = " ^ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
         System.out.println(s);
         System.out.println();
-        new LexicalAnalyzer()
-                .parse(s)
+        new CommandLineInputTokenizer()
+                .parseIntoTokens(s)
                 .forEach(System.out::println);
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:

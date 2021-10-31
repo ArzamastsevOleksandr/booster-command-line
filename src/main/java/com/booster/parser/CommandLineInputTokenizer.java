@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LexicalAnalyzer {
+public class CommandLineInputTokenizer {
     // "   ave \n= n  \s =s  \a=a "
     // COMMAND, FLAG, =, TEXT, FLAG, =, TEXT, FLAG, =, TEXT
     // COMMAND, NAME_VALUE, SYNONYM_VALUE, ANTONYM_VALUE
-    public List<Token> parse(String input) {
+    public List<Token> parseIntoTokens(String input) {
         return parse(input.toCharArray(), new LinkedList<>());
     }
 
@@ -23,33 +23,54 @@ public class LexicalAnalyzer {
 
     private char[] eatFrontChunk(char[] chars, List<Token> tokens) {
         char firstChar = chars[0];
-        if (Character.isWhitespace(firstChar)) {
-            return eatFrontWhitespaces(chars);
-        } else if (Character.isLetter(firstChar)) {
-            return eatFrontLettersAndDigitsAndWhitespaces(chars, tokens);
+        if (isWhitespace(firstChar)) {
+            return getRidOfFrontWhitespaces(chars);
+        } else if (isLetter(firstChar)) {
+            return eatFrontWhileLettersOrDigitsOrWhitespaces(chars, tokens);
         } else if (isFlagMarker(firstChar)) {
-            return eatFrontFlag(chars, tokens);
+            return eatFrontFlagOrText(chars, tokens);
         } else if (isSeparator(firstChar)) {
             return eatFrontSeparator(chars, tokens);
-        } else if (Character.isDigit(firstChar)) {
-            return eatFrontDigitsAndLettersAndMarkersAndSeparators(chars, tokens);
+        } else if (isDigit(firstChar)) {
+            return eatFrontDigitOrText(chars, tokens);
         }
-        // deliberately return an empty array to avoid SOE
-        return new char[]{};
+        return eatFrontUntilWhitespaceEncountered(chars, tokens);
     }
 
-    private char[] eatFrontWhitespaces(char[] chars) {
+    private char[] eatFrontUntilWhitespaceEncountered(char[] chars, List<Token> tokens) {
         int i = 0;
-        while (i < chars.length && Character.isWhitespace(chars[i])) {
+        var sb = new StringBuilder();
+        while (i < chars.length && !isWhitespace(chars[i])) {
+            sb.append(chars[i++]);
+        }
+        tokens.add(Token.text(sb.toString()));
+        return Arrays.copyOfRange(chars, i, chars.length);
+    }
+
+    private boolean isDigit(char firstChar) {
+        return Character.isDigit(firstChar);
+    }
+
+    private boolean isLetter(char firstChar) {
+        return Character.isLetter(firstChar);
+    }
+
+    private boolean isWhitespace(char firstChar) {
+        return Character.isWhitespace(firstChar);
+    }
+
+    private char[] getRidOfFrontWhitespaces(char[] chars) {
+        int i = 0;
+        while (i < chars.length && isWhitespace(chars[i])) {
             ++i;
         }
         return Arrays.copyOfRange(chars, i, chars.length);
     }
 
-    private char[] eatFrontDigitsAndLettersAndMarkersAndSeparators(char[] chars, List<Token> tokens) {
+    private char[] eatFrontDigitOrText(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
-        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || isFlagMarker(chars[i]) || isSeparator(chars[i]))) {
+        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || !isWhitespace(chars[i]))) {
             sb.append(chars[i++]);
         }
         if (isValidPositiveLongNumber(sb.toString())) {
@@ -77,7 +98,7 @@ public class LexicalAnalyzer {
         return character == '=';
     }
 
-    private char[] eatFrontFlag(char[] chars, List<Token> tokens) {
+    private char[] eatFrontFlagOrText(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
         while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || chars[i] == '\\')) {
@@ -99,10 +120,10 @@ public class LexicalAnalyzer {
         return character == '\\';
     }
 
-    private char[] eatFrontLettersAndDigitsAndWhitespaces(char[] chars, List<Token> tokens) {
+    private char[] eatFrontWhileLettersOrDigitsOrWhitespaces(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
-        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || Character.isWhitespace(chars[i]))) {
+        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || isWhitespace(chars[i]))) {
             sb.append(chars[i++]);
         }
         addCommandOrText(tokens, sb);
