@@ -21,21 +21,10 @@ public interface ArgValidator {
 
     Command command();
 
-    default String commandString() {
-        return command().extendedToString();
-    }
-
-//    todo: rename
+    //    todo: rename
     default CommandWithArguments.CommandWithArgumentsBuilder getCommandBuilder() {
         return CommandWithArguments.builder()
                 .command(command());
-    }
-
-    default void checkIfArgumentsAreSpecified(List<String> args) {
-        if (args.size() == 0) {
-            List<String> argErrors = List.of("No args specified for the " + commandString() + " command.");
-            throw new ArgsValidationException(argErrors);
-        }
     }
 
     default Map<String, String> checkFlagsWithValuesAndReturn(List<String> args) {
@@ -61,21 +50,6 @@ public interface ArgValidator {
                     "Mandatory flags (" + String.join(",", mandatoryFlagsCopy) + ") are missing"
             );
             throw new ArgsValidationException(argErrors);
-        }
-    }
-
-    default void checkIfIdIsCorrectNumber(String idValue) {
-        if (isNotLongType(idValue)) {
-            throw new ArgsValidationException(List.of("Id must be a positive integer number. Got: " + idValue + "."));
-        }
-    }
-
-    private boolean isNotLongType(String s) {
-        try {
-            Long.parseLong(s);
-            return false;
-        } catch (NumberFormatException e) {
-            return true;
         }
     }
 

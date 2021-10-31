@@ -19,11 +19,10 @@ public class DeleteVocabularyEntryArgValidator implements ArgValidator {
     @Override
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
         try {
-            commandWithArguments.getId()
-                    .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId,
-                            () -> {
-                                throw new ArgsValidationException(List.of("Id is missing"));
-                            });
+            commandWithArguments.getId().ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId,
+                    () -> {
+                        throw new ArgsValidationException(List.of("Id is missing"));
+                    });
             return commandWithArguments;
         } catch (ArgsValidationException e) {
             return getCommandBuilder().argErrors(e.getArgErrors()).build();
