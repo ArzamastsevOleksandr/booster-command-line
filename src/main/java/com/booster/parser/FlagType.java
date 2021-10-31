@@ -9,6 +9,7 @@ public enum FlagType {
 
     NAME("n"),
     ID("id"),
+    LANGUAGE_ID("lid"),
     SYNONYMS("s"),
     ANTONYMS("a"),
     DESCRIPTION("d"),

@@ -24,8 +24,8 @@ public class AddSettingsArgValidator implements ArgValidator {
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
         try {
             checkIfSettingsAlreadyExist();
-            // todo: implement lid flag
-            commandWithArguments.getId()
+
+            commandWithArguments.getLanguageId()
                     .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
 
             return commandWithArguments;
