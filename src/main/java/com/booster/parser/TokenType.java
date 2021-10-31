@@ -5,5 +5,10 @@ public enum TokenType {
     TEXT,
     NUMBER,
     SEPARATOR,
-    FLAG
+    FLAG;
+
+    public static boolean isNotCommand(TokenType tokenType) {
+        return tokenType != COMMAND;
+    }
+
 }
