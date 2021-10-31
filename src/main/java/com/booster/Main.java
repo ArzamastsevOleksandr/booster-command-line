@@ -1,6 +1,7 @@
 package com.booster;
 
 import com.booster.parser.CommandLineInputTokenizer;
+import com.booster.parser.TokenSequenceTransformer;
 import com.booster.parser.TokenSequenceValidator;
 import com.booster.parser.TokenValidationResult;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,18 +38,26 @@ public class Main {
 //        learningSessionManager.launch();
 //        String s = "";
 //        String s = " ^ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
-        String s = " ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
+//        String s = " ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
 //        String s = " ave \\n=1 a a \\n";
+        String s = "  ave \\n=s;ss;sss";
         System.out.println(s);
         System.out.println();
-        CommandLineInputTokenizer tokenizer = new CommandLineInputTokenizer();
+        var tokenizer = new CommandLineInputTokenizer();
         tokenizer
                 .parseIntoTokens(s)
                 .forEach(System.out::println);
         System.out.println();
-        TokenSequenceValidator validator = new TokenSequenceValidator();
+        var validator = new TokenSequenceValidator();
         TokenValidationResult result = validator.validate(tokenizer.parseIntoTokens(s));
         System.out.println(result);
+
+        var transformer = new TokenSequenceTransformer();
+        if (result.hasNoErrors()) {
+            System.out.println(transformer.transform(tokenizer.parseIntoTokens(s)));
+        } else {
+            System.out.println("Errors");
+        }
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);
