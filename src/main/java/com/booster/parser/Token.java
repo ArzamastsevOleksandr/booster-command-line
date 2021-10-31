@@ -5,6 +5,8 @@ import lombok.Value;
 @Value
 public class Token {
 
+    public static final String SEPARATOR = "=";
+
     String value;
     TokenType type;
 
@@ -17,7 +19,7 @@ public class Token {
     }
 
     public static Token separator() {
-        return new Token("=", TokenType.SEPARATOR);
+        return new Token(SEPARATOR, TokenType.SEPARATOR);
     }
 
     public static Token command(String value) {

@@ -1,6 +1,8 @@
 package com.booster;
 
 import com.booster.parser.CommandLineInputTokenizer;
+import com.booster.parser.TokenSequenceValidator;
+import com.booster.parser.TokenValidationResult;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
         // todo: I can add a new language to the system
         // todo: I can delete a language from the system
+        // todo: unit test tokenizer, validator
         // todo: I can create a tag
         // todo: I can tag the ve
         // todo: I can search for words by tags
@@ -32,12 +35,20 @@ public class Main {
 //        var applicationContext = new AnnotationConfigApplicationContext(Main.class);
 //        var learningSessionManager = applicationContext.getBean("learningSessionManager", LearningSessionManager.class);
 //        learningSessionManager.launch();
-        String s = " ^ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
+//        String s = "";
+//        String s = " ^ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
+        String s = " ave \\n=12^\\s=s \\a=a \\d=d d d d d  ";
+//        String s = " ave \\n=1 a a \\n";
         System.out.println(s);
         System.out.println();
-        new CommandLineInputTokenizer()
+        CommandLineInputTokenizer tokenizer = new CommandLineInputTokenizer();
+        tokenizer
                 .parseIntoTokens(s)
                 .forEach(System.out::println);
+        System.out.println();
+        TokenSequenceValidator validator = new TokenSequenceValidator();
+        TokenValidationResult result = validator.validate(tokenizer.parseIntoTokens(s));
+        System.out.println(result);
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);
