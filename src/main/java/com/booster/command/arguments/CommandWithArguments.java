@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class CommandWithArguments {
 
     Command command;
@@ -17,6 +17,7 @@ public class CommandWithArguments {
     Long languageId;
     String name;
     String definition;
+    String filename;
 
     @Builder.Default
     List<String> argErrors = List.of();
@@ -35,6 +36,10 @@ public class CommandWithArguments {
 
     public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);
+    }
+
+    public Optional<String> getFilename() {
+        return Optional.ofNullable(filename);
     }
 
     public static CommandWithArguments withErrors(List<String> errors) {

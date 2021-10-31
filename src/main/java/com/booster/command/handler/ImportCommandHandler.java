@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.ImportArgs;
 import com.booster.load.XlsxImportComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,7 @@ public class ImportCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            var args = (ImportArgs) commandWithArguments.getArgs();
-            importComponent.load(args.getFilename());
+            commandWithArguments.getFilename().ifPresent(importComponent::load);
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
