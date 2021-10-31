@@ -1,13 +1,14 @@
 package com.booster.dao.params;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-@Value
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddVocabularyEntryDaoParams {
 
     long wordId;

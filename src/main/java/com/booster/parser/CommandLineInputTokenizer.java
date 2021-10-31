@@ -1,6 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -8,6 +9,7 @@ import java.util.List;
 
 import static com.booster.parser.Token.*;
 
+@Component
 public class CommandLineInputTokenizer {
     // "   ave \n= n  \s =s  \a=a "
     // COMMAND, FLAG, =, TEXT, FLAG, =, TEXT, FLAG, =, TEXT

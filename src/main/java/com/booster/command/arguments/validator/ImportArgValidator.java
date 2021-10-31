@@ -1,4 +1,4 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
@@ -15,14 +15,15 @@ import static com.booster.command.Command.IMPORT;
 
 @Component
 @RequiredArgsConstructor
-public class ImportArgsResolver implements ArgsResolver {
+public class ImportArgValidator implements ArgValidator {
 
     private static final String FILE_FLAG = "f";
     private static final String XLSX = ".xlsx";
     private static final String DEFAULT_IMPORT_FILE = "import" + XLSX;
 
+    //    todo: implement a flag
     @Override
-    public CommandWithArguments resolve(List<String> args) {
+    public CommandWithArguments validate(List<String> args) {
         CommandWithArguments.CommandWithArgumentsBuilder builder = getCommandBuilder();
         try {
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
@@ -40,6 +41,11 @@ public class ImportArgsResolver implements ArgsResolver {
                     .argErrors(e.getArgErrors())
                     .build();
         }
+    }
+
+    @Override
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        return null;
     }
 
     private void checkDefaultImportFileExists() {

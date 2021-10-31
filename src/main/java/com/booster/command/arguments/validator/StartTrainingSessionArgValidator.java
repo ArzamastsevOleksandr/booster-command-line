@@ -1,4 +1,4 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
@@ -14,12 +14,13 @@ import static com.booster.command.Command.START_TRAINING_SESSION;
 
 @Component
 @RequiredArgsConstructor
-public class StartTrainingSessionArgsResolver implements ArgsResolver {
+public class StartTrainingSessionArgValidator implements ArgValidator {
 
     private static final String MODE_FLAG = "m";
 
+    // todo: implement flag
     @Override
-    public CommandWithArguments resolve(List<String> args) {
+    public CommandWithArguments validate(List<String> args) {
         var builder = getCommandBuilder();
         try {
             Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
@@ -38,6 +39,11 @@ public class StartTrainingSessionArgsResolver implements ArgsResolver {
                     .argErrors(e.getArgErrors())
                     .build();
         }
+    }
+
+    @Override
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        return null;
     }
 
     private void checkIfModeValueIsCorrect(String mode) {

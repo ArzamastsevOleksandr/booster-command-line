@@ -1,4 +1,4 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.Args;
@@ -10,9 +10,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface ArgsResolver {
+public interface ArgValidator {
 
-    CommandWithArguments resolve(List<String> args);
+    @Deprecated
+    default CommandWithArguments validate(List<String> args) {
+        return null;
+    }
+
+    CommandWithArguments validate(CommandWithArguments commandWithArguments);
 
     Command command();
 

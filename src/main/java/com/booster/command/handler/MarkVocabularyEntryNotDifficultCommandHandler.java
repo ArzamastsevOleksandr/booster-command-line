@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.MarkVocabularyEntryNotDifficultArgs;
 import com.booster.dao.VocabularyEntryDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,8 @@ public class MarkVocabularyEntryNotDifficultCommandHandler implements CommandHan
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            var args = (MarkVocabularyEntryNotDifficultArgs) commandWithArguments.getArgs();
-            vocabularyEntryDao.markDifficult(args.getId(), false);
+            commandWithArguments.getId()
+                    .ifPresent(id -> vocabularyEntryDao.markDifficult(id, false));
             adapter.writeLine("Done.");
         } else {
             adapter.writeLine("Errors: ");

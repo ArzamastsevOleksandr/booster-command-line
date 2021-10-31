@@ -1,20 +1,17 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.LIST_WORDS;
 
 @Component
-public class ListWordsArgsResolver implements ArgsResolver {
+public class ListWordsArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments resolve(List<String> args) {
-        // for now no args exist
-        return getCommandBuilder().build();
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        return commandWithArguments;
     }
 
     @Override

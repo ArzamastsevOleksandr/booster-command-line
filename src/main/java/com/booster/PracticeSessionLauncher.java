@@ -3,19 +3,18 @@ package com.booster;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.adapter.CommonOperations;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandArgumentsResolver;
+import com.booster.command.arguments.CommandArgumentsValidator;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.command.service.CommandHandlerCollectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-// todo: rename
 @Component
 @RequiredArgsConstructor
-public class LearningSessionManager {
+public class PracticeSessionLauncher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
-    private final CommandArgumentsResolver commandArgumentsResolver;
+    private final CommandArgumentsValidator commandArgumentsValidator;
 
     private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
@@ -39,7 +38,7 @@ public class LearningSessionManager {
 
     private CommandWithArguments nextCommandWithArguments() {
         String line = adapter.readLine();
-        return commandArgumentsResolver.resolve(line);
+        return commandArgumentsValidator.validate(line);
     }
 
 }

@@ -1,7 +1,6 @@
-package com.booster.command.arguments.resolver;
+package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.AddSettingsArgs;
 import com.booster.command.arguments.CommandWithArguments;
 import com.booster.service.LanguageService;
 import com.booster.service.SettingsService;
@@ -9,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.booster.command.Command.ADD_SETTINGS;
 
@@ -17,33 +15,22 @@ import static com.booster.command.Command.ADD_SETTINGS;
 //  have a list of validators that return an Option[], collect all errors
 @Component
 @RequiredArgsConstructor
-public class AddSettingsArgsResolver implements ArgsResolver {
-
-    private static final String LANGUAGE_ID_FLAG = "lid";
+public class AddSettingsArgValidator implements ArgValidator {
 
     private final LanguageService languageService;
     private final SettingsService settingsService;
 
     @Override
-    public CommandWithArguments resolve(List<String> args) {
-        var commandWithArgumentsBuilder = getCommandBuilder();
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
         try {
             checkIfSettingsAlreadyExist();
-            Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
-            var addSettingsArgsBuilder = AddSettingsArgs.builder();
-//            todo: FP
-            if (flag2value.get(LANGUAGE_ID_FLAG) != null) {
-                checkIfIdIsCorrectNumber(flag2value.get(LANGUAGE_ID_FLAG));
-                checkIfLanguageBeingLearnedExistsWithId(Long.parseLong(flag2value.get(LANGUAGE_ID_FLAG)));
-                addSettingsArgsBuilder = addSettingsArgsBuilder.languageId(Long.parseLong(flag2value.get(LANGUAGE_ID_FLAG)));
-            }
-            return commandWithArgumentsBuilder
-                    .args(addSettingsArgsBuilder.build())
-                    .build();
+            // todo: implement lid flag
+            commandWithArguments.getId()
+                    .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
+
+            return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return commandWithArgumentsBuilder
-                    .argErrors(e.getArgErrors())
-                    .build();
+            return getCommandBuilder().argErrors(e.getArgErrors()).build();
         }
     }
 
