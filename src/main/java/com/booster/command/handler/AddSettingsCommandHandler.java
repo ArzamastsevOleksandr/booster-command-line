@@ -20,7 +20,7 @@ public class AddSettingsCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArguments commandWithArguments) {
         if (commandWithArguments.hasNoErrors()) {
-            AddSettingsDaoParams params = commandWithArguments.getId()
+            AddSettingsDaoParams params = commandWithArguments.getLanguageId()
                     .map(AddSettingsDaoParams::of)
                     .orElseGet(AddSettingsDaoParams::empty);
 

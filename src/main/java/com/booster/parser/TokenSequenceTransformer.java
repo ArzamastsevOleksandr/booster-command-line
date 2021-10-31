@@ -30,6 +30,9 @@ public class TokenSequenceTransformer {
                 case ID:
                     argumentsBuilder = argumentsBuilder.id(Long.parseLong(value.getValue()));
                     break;
+                case LANGUAGE_ID:
+                    argumentsBuilder = argumentsBuilder.languageId(Long.parseLong(value.getValue()));
+                    break;
                 case NAME:
                     argumentsBuilder = argumentsBuilder.name(value.getValue());
                     break;

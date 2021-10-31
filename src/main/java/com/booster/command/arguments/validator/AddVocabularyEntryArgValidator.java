@@ -29,16 +29,16 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
             if (commandWithArguments.getName().isEmpty()) {
                 throw new ArgsValidationException(List.of("Name is missing"));
             }
-            commandWithArguments.getId().ifPresentOrElse(id -> {
-                checkIfLanguageExistsWithId(id);
+            commandWithArguments.getLanguageId().ifPresentOrElse(languageId -> {
+                checkIfLanguageExistsWithId(languageId);
                 long wordId = getWordIdByWordName(commandWithArguments.getName().get());
-                checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, id);
+                checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
             }, () -> settingsService.findOne()
                     .flatMap(Settings::getLanguageId)
-                    .ifPresentOrElse(lid -> {
-                        checkIfLanguageExistsWithId(lid);
+                    .ifPresentOrElse(langId -> {
+                        checkIfLanguageExistsWithId(langId);
                         long wordId = getWordIdByWordName(commandWithArguments.getName().get());
-                        checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, lid);
+                        checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
                     }, () -> {
                         throw new ArgsValidationException(List.of(
                                 "Language id is missing and no settings with default language id exist"
@@ -65,9 +65,9 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
         }
     }
 
-    private void checkIfLanguageExistsWithId(long id) {
-        if (!languageService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Language with id: " + id + " does not exist."));
+    private void checkIfLanguageExistsWithId(long languageId) {
+        if (!languageService.existsWithId(languageId)) {
+            throw new ArgsValidationException(List.of("Language with id: " + languageId + " does not exist."));
         }
     }
 

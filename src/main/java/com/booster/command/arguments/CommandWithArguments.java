@@ -14,6 +14,7 @@ public class CommandWithArguments {
     Command command;
 
     Long id;
+    Long languageId;
     String name;
     String definition;
 
@@ -22,6 +23,10 @@ public class CommandWithArguments {
 
     public Optional<Long> getId() {
         return Optional.ofNullable(id);
+    }
+
+    public Optional<Long> getLanguageId() {
+        return Optional.ofNullable(languageId);
     }
 
     public Optional<String> getName() {
