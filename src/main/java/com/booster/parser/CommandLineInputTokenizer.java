@@ -6,8 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.booster.parser.Token.FLAG_MARKER;
-import static com.booster.parser.Token.SEPARATOR;
+import static com.booster.parser.Token.*;
 
 public class CommandLineInputTokenizer {
     // "   ave \n= n  \s =s  \a=a "
@@ -126,11 +125,15 @@ public class CommandLineInputTokenizer {
     private char[] eatFrontWhileLettersOrDigitsOrWhitespaces(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
-        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || isWhitespace(chars[i]))) {
+        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || isWhitespace(chars[i]) || isWordEquivalentDelimiter(chars[i]))) {
             sb.append(chars[i++]);
         }
         addCommandOrText(tokens, sb);
         return Arrays.copyOfRange(chars, i, chars.length);
+    }
+
+    private boolean isWordEquivalentDelimiter(char character) {
+        return WORD_EQUIVALENT_DELIMITER.equals(Character.toString(character));
     }
 
     private void addCommandOrText(List<Token> tokens, StringBuilder sb) {
