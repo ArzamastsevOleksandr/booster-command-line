@@ -20,24 +20,17 @@ public class ListLanguagesCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            List<Language> languages = languageDao.findAll();
+        List<Language> languages = languageDao.findAll();
 
-            if (languages.isEmpty()) {
-                adapter.writeLine("There are no languages in the system now.");
-            } else {
-                adapter.writeLine("All languages:");
-                adapter.newLine();
-
-                for (var language : languages) {
-                    adapter.writeLine(language.toString());
-                }
-            }
+        if (languages.isEmpty()) {
+            adapter.writeLine("There are no languages in the system now.");
         } else {
-            adapter.writeLine("Errors: ");
+            adapter.writeLine("All languages:");
             adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
+
+            for (var language : languages) {
+                adapter.writeLine(language.toString());
+            }
         }
     }
 
