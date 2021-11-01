@@ -1,6 +1,6 @@
 package com.booster.parser;
 
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +14,13 @@ public class CommandLineInputTransformer {
     private final TokenSequenceValidator validator;
     private final TokenSequenceTransformer transformer;
 
-    public CommandWithArguments fromString(String input) {
+    public CommandWithArgs fromString(String input) {
         List<Token> tokens = tokenizer.parseIntoTokens(input);
         TokenValidationResult validationResult = validator.validate(tokens);
         if (validationResult.hasNoErrors()) {
             return transformer.transform(tokens);
         }
-        return CommandWithArguments.withErrors(validationResult.getErrors());
+        return CommandWithArgs.withErrors(validationResult.getErrors());
     }
 
 }

@@ -1,7 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,14 +9,14 @@ import java.util.List;
 @Component
 public class TokenSequenceTransformer {
 
-    public CommandWithArguments transform(List<Token> tokens) {
+    public CommandWithArgs transform(List<Token> tokens) {
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {
-            return CommandWithArguments.builder().command(command).build();
+            return CommandWithArgs.builder().command(command).build();
         }
 
-        var argumentsBuilder = CommandWithArguments.builder()
+        var argumentsBuilder = CommandWithArgs.builder()
                 .command(command);
 
         List<Token> copy = tokens.subList(1, tokens.size());

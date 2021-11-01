@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.arguments.TrainingSessionMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,12 +13,12 @@ import static com.booster.command.Command.START_TRAINING_SESSION;
 public class StartTrainingSessionArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.getMode().isEmpty()) {
-            return commandWithArguments.toBuilder().mode(TrainingSessionMode.FULL.getMode()).build();
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.getMode().isEmpty()) {
+            return commandWithArgs.toBuilder().mode(TrainingSessionMode.FULL.getMode()).build();
         }
-        checkIfModeValueIsCorrect(commandWithArguments.getMode().get());
-        return commandWithArguments;
+        checkIfModeValueIsCorrect(commandWithArgs.getMode().get());
+        return commandWithArgs;
     }
 
     private void checkIfModeValueIsCorrect(String mode) {

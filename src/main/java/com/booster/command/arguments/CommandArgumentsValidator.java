@@ -14,12 +14,12 @@ public class CommandArgumentsValidator {
 
     private final CommandLineInputTransformer transformer;
 
-    public CommandWithArguments validate(String line) {
-        CommandWithArguments commandWithArguments = transformer.fromString(line);
-        if (Command.isExit(commandWithArguments.getCommand())) {
-            return commandWithArguments;
+    public CommandWithArgs validate(String line) {
+        CommandWithArgs commandWithArgs = transformer.fromString(line);
+        if (Command.isExit(commandWithArgs.getCommand())) {
+            return commandWithArgs;
         }
-        return commandArgumentsValidatorCollectionService.validate(commandWithArguments);
+        return commandArgumentsValidatorCollectionService.validate(commandWithArgs);
     }
 
 }

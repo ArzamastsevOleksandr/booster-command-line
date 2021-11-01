@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +15,8 @@ public class HelpCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
 
             adapter.newLine();
             adapter.writeLine("Available commands are:");
@@ -30,7 +30,7 @@ public class HelpCommandHandler implements CommandHandler {
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
     }

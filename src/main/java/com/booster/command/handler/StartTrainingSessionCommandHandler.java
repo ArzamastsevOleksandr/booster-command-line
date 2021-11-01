@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
@@ -28,9 +28,9 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
-            commandWithArguments.getMode()
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
+            commandWithArgs.getMode()
                     .filter(m -> !TrainingSessionMode.isUnrecognized(m))
                     .map(TrainingSessionMode::fromString)
                     .ifPresent(mode -> {
@@ -48,7 +48,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
         adapter.newLine();

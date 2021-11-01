@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.model.Settings;
 import com.booster.service.LanguageService;
 import com.booster.service.SettingsService;
@@ -22,22 +22,22 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
     private final LanguageService languageService;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.getName().isEmpty()) {
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.getName().isEmpty()) {
             throw new ArgsValidationException("Name is missing");
         }
-        commandWithArguments.getLanguageId().ifPresentOrElse(languageId -> {
+        commandWithArgs.getLanguageId().ifPresentOrElse(languageId -> {
             checkIfLanguageExistsWithId(languageId);
-            long wordId = getWordIdByWordName(commandWithArguments.getName().get());
+            long wordId = getWordIdByWordName(commandWithArgs.getName().get());
             checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
         }, () -> settingsService.findOne()
                 .flatMap(Settings::getLanguageId)
                 .ifPresentOrElse(langId -> {
                     checkIfLanguageExistsWithId(langId);
-                    long wordId = getWordIdByWordName(commandWithArguments.getName().get());
+                    long wordId = getWordIdByWordName(commandWithArgs.getName().get());
                     checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
                 }, this::languageIdAndSettingsAreMissing));
-        return commandWithArguments;
+        return commandWithArgs;
     }
 
     private void languageIdAndSettingsAreMissing() {

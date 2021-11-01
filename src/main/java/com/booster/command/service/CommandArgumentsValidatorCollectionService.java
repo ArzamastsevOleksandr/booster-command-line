@@ -2,7 +2,7 @@ package com.booster.command.service;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.arguments.validator.ArgValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class CommandArgumentsValidatorCollectionService {
 
-    private static final CommandWithArguments UNRECOGNIZED = CommandWithArguments.builder()
+    private static final CommandWithArgs UNRECOGNIZED = CommandWithArgs.builder()
             .command(Command.UNRECOGNIZED)
             .build();
 
@@ -31,9 +31,9 @@ public class CommandArgumentsValidatorCollectionService {
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        return Optional.ofNullable(argValidators.get(commandWithArguments.getCommand()))
-                .map(argValidator -> argValidator.validate(commandWithArguments))
+    public CommandWithArgs validate(CommandWithArgs commandWithArgs) {
+        return Optional.ofNullable(argValidators.get(commandWithArgs.getCommand()))
+                .map(argValidator -> argValidator.validate(commandWithArgs))
                 .orElse(UNRECOGNIZED);
     }
 

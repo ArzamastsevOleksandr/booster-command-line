@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import com.booster.service.VocabularyEntryService;
@@ -22,14 +22,14 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     // todo: default pagination + pagination flags
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
-            commandWithArguments.getId()
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
+            commandWithArgs.getId()
                     .ifPresentOrElse(this::displayVocabularyEntryById, this::displayAllVocabularyEntries);
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
     }

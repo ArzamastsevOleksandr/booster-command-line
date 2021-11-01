@@ -1,11 +1,11 @@
 package com.booster.command.handler;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 
 public interface CommandHandler {
 
-    void handle(CommandWithArguments commandWithArguments);
+    void handle(CommandWithArgs commandWithArgs);
 
     Command getCommand();
 
