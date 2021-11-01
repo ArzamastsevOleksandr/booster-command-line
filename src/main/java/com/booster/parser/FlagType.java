@@ -13,6 +13,7 @@ public enum FlagType {
     SYNONYMS("s"),
     ANTONYMS("a"),
     DESCRIPTION("d"),
+    MODE("m"),
     FILE("f"),
     UNKNOWN("UNKNOWN");
 
