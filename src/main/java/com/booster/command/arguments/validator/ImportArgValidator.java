@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +17,11 @@ public class ImportArgValidator implements ArgValidator {
     private static final String DEFAULT_IMPORT_FILE = "import" + XLSX;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        commandWithArguments.getFilename()
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        commandWithArgs.getFilename()
                 .ifPresentOrElse(this::checkCustomFileExists, this::checkDefaultImportFileExists);
 
-        return commandWithArguments.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
+        return commandWithArgs.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
     }
 
     private void checkDefaultImportFileExists() {

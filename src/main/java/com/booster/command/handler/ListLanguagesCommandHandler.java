@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.LanguageDao;
 import com.booster.model.Language;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ public class ListLanguagesCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
             List<Language> languages = languageDao.findAll();
 
             if (languages.isEmpty()) {
@@ -36,7 +36,7 @@ public class ListLanguagesCommandHandler implements CommandHandler {
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
     }

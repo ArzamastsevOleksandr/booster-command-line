@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +14,8 @@ public class MarkVocabularyEntryNotDifficultArgValidator implements ArgValidator
     private final MarkVocabularyEntryDifficultArgValidator validator;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        return validator.validate(commandWithArguments);
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        return validator.validate(commandWithArgs);
     }
 
     @Override

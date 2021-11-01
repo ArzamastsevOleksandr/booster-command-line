@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import org.springframework.stereotype.Component;
 
 import static com.booster.command.Command.DELETE_SETTINGS;
@@ -10,8 +10,8 @@ import static com.booster.command.Command.DELETE_SETTINGS;
 public class DeleteSettingsArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        return commandWithArguments;
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        return commandWithArgs;
     }
 
     @Override

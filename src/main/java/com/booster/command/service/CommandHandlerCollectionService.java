@@ -2,7 +2,7 @@ package com.booster.command.service;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.handler.CommandHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +27,11 @@ public class CommandHandlerCollectionService {
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void handle(CommandWithArguments commandWithArguments) {
-        Command command = commandWithArguments.getCommand();
+    public void handle(CommandWithArgs commandWithArgs) {
+        Command command = commandWithArgs.getCommand();
         Optional.ofNullable(commandHandlers.get(command))
                 .ifPresentOrElse(
-                        commandHandler -> commandHandler.handle(commandWithArguments),
+                        commandHandler -> commandHandler.handle(commandWithArgs),
                         () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
                 );
     }

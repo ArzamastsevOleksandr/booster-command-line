@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +15,11 @@ public class ExportArgValidator implements ArgValidator {
     private static final String DEFAULT_EXPORT_FILE = "export" + XLSX;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.getFilename().isEmpty()) {
-            return commandWithArguments.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.getFilename().isEmpty()) {
+            return commandWithArgs.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
         }
-        return commandWithArguments;
+        return commandWithArgs;
     }
 
     @Override

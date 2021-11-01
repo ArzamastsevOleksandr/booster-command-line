@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.service.LanguageService;
 import com.booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ public class AddSettingsArgValidator implements ArgValidator {
     private final SettingsService settingsService;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
         checkIfSettingsAlreadyExist();
 
-        commandWithArguments.getLanguageId()
+        commandWithArgs.getLanguageId()
                 .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
 
-        return commandWithArguments;
+        return commandWithArgs;
     }
 
     @Override

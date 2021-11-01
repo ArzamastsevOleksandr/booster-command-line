@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Settings;
@@ -30,22 +30,22 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
             var params = new AddVocabularyEntryDaoParams();
 
-            commandWithArguments.getName().ifPresent(name -> {
+            commandWithArgs.getName().ifPresent(name -> {
                 long wordId = wordService.findByNameOrCreateAndGet(name).getId();
                 params.setWordId(wordId);
             });
 
-            commandWithArguments.getId().ifPresentOrElse(params::setLanguageId, () -> {
+            commandWithArgs.getId().ifPresentOrElse(params::setLanguageId, () -> {
                 settingsService.findOne()
                         .flatMap(Settings::getLanguageId)
                         .ifPresent(params::setLanguageId);
             });
 
-            commandWithArguments.getDefinition().ifPresent(params::setDefinition);
+            commandWithArgs.getDefinition().ifPresent(params::setDefinition);
 
             // todo: set synonyms and antonyms
             vocabularyEntryDao.addWithDefaultValues(params);
@@ -53,7 +53,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
         adapter.newLine();

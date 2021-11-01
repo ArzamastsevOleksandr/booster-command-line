@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Value
 @Builder(toBuilder = true)
-public class CommandWithArguments {
+public class CommandWithArgs {
 
     Command command;
 
@@ -21,7 +21,7 @@ public class CommandWithArguments {
     String mode;
 
     @Builder.Default
-    List<String> argErrors = List.of();
+    List<String> errors = List.of();
 
     public Optional<Long> getId() {
         return Optional.ofNullable(id);
@@ -47,14 +47,14 @@ public class CommandWithArguments {
         return Optional.ofNullable(mode);
     }
 
-    public static CommandWithArguments withErrors(List<String> errors) {
-        return CommandWithArguments.builder()
-                .argErrors(errors)
+    public static CommandWithArgs withErrors(List<String> errors) {
+        return CommandWithArgs.builder()
+                .errors(errors)
                 .build();
     }
 
     public boolean hasNoErrors() {
-        return argErrors == null || argErrors.isEmpty();
+        return errors == null || errors.isEmpty();
     }
 
 }

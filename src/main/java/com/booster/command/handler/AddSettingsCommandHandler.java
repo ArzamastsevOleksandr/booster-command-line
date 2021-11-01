@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.SettingsDao;
 import com.booster.dao.params.AddSettingsDaoParams;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,9 @@ public class AddSettingsCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArguments commandWithArguments) {
-        if (commandWithArguments.hasNoErrors()) {
-            AddSettingsDaoParams params = commandWithArguments.getLanguageId()
+    public void handle(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.hasNoErrors()) {
+            AddSettingsDaoParams params = commandWithArgs.getLanguageId()
                     .map(AddSettingsDaoParams::of)
                     .orElseGet(AddSettingsDaoParams::empty);
 
@@ -29,7 +29,7 @@ public class AddSettingsCommandHandler implements CommandHandler {
         } else {
             adapter.writeLine("Errors: ");
             adapter.newLine();
-            commandWithArguments.getArgErrors()
+            commandWithArgs.getErrors()
                     .forEach(adapter::writeLine);
         }
         adapter.newLine();

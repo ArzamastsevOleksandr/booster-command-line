@@ -4,7 +4,7 @@ import com.booster.adapter.CommandLineAdapter;
 import com.booster.adapter.CommonOperations;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandArgumentsValidator;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.service.CommandHandlerCollectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,19 +24,19 @@ public class PracticeSessionLauncher {
         commonOperations.help();
         commonOperations.askForInput();
 
-        CommandWithArguments commandWithArguments = nextCommandWithArguments();
-        Command command = commandWithArguments.getCommand();
+        CommandWithArgs commandWithArgs = nextCommandWithArguments();
+        Command command = commandWithArgs.getCommand();
         while (Command.isNotExit(command)) {
-            commandHandlerCollectionService.handle(commandWithArguments);
+            commandHandlerCollectionService.handle(commandWithArgs);
 
             commonOperations.askForInput();
-            commandWithArguments = nextCommandWithArguments();
-            command = commandWithArguments.getCommand();
+            commandWithArgs = nextCommandWithArguments();
+            command = commandWithArgs.getCommand();
         }
         commonOperations.end();
     }
 
-    private CommandWithArguments nextCommandWithArguments() {
+    private CommandWithArgs nextCommandWithArguments() {
         String line = adapter.readLine();
         return commandArgumentsValidator.validate(line);
     }

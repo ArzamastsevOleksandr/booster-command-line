@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 
 public interface ArgValidator {
 
@@ -9,21 +9,20 @@ public interface ArgValidator {
         throw new ArgsValidationException("Id is missing");
     };
 
-    default CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+    default CommandWithArgs validate(CommandWithArgs commandWithArgs) {
         try {
-            return validateAndReturn(commandWithArguments);
+            return validateAndReturn(commandWithArgs);
         } catch (ArgsValidationException e) {
-            return getCommandWithArgumentsBuilder().argErrors(e.errors).build();
+            return getCommandWithArgumentsBuilder().errors(e.errors).build();
         }
     }
 
-    CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments);
+    CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs);
 
     Command command();
 
-    //    todo: rename
-    default CommandWithArguments.CommandWithArgumentsBuilder getCommandWithArgumentsBuilder() {
-        return CommandWithArguments.builder()
+    default CommandWithArgs.CommandWithArgsBuilder getCommandWithArgumentsBuilder() {
+        return CommandWithArgs.builder()
                 .command(command());
     }
 

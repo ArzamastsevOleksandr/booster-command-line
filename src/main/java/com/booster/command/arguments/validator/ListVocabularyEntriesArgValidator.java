@@ -1,7 +1,7 @@
 package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
-import com.booster.command.arguments.CommandWithArguments;
+import com.booster.command.arguments.CommandWithArgs;
 import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,11 +15,11 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
     private final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
-        commandWithArguments.getId()
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        commandWithArgs.getId()
                 .ifPresent(this::checkIfVocabularyEntryExistsWithId);
 
-        return commandWithArguments;
+        return commandWithArgs;
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
