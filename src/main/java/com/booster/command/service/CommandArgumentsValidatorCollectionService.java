@@ -31,6 +31,12 @@ public class CommandArgumentsValidatorCollectionService {
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        return Optional.ofNullable(argValidators.get(commandWithArguments.getCommand()))
+                .map(argValidator -> argValidator.validate(commandWithArguments))
+                .orElse(UNRECOGNIZED);
+    }
+
     //    @PostConstruct
     public void postConstruct() {
         adapter.writeLine("Registered the following command arg resolvers: ");
@@ -39,13 +45,6 @@ public class CommandArgumentsValidatorCollectionService {
         argValidators.keySet()
                 .forEach(command -> adapter.writeLine(command.toString()));
         adapter.newLine();
-    }
-
-
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        return Optional.ofNullable(argValidators.get(commandWithArguments.getCommand()))
-                .map(argValidator -> argValidator.validate(commandWithArguments))
-                .orElse(UNRECOGNIZED);
     }
 
 }

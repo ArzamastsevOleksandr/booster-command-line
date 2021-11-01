@@ -19,17 +19,13 @@ public class AddSettingsArgValidator implements ArgValidator {
     private final SettingsService settingsService;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            checkIfSettingsAlreadyExist();
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        checkIfSettingsAlreadyExist();
 
-            commandWithArguments.getLanguageId()
-                    .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
+        commandWithArguments.getLanguageId()
+                .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
 
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
-        }
+        return commandWithArguments;
     }
 
     @Override

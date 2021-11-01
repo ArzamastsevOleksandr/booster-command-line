@@ -15,15 +15,11 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
     private final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            commandWithArguments.getId()
-                    .ifPresent(this::checkIfVocabularyEntryExistsWithId);
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        commandWithArguments.getId()
+                .ifPresent(this::checkIfVocabularyEntryExistsWithId);
 
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
-        }
+        return commandWithArguments;
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {

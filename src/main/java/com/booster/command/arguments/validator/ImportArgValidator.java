@@ -17,15 +17,11 @@ public class ImportArgValidator implements ArgValidator {
     private static final String DEFAULT_IMPORT_FILE = "import" + XLSX;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            commandWithArguments.getFilename()
-                    .ifPresentOrElse(this::checkCustomFileExists, this::checkDefaultImportFileExists);
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        commandWithArguments.getFilename()
+                .ifPresentOrElse(this::checkCustomFileExists, this::checkDefaultImportFileExists);
 
-            return commandWithArguments.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
-        }
+        return commandWithArguments.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
     }
 
     private void checkDefaultImportFileExists() {
@@ -40,6 +36,7 @@ public class ImportArgValidator implements ArgValidator {
 
     private void checkCustomFileExists(String filename) {
         File file = new File(filename);
+        // todo: fix error
         if (!file.exists() || file.isDirectory()) {
             throw new ArgsValidationException("Custom import file not found: " + DEFAULT_IMPORT_FILE);
         }

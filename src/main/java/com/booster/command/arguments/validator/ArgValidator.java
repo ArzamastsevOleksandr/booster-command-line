@@ -9,12 +9,20 @@ public interface ArgValidator {
         throw new ArgsValidationException("Id is missing");
     };
 
-    CommandWithArguments validate(CommandWithArguments commandWithArguments);
+    default CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+        try {
+            return validateAndReturn(commandWithArguments);
+        } catch (ArgsValidationException e) {
+            return getCommandWithArgumentsBuilder().argErrors(e.errors).build();
+        }
+    }
+
+    CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments);
 
     Command command();
-    //    todo: rename
 
-    default CommandWithArguments.CommandWithArgumentsBuilder getCommandBuilder() {
+    //    todo: rename
+    default CommandWithArguments.CommandWithArgumentsBuilder getCommandWithArgumentsBuilder() {
         return CommandWithArguments.builder()
                 .command(command());
     }

@@ -12,7 +12,7 @@ import static com.booster.command.Command.SHOW_SETTINGS;
 public class ShowSettingsArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
         return commandWithArguments;
     }
 
