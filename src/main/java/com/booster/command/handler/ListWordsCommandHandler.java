@@ -20,22 +20,15 @@ public class ListWordsCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            List<Word> words = wordDao.findAll();
+        List<Word> words = wordDao.findAll();
 
-            if (words.isEmpty()) {
-                adapter.writeLine("There are no words in the system yet.");
-            } else {
-                adapter.writeLine("All words:");
-                for (var word : words) {
-                    adapter.writeLine(word.toString());
-                }
-            }
+        if (words.isEmpty()) {
+            adapter.writeLine("There are no words in the system yet.");
         } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
+            adapter.writeLine("All words:");
+            for (var word : words) {
+                adapter.writeLine(word.toString());
+            }
         }
     }
 

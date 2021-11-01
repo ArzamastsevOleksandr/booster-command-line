@@ -23,15 +23,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     // todo: default pagination + pagination flags
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            commandWithArgs.getId()
-                    .ifPresentOrElse(this::displayVocabularyEntryById, this::displayAllVocabularyEntries);
-        } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
-        }
+        commandWithArgs.getId().ifPresentOrElse(this::displayVocabularyEntryById, this::displayAllVocabularyEntries);
     }
 
     @Override

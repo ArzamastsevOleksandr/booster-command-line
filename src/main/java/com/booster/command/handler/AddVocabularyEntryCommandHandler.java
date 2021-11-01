@@ -1,6 +1,5 @@
 package com.booster.command.handler;
 
-import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.VocabularyEntryDao;
@@ -27,36 +26,25 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final WordService wordService;
     private final SettingsService settingsService;
 
-    private final CommandLineAdapter adapter;
-
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            var params = new AddVocabularyEntryDaoParams();
+        var params = new AddVocabularyEntryDaoParams();
 
-            commandWithArgs.getName().ifPresent(name -> {
-                long wordId = wordService.findByNameOrCreateAndGet(name).getId();
-                params.setWordId(wordId);
-            });
+        commandWithArgs.getName().ifPresent(name -> {
+            long wordId = wordService.findByNameOrCreateAndGet(name).getId();
+            params.setWordId(wordId);
+        });
 
-            commandWithArgs.getId().ifPresentOrElse(params::setLanguageId, () -> {
-                settingsService.findOne()
-                        .flatMap(Settings::getLanguageId)
-                        .ifPresent(params::setLanguageId);
-            });
+        commandWithArgs.getId().ifPresentOrElse(params::setLanguageId, () -> {
+            settingsService.findOne()
+                    .flatMap(Settings::getLanguageId)
+                    .ifPresent(params::setLanguageId);
+        });
 
-            commandWithArgs.getDefinition().ifPresent(params::setDefinition);
+        commandWithArgs.getDefinition().ifPresent(params::setDefinition);
 
-            // todo: set synonyms and antonyms
-            vocabularyEntryDao.addWithDefaultValues(params);
-            adapter.writeLine("Done.");
-        } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
-        }
-        adapter.newLine();
+        // todo: set synonyms and antonyms
+        vocabularyEntryDao.addWithDefaultValues(params);
     }
 
     @Override

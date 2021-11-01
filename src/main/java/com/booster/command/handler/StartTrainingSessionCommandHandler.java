@@ -29,29 +29,21 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            commandWithArgs.getMode()
-                    .filter(m -> !TrainingSessionMode.isUnrecognized(m))
-                    .map(TrainingSessionMode::fromString)
-                    .ifPresent(mode -> {
-                        // todo: fix: FULL mode will load ves with no ant/syn
-                        List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
+        commandWithArgs.getMode()
+                .filter(m -> !TrainingSessionMode.isUnrecognized(m))
+                .map(TrainingSessionMode::fromString)
+                .ifPresent(mode -> {
+                    // todo: fix: FULL mode will load ves with no ant/syn
+                    List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
 
-                        if (vocabularyEntries.isEmpty()) {
-                            adapter.writeLine("There are no entries to practice.");
-                        } else {
-                            adapter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
-                            executeTrainingSession(vocabularyEntries, mode);
-                            adapter.writeLine("Training session finished!");
-                        }
-                    });
-        } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
-        }
-        adapter.newLine();
+                    if (vocabularyEntries.isEmpty()) {
+                        adapter.writeLine("There are no entries to practice.");
+                    } else {
+                        adapter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
+                        executeTrainingSession(vocabularyEntries, mode);
+                        adapter.writeLine("Training session finished!");
+                    }
+                });
     }
 
     @Override

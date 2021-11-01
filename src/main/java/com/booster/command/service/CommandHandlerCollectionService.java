@@ -28,12 +28,19 @@ public class CommandHandlerCollectionService {
     }
 
     public void handle(CommandWithArgs commandWithArgs) {
-        Command command = commandWithArgs.getCommand();
-        Optional.ofNullable(commandHandlers.get(command))
-                .ifPresentOrElse(
-                        commandHandler -> commandHandler.handle(commandWithArgs),
-                        () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
-                );
+        if (commandWithArgs.hasNoErrors()) {
+            Command command = commandWithArgs.getCommand();
+            Optional.ofNullable(commandHandlers.get(command)).ifPresentOrElse(
+                    commandHandler -> commandHandler.handle(commandWithArgs),
+                    () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
+            );
+        } else {
+            adapter.writeLine("Errors: ");
+            adapter.newLine();
+            commandWithArgs.getErrors()
+                    .forEach(adapter::writeLine);
+        }
+        adapter.newLine();
     }
 
     //    @PostConstruct

@@ -17,18 +17,10 @@ public class ShowSettingsCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            settingsService.findOne()
-                    .ifPresentOrElse(
-                            settings -> adapter.writeLine(settings.toString()),
-                            () -> adapter.writeLine("There are no settings in the system now.")
-                    );
-        } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
-        }
+        settingsService.findOne().ifPresentOrElse(
+                settings -> adapter.writeLine(settings.toString()),
+                () -> adapter.writeLine("There are no settings in the system now.")
+        );
     }
 
     @Override

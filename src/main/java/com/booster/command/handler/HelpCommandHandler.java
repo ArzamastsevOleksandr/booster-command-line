@@ -16,23 +16,14 @@ public class HelpCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
+        adapter.writeLine("Available commands are:");
+        adapter.newLine();
 
-            adapter.newLine();
-            adapter.writeLine("Available commands are:");
-            adapter.newLine();
+        Arrays.stream(Command.values())
+                .filter(Command::isRecognizable)
+                .forEach(command -> adapter.writeLine(command.toString() + ": " + command.getEquivalents()));
 
-            Arrays.stream(Command.values())
-                    .filter(Command::isRecognizable)
-                    .forEach(command -> adapter.writeLine(command.toString() + ": " + command.getEquivalents()));
-
-            adapter.newLine();
-        } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
-        }
+        adapter.newLine();
     }
 
     @Override
