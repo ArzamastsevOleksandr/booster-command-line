@@ -13,16 +13,12 @@ import static com.booster.command.Command.START_TRAINING_SESSION;
 public class StartTrainingSessionArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            if (commandWithArguments.getMode().isEmpty()) {
-                return commandWithArguments.toBuilder().mode(TrainingSessionMode.FULL.getMode()).build();
-            }
-            checkIfModeValueIsCorrect(commandWithArguments.getMode().get());
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        if (commandWithArguments.getMode().isEmpty()) {
+            return commandWithArguments.toBuilder().mode(TrainingSessionMode.FULL.getMode()).build();
         }
+        checkIfModeValueIsCorrect(commandWithArguments.getMode().get());
+        return commandWithArguments;
     }
 
     private void checkIfModeValueIsCorrect(String mode) {

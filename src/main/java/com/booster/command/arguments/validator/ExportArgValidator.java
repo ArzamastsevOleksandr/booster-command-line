@@ -15,15 +15,11 @@ public class ExportArgValidator implements ArgValidator {
     private static final String DEFAULT_EXPORT_FILE = "export" + XLSX;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            if (commandWithArguments.getFilename().isEmpty()) {
-                return commandWithArguments.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
-            }
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        if (commandWithArguments.getFilename().isEmpty()) {
+            return commandWithArguments.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
         }
+        return commandWithArguments;
     }
 
     @Override

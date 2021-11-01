@@ -12,7 +12,7 @@ import static com.booster.command.Command.HELP;
 public class HelpArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
         return commandWithArguments;
     }
 

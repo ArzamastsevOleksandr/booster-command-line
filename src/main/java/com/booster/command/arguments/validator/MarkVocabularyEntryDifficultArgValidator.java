@@ -15,15 +15,11 @@ public class MarkVocabularyEntryDifficultArgValidator implements ArgValidator {
     private final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            commandWithArguments.getId()
-                    .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        commandWithArguments.getId()
+                .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
 
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
-        }
+        return commandWithArguments;
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {

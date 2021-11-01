@@ -22,26 +22,22 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
     private final LanguageService languageService;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        try {
-            if (commandWithArguments.getName().isEmpty()) {
-                throw new ArgsValidationException("Name is missing");
-            }
-            commandWithArguments.getLanguageId().ifPresentOrElse(languageId -> {
-                checkIfLanguageExistsWithId(languageId);
-                long wordId = getWordIdByWordName(commandWithArguments.getName().get());
-                checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
-            }, () -> settingsService.findOne()
-                    .flatMap(Settings::getLanguageId)
-                    .ifPresentOrElse(langId -> {
-                        checkIfLanguageExistsWithId(langId);
-                        long wordId = getWordIdByWordName(commandWithArguments.getName().get());
-                        checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
-                    }, this::languageIdAndSettingsAreMissing));
-            return commandWithArguments;
-        } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.errors).build();
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
+        if (commandWithArguments.getName().isEmpty()) {
+            throw new ArgsValidationException("Name is missing");
         }
+        commandWithArguments.getLanguageId().ifPresentOrElse(languageId -> {
+            checkIfLanguageExistsWithId(languageId);
+            long wordId = getWordIdByWordName(commandWithArguments.getName().get());
+            checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
+        }, () -> settingsService.findOne()
+                .flatMap(Settings::getLanguageId)
+                .ifPresentOrElse(langId -> {
+                    checkIfLanguageExistsWithId(langId);
+                    long wordId = getWordIdByWordName(commandWithArguments.getName().get());
+                    checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
+                }, this::languageIdAndSettingsAreMissing));
+        return commandWithArguments;
     }
 
     private void languageIdAndSettingsAreMissing() {

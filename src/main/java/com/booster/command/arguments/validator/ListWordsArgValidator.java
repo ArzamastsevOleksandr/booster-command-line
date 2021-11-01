@@ -10,7 +10,7 @@ import static com.booster.command.Command.LIST_WORDS;
 public class ListWordsArgValidator implements ArgValidator {
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
         return commandWithArguments;
     }
 

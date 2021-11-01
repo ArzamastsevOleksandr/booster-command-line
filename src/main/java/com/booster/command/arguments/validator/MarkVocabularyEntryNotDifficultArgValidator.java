@@ -14,7 +14,7 @@ public class MarkVocabularyEntryNotDifficultArgValidator implements ArgValidator
     private final MarkVocabularyEntryDifficultArgValidator validator;
 
     @Override
-    public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
+    public CommandWithArguments validateAndReturn(CommandWithArguments commandWithArguments) {
         return validator.validate(commandWithArguments);
     }
 
