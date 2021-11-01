@@ -7,8 +7,6 @@ import com.booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.ADD_SETTINGS;
 
 // todo: functional style error processing with no exceptions (Option).
@@ -30,7 +28,7 @@ public class AddSettingsArgValidator implements ArgValidator {
 
             return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
     }
 
@@ -41,13 +39,13 @@ public class AddSettingsArgValidator implements ArgValidator {
 
     private void checkIfSettingsAlreadyExist() {
         if (settingsService.existAny()) {
-            throw new ArgsValidationException(List.of("Settings already exist."));
+            throw new ArgsValidationException("Settings already exist.");
         }
     }
 
     private void checkIfLanguageBeingLearnedExistsWithId(long id) {
         if (!languageService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Language being learned with id: " + id + " does not exist."));
+            throw new ArgsValidationException("Language being learned with id: " + id + " does not exist.");
         }
     }
 

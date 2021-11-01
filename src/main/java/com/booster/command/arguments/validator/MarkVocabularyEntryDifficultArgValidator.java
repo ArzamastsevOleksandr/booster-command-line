@@ -6,8 +6,6 @@ import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.MARK_VOCABULARY_ENTRY_DIFFICULT;
 
 @Component
@@ -18,15 +16,15 @@ public class MarkVocabularyEntryDifficultArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        commandWithArguments.getId().ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, () -> {
-            throw new ArgsValidationException(List.of("Id is missing"));
-        });
+        commandWithArguments.getId()
+                .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+
         return commandWithArguments;
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
         if (!vocabularyEntryService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Vocabulary entry does not exist with id: " + id));
+            throw new ArgsValidationException("Vocabulary entry does not exist with id: " + id);
         }
     }
 

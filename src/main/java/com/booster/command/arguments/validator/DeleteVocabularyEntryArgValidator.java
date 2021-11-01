@@ -6,8 +6,6 @@ import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.DELETE_VOCABULARY_ENTRY;
 
 @Component
@@ -19,13 +17,12 @@ public class DeleteVocabularyEntryArgValidator implements ArgValidator {
     @Override
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
         try {
-            commandWithArguments.getId().ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId,
-                    () -> {
-                        throw new ArgsValidationException(List.of("Id is missing"));
-                    });
+            commandWithArguments.getId()
+                    .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+
             return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
     }
 
@@ -36,7 +33,7 @@ public class DeleteVocabularyEntryArgValidator implements ArgValidator {
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
         if (!vocabularyEntryService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Vocabulary entry with id: " + id + " does not exist."));
+            throw new ArgsValidationException("Vocabulary entry with id: " + id + " does not exist.");
         }
     }
 

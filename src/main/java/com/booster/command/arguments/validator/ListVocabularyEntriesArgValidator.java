@@ -6,8 +6,6 @@ import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.LIST_VOCABULARY_ENTRIES;
 
 @Component
@@ -24,13 +22,13 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
 
             return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
         if (!vocabularyEntryService.existsWithId(id)) {
-            throw new ArgsValidationException(List.of("Vocabulary entry does not exist with id: " + id));
+            throw new ArgsValidationException("Vocabulary entry does not exist with id: " + id);
         }
     }
 

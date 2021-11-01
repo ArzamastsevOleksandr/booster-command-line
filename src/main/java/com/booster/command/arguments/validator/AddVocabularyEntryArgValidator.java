@@ -10,8 +10,6 @@ import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static com.booster.command.Command.ADD_VOCABULARY_ENTRY;
 
 @Component
@@ -27,7 +25,7 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
         try {
             if (commandWithArguments.getName().isEmpty()) {
-                throw new ArgsValidationException(List.of("Name is missing"));
+                throw new ArgsValidationException("Name is missing");
             }
             commandWithArguments.getLanguageId().ifPresentOrElse(languageId -> {
                 checkIfLanguageExistsWithId(languageId);
@@ -39,15 +37,15 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
                         checkIfLanguageExistsWithId(langId);
                         long wordId = getWordIdByWordName(commandWithArguments.getName().get());
                         checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
-                    }, () -> {
-                        throw new ArgsValidationException(List.of(
-                                "Language id is missing and no settings with default language id exist"
-                        ));
-                    }));
+                    }, this::languageIdAndSettingsAreMissing));
             return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
+    }
+
+    private void languageIdAndSettingsAreMissing() {
+        throw new ArgsValidationException("Language id is missing and no settings with default language id exist");
     }
 
     @Override
@@ -61,13 +59,13 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
 
     private void checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(long wordId, long languageId) {
         if (vocabularyEntryService.existsWithWordIdAndLanguageId(wordId, languageId)) {
-            throw new ArgsValidationException(List.of("Vocabulary entry already exists for language with id: " + languageId));
+            throw new ArgsValidationException("Vocabulary entry already exists for language with id: " + languageId);
         }
     }
 
     private void checkIfLanguageExistsWithId(long languageId) {
         if (!languageService.existsWithId(languageId)) {
-            throw new ArgsValidationException(List.of("Language with id: " + languageId + " does not exist."));
+            throw new ArgsValidationException("Language with id: " + languageId + " does not exist.");
         }
     }
 
