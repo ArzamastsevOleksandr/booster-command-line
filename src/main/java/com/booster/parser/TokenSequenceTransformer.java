@@ -42,6 +42,9 @@ public class TokenSequenceTransformer {
                 case FILE:
                     argumentsBuilder = argumentsBuilder.filename(value.getValue());
                     break;
+                case MODE:
+                    argumentsBuilder = argumentsBuilder.mode(value.getValue());
+                    break;
                 case SYNONYMS:
                 case ANTONYMS:
                     // todo: process synonyms, antonyms, training session modes

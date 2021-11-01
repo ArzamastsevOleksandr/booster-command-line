@@ -18,6 +18,7 @@ public class CommandWithArguments {
     String name;
     String definition;
     String filename;
+    String mode;
 
     @Builder.Default
     List<String> argErrors = List.of();
@@ -42,22 +43,18 @@ public class CommandWithArguments {
         return Optional.ofNullable(filename);
     }
 
+    public Optional<String> getMode() {
+        return Optional.ofNullable(mode);
+    }
+
     public static CommandWithArguments withErrors(List<String> errors) {
         return CommandWithArguments.builder()
                 .argErrors(errors)
                 .build();
     }
 
-    @Deprecated
-    // todo: forbid null values
-    Args args;
-
     public boolean hasNoErrors() {
         return argErrors == null || argErrors.isEmpty();
-    }
-
-    public boolean hasErrors() {
-        return !hasNoErrors();
     }
 
 }

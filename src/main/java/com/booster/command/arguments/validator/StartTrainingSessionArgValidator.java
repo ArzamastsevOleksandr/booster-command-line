@@ -2,13 +2,11 @@ package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArguments;
-import com.booster.command.arguments.StartTrainingSessionArgs;
 import com.booster.command.arguments.TrainingSessionMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.booster.command.Command.START_TRAINING_SESSION;
 
@@ -16,34 +14,17 @@ import static com.booster.command.Command.START_TRAINING_SESSION;
 @RequiredArgsConstructor
 public class StartTrainingSessionArgValidator implements ArgValidator {
 
-    private static final String MODE_FLAG = "m";
-
-    // todo: implement flag
-    @Override
-    public CommandWithArguments validate(List<String> args) {
-        var builder = getCommandBuilder();
-        try {
-            Map<String, String> flag2value = checkFlagsWithValuesAndReturn(args);
-            if (flag2value.containsKey(MODE_FLAG)) {
-                checkIfModeValueIsCorrect(flag2value.get(MODE_FLAG));
-                return builder
-                        .args(new StartTrainingSessionArgs(TrainingSessionMode.fromString(flag2value.get(MODE_FLAG))))
-                        .build();
-            } else {
-                return builder
-                        .args(new StartTrainingSessionArgs(TrainingSessionMode.fromString(TrainingSessionMode.FULL.getMode())))
-                        .build();
-            }
-        } catch (ArgsValidationException e) {
-            return builder
-                    .argErrors(e.getArgErrors())
-                    .build();
-        }
-    }
-
     @Override
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        return null;
+        try {
+            if (commandWithArguments.getMode().isEmpty()) {
+                return commandWithArguments.toBuilder().mode(TrainingSessionMode.FULL.getMode()).build();
+            }
+            checkIfModeValueIsCorrect(commandWithArguments.getMode().get());
+            return commandWithArguments;
+        } catch (ArgsValidationException e) {
+            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+        }
     }
 
     private void checkIfModeValueIsCorrect(String mode) {
