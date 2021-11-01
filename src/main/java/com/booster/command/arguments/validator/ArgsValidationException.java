@@ -1,22 +1,14 @@
 package com.booster.command.arguments.validator;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
-
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
-@Value
-@RequiredArgsConstructor
 public class ArgsValidationException extends RuntimeException {
 
-    // todo: constructor with var args
-    List<String> argErrors;
+    public final List<String> errors;
 
-    public List<String> getArgErrors() {
-        return Collections.unmodifiableList(argErrors);
+    public ArgsValidationException(String... errors) {
+        this.errors = List.of(Objects.requireNonNull(errors));
     }
 
 }

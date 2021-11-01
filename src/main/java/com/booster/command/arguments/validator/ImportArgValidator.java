@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.List;
 
 import static com.booster.command.Command.IMPORT;
 
@@ -25,16 +24,16 @@ public class ImportArgValidator implements ArgValidator {
 
             return commandWithArguments.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
     }
 
     private void checkDefaultImportFileExists() {
         File file = new File(DEFAULT_IMPORT_FILE);
         if (!file.exists() || file.isDirectory()) {
-            throw new ArgsValidationException(List.of(
+            throw new ArgsValidationException(
                     "Default import file not found: " + DEFAULT_IMPORT_FILE,
-                    "Try specifying custom filename")
+                    "Try specifying custom filename"
             );
         }
     }
@@ -42,7 +41,7 @@ public class ImportArgValidator implements ArgValidator {
     private void checkCustomFileExists(String filename) {
         File file = new File(filename);
         if (!file.exists() || file.isDirectory()) {
-            throw new ArgsValidationException(List.of("Custom import file not found: " + DEFAULT_IMPORT_FILE));
+            throw new ArgsValidationException("Custom import file not found: " + DEFAULT_IMPORT_FILE);
         }
     }
 

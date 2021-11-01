@@ -22,7 +22,7 @@ public class ExportArgValidator implements ArgValidator {
             }
             return commandWithArguments;
         } catch (ArgsValidationException e) {
-            return getCommandBuilder().argErrors(e.getArgErrors()).build();
+            return getCommandBuilder().argErrors(e.errors).build();
         }
     }
 
