@@ -16,10 +16,14 @@ public class MarkVocabularyEntryDifficultArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArguments validate(CommandWithArguments commandWithArguments) {
-        commandWithArguments.getId()
-                .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+        try {
+            commandWithArguments.getId()
+                    .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
 
-        return commandWithArguments;
+            return commandWithArguments;
+        } catch (ArgsValidationException e) {
+            return getCommandBuilder().argErrors(e.errors).build();
+        }
     }
 
     private void checkIfVocabularyEntryExistsWithId(long id) {
