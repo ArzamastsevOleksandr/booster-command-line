@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: I can add a new language to the system
-        // todo: I can delete a language from the system
+        // todo: UPDATE_VOCABULARY_ENTRY command
         // todo: unit test tokenizer, validator
         // todo: I can create a tag
         // todo: I can tag the ve
@@ -51,8 +50,8 @@ public class Main {
         // todo: Chapter 33: crash JVM examples, Chapter 68, 79, 82, 84, 87, 95, 97
         // todo: custom command grammar and parser?
         // todo: fix: ave command: description of > 1 word can not be recognized
-        // todo: UPDATE_VOCABULARY_ENTRY command
         // todo: UPDATE_SETTINGS command?
+        // todo: I can delete a language from the system
         // todo: distinguish upper-lower case?
         // todo: if I add the same ve, ask if I want to merge the result
         // todo: list_flags command

@@ -46,4 +46,11 @@ public class LanguageDao {
                         "where l.name = ?", Integer.class, name);
     }
 
+    public void add(String name) {
+        jdbcTemplate.update(
+                "insert into language " +
+                        "(name) " +
+                        "values (?)", name);
+    }
+
 }
