@@ -23,7 +23,7 @@ public class AddSettingsArgValidator implements ArgValidator {
         checkIfSettingsAlreadyExist();
 
         commandWithArgs.getLanguageId()
-                .ifPresent(this::checkIfLanguageBeingLearnedExistsWithId);
+                .ifPresent(this::checkIfLanguageExistsWithId);
 
         return commandWithArgs;
     }
@@ -35,13 +35,13 @@ public class AddSettingsArgValidator implements ArgValidator {
 
     private void checkIfSettingsAlreadyExist() {
         if (settingsService.existAny()) {
-            throw new ArgsValidationException("Settings already exist.");
+            throw new ArgsValidationException("Settings already exist");
         }
     }
 
-    private void checkIfLanguageBeingLearnedExistsWithId(long id) {
+    private void checkIfLanguageExistsWithId(long id) {
         if (!languageService.existsWithId(id)) {
-            throw new ArgsValidationException("Language being learned with id: " + id + " does not exist.");
+            throw new ArgsValidationException("Language with id: " + id + " does not exist");
         }
     }
 

@@ -20,9 +20,12 @@ public class LanguageService {
         return Optional.empty();
     }
 
-    // todo: fail fast if >1 rows returned
     public boolean existsWithId(long id) {
         return languageDao.countWithId(id) == 1;
+    }
+
+    public boolean existsWithName(String name) {
+        return languageDao.countWithName(name) == 1;
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
@@ -16,6 +17,7 @@ public enum Command {
     HELP(Set.of("h")),
 
     LIST_LANGUAGES(Set.of("l")),
+    ADD_LANGUAGE(Set.of("al")),
 
     LIST_WORDS(Set.of("w")),
 
@@ -39,19 +41,22 @@ public enum Command {
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 
+    // if any of the commands have shared equivalents - crash the program early
     static {
-        Map<String, Long> distinctEquivalent2Count = Arrays.stream(values())
+        Map<String, Long> equivalent2Count = Arrays.stream(values())
                 .map(Command::getEquivalents)
                 .flatMap(Set::stream)
                 .collect(groupingBy(Function.identity(), counting()));
 
-        Map<String, Long> violations = distinctEquivalent2Count.entrySet()
+        Predicate<Map.Entry<String, Long>> isSharedEquivalent = e -> e.getValue() > 1;
+
+        Map<String, Long> sharedEquivalents = equivalent2Count.entrySet()
                 .stream()
-                .filter(e -> e.getValue() > 1)
+                .filter(isSharedEquivalent)
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        if (!violations.isEmpty()) {
-            throw new AssertionError("Duplicate commands detected: " + violations);
+        if (!sharedEquivalents.isEmpty()) {
+            throw new AssertionError("Duplicate commands detected: " + sharedEquivalents);
         }
     }
 

@@ -22,8 +22,6 @@ public class HelpCommandHandler implements CommandHandler {
         Arrays.stream(Command.values())
                 .filter(Command::isRecognizable)
                 .forEach(command -> adapter.writeLine(command.toString() + ": " + command.getEquivalents()));
-
-        adapter.newLine();
     }
 
     @Override
