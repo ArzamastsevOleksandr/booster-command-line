@@ -1,5 +1,6 @@
 package com.booster;
 
+import com.booster.launcher.Launcher;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,9 +31,14 @@ public class Main {
         // todo: I have a level in calc
         // todo: Correct calc answers increase level and complexity of all subsequent calcs
         // todo: I can have a mul/div/sub/add/mixed training sessions in calc
+        // todo: use over(), rank() and partition by when searching for which ves to output
+        // todo: use indexes in tables where frequent search is done
+        // todo: add benchmarks for standard sql and sql with indexes
+        // docker-compose logs -f (--tail=0 to see only new ones)
+        // sudo docker rm -f $(sudo docker container ps -aq) & sudo docker-compose up -d
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
-        var learningSessionManager = applicationContext.getBean("practiceSessionLauncher", PracticeSessionLauncher.class);
-        learningSessionManager.launch();
+        var launcher = applicationContext.getBean("launcher", Launcher.class);
+        launcher.launch();
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);
@@ -42,7 +48,7 @@ public class Main {
         // todo: learn javac
         // todo: java flame graphs
         // todo: inline types: stack gives more cache-friendliness vs heap
-        // todo: Chapter 33: crash JVM examples, Chapter 68, 79
+        // todo: Chapter 33: crash JVM examples, Chapter 68, 79, 82, 84, 87, 95, 97
         // todo: custom command grammar and parser?
         // todo: fix: ave command: description of > 1 word can not be recognized
         // todo: UPDATE_VOCABULARY_ENTRY command
@@ -59,6 +65,9 @@ public class Main {
         //  you should hear alarm bells ringing inside your head.
         // todo: a task to add fractions (1/3 + 4/8 + 3/2)
         // todo: play with JShell
+        // todo: implement custom annotations (Like, CommandHandler,
+        //  to avoid creating redundant comments + to enable fitness function tests (architecture conformity).
+        // todo: write 1-line open comments.
     }
 
 }

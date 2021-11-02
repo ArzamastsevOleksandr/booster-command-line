@@ -1,4 +1,4 @@
-package com.booster;
+package com.booster.launcher;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.adapter.CommonOperations;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PracticeSessionLauncher {
+public class Launcher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandArgumentsValidator commandArgumentsValidator;
