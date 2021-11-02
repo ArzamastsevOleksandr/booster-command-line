@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class TestExample {
 
+    // fitness functions test how close the current design is to the desired architecture
     @Test
     void test() {
         JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
