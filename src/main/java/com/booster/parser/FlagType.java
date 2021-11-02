@@ -17,7 +17,7 @@ public enum FlagType {
     FILE("f"),
     UNKNOWN("UNKNOWN");
 
-    private final String value;
+    public final String value;
 
     public static FlagType fromString(String s) {
         return Arrays.stream(values())

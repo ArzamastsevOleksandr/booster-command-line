@@ -85,6 +85,7 @@ public class CommandLineInputTokenizer {
         return Arrays.copyOfRange(chars, i, chars.length);
     }
 
+    // todo: parse negative numbers and return validation errors later
     private boolean isValidPositiveLongNumber(String toString) {
         try {
             return Long.parseLong(toString) > 0;
