@@ -18,6 +18,7 @@ public enum Command {
 
     LIST_LANGUAGES(Set.of("l")),
     ADD_LANGUAGE(Set.of("al")),
+    DELETE_LANGUAGE(Set.of("dl")),
 
     LIST_WORDS(Set.of("w")),
 

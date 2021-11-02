@@ -28,4 +28,8 @@ public class VocabularyEntryService {
         return vocabularyEntryDao.countWithWordIdAndLanguageId(wordId, languageId) == 1;
     }
 
+    public boolean existAnyWithLanguageId(Long id) {
+        return vocabularyEntryDao.countWithLanguageId(id) > 0;
+    }
+
 }

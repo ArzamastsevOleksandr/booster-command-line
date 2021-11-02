@@ -53,4 +53,10 @@ public class LanguageDao {
                         "values (?)", name);
     }
 
+    public void delete(Long id) {
+        jdbcTemplate.update(
+                "delete from language " +
+                        "where id = ?", id);
+    }
+
 }

@@ -324,4 +324,11 @@ public class VocabularyEntryDao {
                         "where id = ?", isDifficult, id);
     }
 
+    public int countWithLanguageId(Long id) {
+        return jdbcTemplate.queryForObject(
+                "select count(*) " +
+                        "from vocabulary_entry " +
+                        "where language_id = ?", Integer.class, id);
+    }
+
 }
