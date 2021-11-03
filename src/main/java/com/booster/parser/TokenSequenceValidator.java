@@ -8,6 +8,9 @@ import java.util.List;
 @Component
 public class TokenSequenceValidator {
 
+    // todo: package-private access modifiers
+    // todo: implement support for flags with no values
+    // todo: add explanatory error messages
     public TokenValidationResult validate(List<Token> tokens) {
         if (tokens.isEmpty()) {
             return TokenValidationResult.withErrors(List.of("Err0"));
