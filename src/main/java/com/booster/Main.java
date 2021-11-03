@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class Main {
     public static void main(String[] args) {
         // todo: UPDATE_VOCABULARY_ENTRY command
+        // todo: fix: 'uve \id=1 \n' results in 'Unknown command.'
         // todo: unit test tokenizer, validator
         // todo: I can create a tag
         // todo: I can tag the ve

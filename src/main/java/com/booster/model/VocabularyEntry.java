@@ -13,6 +13,7 @@ public class VocabularyEntry {
 
     long id;
     String name;
+    long wordId;
     Timestamp createdAt;
     int correctAnswersCount;
 

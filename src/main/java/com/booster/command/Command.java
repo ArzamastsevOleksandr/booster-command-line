@@ -25,6 +25,7 @@ public enum Command {
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),
     DELETE_VOCABULARY_ENTRY(Set.of("dve")),
     ADD_VOCABULARY_ENTRY(Set.of("ave")),
+    UPDATE_VOCABULARY_ENTRY(Set.of("uve")),
 
     START_TRAINING_SESSION(Set.of("t")),
 

@@ -36,6 +36,7 @@ public class Launcher {
         commonOperations.end();
     }
 
+    // todo: SRP + naming
     private CommandWithArgs nextCommandWithArguments() {
         String line = adapter.readLine();
         return commandArgumentsValidator.validate(line);
