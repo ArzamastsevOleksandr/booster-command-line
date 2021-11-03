@@ -23,4 +23,8 @@ public class NoteDao {
         return jdbcTemplate.query("select * from note", RS_2_NOTE);
     }
 
+    public void add(String content) {
+        jdbcTemplate.update("insert into note (content) values (?)", content);
+    }
+
 }

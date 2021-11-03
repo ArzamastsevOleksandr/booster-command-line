@@ -20,6 +20,7 @@ public class CommandWithArgs {
     String definition;
     String filename;
     String mode;
+    String content;
     @Builder.Default
     Set<String> synonyms = Set.of();
     @Builder.Default
@@ -50,6 +51,10 @@ public class CommandWithArgs {
 
     public Optional<String> getMode() {
         return Optional.ofNullable(mode);
+    }
+
+    public Optional<String> getContent() {
+        return Optional.ofNullable(content);
     }
 
     public Set<String> getSynonyms() {
