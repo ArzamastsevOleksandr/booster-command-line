@@ -11,9 +11,7 @@ import static com.booster.parser.Token.*;
 
 @Component
 public class CommandLineInputTokenizer {
-    // "   ave \n= n  \s =s  \a=a "
-    // COMMAND, FLAG, =, TEXT, FLAG, =, TEXT, FLAG, =, TEXT
-    // COMMAND, NAME_VALUE, SYNONYM_VALUE, ANTONYM_VALUE
+
     public List<Token> parseIntoTokens(String input) {
         return parse(input.toCharArray(), new LinkedList<>());
     }
