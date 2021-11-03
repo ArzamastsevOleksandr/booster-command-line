@@ -36,6 +36,8 @@ public enum Command {
     ADD_SETTINGS(Set.of("as")),
     DELETE_SETTINGS(Set.of("ds")),
 
+    LIST_NOTES(Set.of("n")),
+
     MARK_VOCABULARY_ENTRY_DIFFICULT(Set.of("md")),
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),
 
