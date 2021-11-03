@@ -24,7 +24,6 @@ public class Main {
         // todo: can exit the training session before it ends
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
-        // todo: I can add notes
         // todo: I can delete a note
         // todo: I can tag the note
         // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again

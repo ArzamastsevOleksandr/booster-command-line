@@ -56,6 +56,9 @@ public class TokenSequenceTransformer {
                 case ANTONYMS:
                     argumentsBuilder = argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
                     break;
+                case CONTENT:
+                    argumentsBuilder = argumentsBuilder.content(flagValue);
+                    break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }

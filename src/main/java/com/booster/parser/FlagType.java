@@ -15,6 +15,7 @@ public enum FlagType {
     DESCRIPTION("d"),
     MODE("m"),
     FILE("f"),
+    CONTENT("c"),
     UNKNOWN("UNKNOWN");
 
     public final String value;
