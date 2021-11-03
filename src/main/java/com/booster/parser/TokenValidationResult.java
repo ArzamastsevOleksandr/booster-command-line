@@ -5,7 +5,6 @@ import lombok.Value;
 import java.util.List;
 import java.util.Objects;
 
-// todo: test
 @Value
 public class TokenValidationResult {
 
