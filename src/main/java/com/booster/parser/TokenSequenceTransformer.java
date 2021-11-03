@@ -4,7 +4,11 @@ import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 @Component
 public class TokenSequenceTransformer {
@@ -26,33 +30,44 @@ public class TokenSequenceTransformer {
             Token value = copy.get(i + 2);
 
             FlagType flagType = FlagType.fromString(flag.getValue());
+            String flagValue = value.getValue();
             switch (flagType) {
                 case ID:
-                    argumentsBuilder = argumentsBuilder.id(Long.parseLong(value.getValue()));
+                    argumentsBuilder = argumentsBuilder.id(Long.parseLong(flagValue));
                     break;
                 case LANGUAGE_ID:
-                    argumentsBuilder = argumentsBuilder.languageId(Long.parseLong(value.getValue()));
+                    argumentsBuilder = argumentsBuilder.languageId(Long.parseLong(flagValue));
                     break;
                 case NAME:
-                    argumentsBuilder = argumentsBuilder.name(value.getValue());
+                    argumentsBuilder = argumentsBuilder.name(flagValue);
                     break;
                 case DESCRIPTION:
-                    argumentsBuilder = argumentsBuilder.definition(value.getValue());
+                    argumentsBuilder = argumentsBuilder.definition(flagValue);
                     break;
                 case FILE:
-                    argumentsBuilder = argumentsBuilder.filename(value.getValue());
+                    argumentsBuilder = argumentsBuilder.filename(flagValue);
                     break;
                 case MODE:
-                    argumentsBuilder = argumentsBuilder.mode(value.getValue());
+                    argumentsBuilder = argumentsBuilder.mode(flagValue);
                     break;
                 case SYNONYMS:
+                    argumentsBuilder = argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
+                    break;
                 case ANTONYMS:
-                    // todo: process synonyms, antonyms, training session modes
+                    argumentsBuilder = argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
+                    break;
                 default:
-                    throw new RuntimeException("Must never happen");
+                    throw new RuntimeException("Flag does not have a handler: " + flagType);
             }
         }
         return argumentsBuilder.build();
+    }
+
+    private Set<String> getWordEquivalentNames(String value) {
+        return Arrays.stream(value.split(Token.WORD_EQUIVALENT_DELIMITER))
+                .map(String::strip)
+                .filter(s -> !s.isBlank())
+                .collect(toSet());
     }
 
 }

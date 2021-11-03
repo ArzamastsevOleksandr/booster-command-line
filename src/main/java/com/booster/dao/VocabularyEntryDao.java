@@ -124,12 +124,12 @@ public class VocabularyEntryDao {
                 "insert into vocabulary_entry__synonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
-                createBatchPreparedStatementSetter(params.getSynonymIds(), vocabularyEntryId));
+                createBatchPreparedStatementSetter(new ArrayList<>(params.getSynonymIds()), vocabularyEntryId));
         jdbcTemplate.batchUpdate(
                 "insert into vocabulary_entry__antonym__jt " +
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
-                createBatchPreparedStatementSetter(params.getAntonymIds(), vocabularyEntryId));
+                createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), vocabularyEntryId));
     }
 
     private ResultSetExtractor<Map<Long, Set<String>>> createResultSetExtractor(String columnName) {

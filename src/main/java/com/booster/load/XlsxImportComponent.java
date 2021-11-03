@@ -17,9 +17,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
@@ -68,15 +68,15 @@ public class XlsxImportComponent {
 
             String definition = row.getCell(1).getStringCellValue();
 
-            List<Long> synonymIds = Arrays.stream(row.getCell(2).getStringCellValue().split(";"))
+            Set<Long> synonymIds = Arrays.stream(row.getCell(2).getStringCellValue().split(";"))
                     .map(wordService::findByNameOrCreateAndGet)
                     .map(Word::getId)
-                    .collect(toList());
+                    .collect(toSet());
 
-            List<Long> antonymIds = Arrays.stream(row.getCell(3).getStringCellValue().split(";"))
+            Set<Long> antonymIds = Arrays.stream(row.getCell(3).getStringCellValue().split(";"))
                     .map(wordService::findByNameOrCreateAndGet)
                     .map(Word::getId)
-                    .collect(toList());
+                    .collect(toSet());
 
             int correctAnswersCount = (int) row.getCell(4).getNumericCellValue();
             Timestamp createdAt = Timestamp.valueOf(row.getCell(5).getStringCellValue());
