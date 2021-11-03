@@ -83,6 +83,11 @@ create table settings
 
 create table note
 (
-    id serial primary key,
+    id      serial primary key,
     content varchar(255) not null
+);
+
+create table tag
+(
+    name varchar(50) primary key
 );
