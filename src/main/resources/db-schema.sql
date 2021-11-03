@@ -44,7 +44,15 @@ create table vocabulary_entry__synonym__jt
     vocabulary_entry_id bigint,
     word_id             bigint,
 
-    primary key (vocabulary_entry_id, word_id)
+    primary key (vocabulary_entry_id, word_id),
+
+    constraint ve_synonym_jt__ve__fkey
+        foreign key (vocabulary_entry_id)
+            references vocabulary_entry (id),
+
+    constraint ve_synonym_jt__word__fkey
+        foreign key (word_id)
+            references word (id)
 );
 
 create table vocabulary_entry__antonym__jt
@@ -52,16 +60,24 @@ create table vocabulary_entry__antonym__jt
     vocabulary_entry_id bigint,
     word_id             bigint,
 
-    primary key (vocabulary_entry_id, word_id)
+    primary key (vocabulary_entry_id, word_id),
+
+    constraint ve_antonym_jt__ve__fkey
+        foreign key (vocabulary_entry_id)
+            references vocabulary_entry (id),
+
+    constraint ve_antonym_jt__word__fkey
+        foreign key (word_id)
+            references word (id)
 );
 
 create table settings
 (
     id          serial primary key,
-    language_id bigint
+    language_id bigint,
+
+    constraint settings__language__fkey
+        foreign key (language_id)
+            references language (id)
 );
 
-alter table settings
-    add constraint settings__language_id__fkey
-        foreign key (language_id)
-            references language (id);
