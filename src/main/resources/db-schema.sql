@@ -81,3 +81,8 @@ create table settings
             references language (id)
 );
 
+create table note
+(
+    id serial primary key,
+    content varchar(255) not null
+);
