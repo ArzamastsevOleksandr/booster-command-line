@@ -11,12 +11,9 @@ import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +32,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
             params.setWordId(wordId);
         });
 
-        commandWithArgs.getId().ifPresentOrElse(params::setLanguageId, () -> {
+        commandWithArgs.getLanguageId().ifPresentOrElse(params::setLanguageId, () -> {
             settingsService.findOne()
                     .flatMap(Settings::getLanguageId)
                     .ifPresent(params::setLanguageId);
@@ -43,7 +40,9 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
         commandWithArgs.getDefinition().ifPresent(params::setDefinition);
 
-        // todo: set synonyms and antonyms
+        params.setSynonymIds(getWordIds(commandWithArgs.getSynonyms()));
+        params.setAntonymIds(getWordIds(commandWithArgs.getAntonyms()));
+
         vocabularyEntryDao.addWithDefaultValues(params);
     }
 
@@ -52,24 +51,12 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         return Command.ADD_VOCABULARY_ENTRY;
     }
 
-    private List<Long> getSynonymIds(Map<String, String> flag2value) {
-        return Optional.ofNullable(flag2value.get("s"))
-                .map(this::getWordIds)
-                .orElse(List.of());
-    }
-
-    private List<Long> getAntonymIds(Map<String, String> flag2value) {
-        return Optional.ofNullable(flag2value.get("a"))
-                .map(this::getWordIds)
-                .orElse(List.of());
-    }
-
-    private List<Long> getWordIds(String values) {
-        return Arrays.stream(values.split(";"))
-                .map(String::strip)
+    private Set<Long> getWordIds(Set<String> words) {
+        return words.stream()
+                .filter(s -> !s.isBlank())
                 .map(wordService::findByNameOrCreateAndGet)
                 .map(Word::getId)
-                .collect(toList());
+                .collect(toSet());
     }
 
 }

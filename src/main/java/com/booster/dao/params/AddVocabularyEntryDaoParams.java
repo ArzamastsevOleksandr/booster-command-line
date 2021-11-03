@@ -1,9 +1,12 @@
 package com.booster.dao.params;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -21,8 +24,8 @@ public class AddVocabularyEntryDaoParams {
     int correctAnswersCount = 0;
 
     @Builder.Default
-    List<Long> synonymIds = List.of();
+    Set<Long> synonymIds = Set.of();
     @Builder.Default
-    List<Long> antonymIds = List.of();
+    Set<Long> antonymIds = Set.of();
 
 }

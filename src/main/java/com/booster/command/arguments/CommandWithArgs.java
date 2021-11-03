@@ -6,6 +6,7 @@ import lombok.Value;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Value
 @Builder(toBuilder = true)
@@ -19,6 +20,10 @@ public class CommandWithArgs {
     String definition;
     String filename;
     String mode;
+    @Builder.Default
+    Set<String> synonyms = Set.of();
+    @Builder.Default
+    Set<String> antonyms = Set.of();
 
     @Builder.Default
     List<String> errors = List.of();
@@ -45,6 +50,14 @@ public class CommandWithArgs {
 
     public Optional<String> getMode() {
         return Optional.ofNullable(mode);
+    }
+
+    public Set<String> getSynonyms() {
+        return synonyms == null ? Set.of() : synonyms;
+    }
+
+    public Set<String> getAntonyms() {
+        return antonyms == null ? Set.of() : antonyms;
     }
 
     public static CommandWithArgs withErrors(List<String> errors) {
