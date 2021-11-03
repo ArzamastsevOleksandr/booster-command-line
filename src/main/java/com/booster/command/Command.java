@@ -40,6 +40,8 @@ public enum Command {
     ADD_NOTE(Set.of("an")),
     DELETE_NOTE(Set.of("dn")),
 
+    ADD_TAG(Set.of("at")),
+
     MARK_VOCABULARY_ENTRY_DIFFICULT(Set.of("md")),
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),
 

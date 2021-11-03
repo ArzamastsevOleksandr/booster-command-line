@@ -13,7 +13,6 @@ public class Main {
         // todo: fix: if there is no handler for the command - 'Unknown command.'. A more expressive error message?
         // todo: uve \as \aa \rs \ra (add/remove syn/ant) \cac (override cac)
         // todo: unit test tokenizer, validator
-        // todo: I can create a tag
         // todo: I can tag the ve
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
