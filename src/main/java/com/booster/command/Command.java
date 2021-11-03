@@ -38,6 +38,7 @@ public enum Command {
 
     LIST_NOTES(Set.of("n")),
     ADD_NOTE(Set.of("an")),
+    DELETE_NOTE(Set.of("dn")),
 
     MARK_VOCABULARY_ENTRY_DIFFICULT(Set.of("md")),
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),

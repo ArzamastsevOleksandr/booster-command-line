@@ -27,4 +27,12 @@ public class NoteDao {
         jdbcTemplate.update("insert into note (content) values (?)", content);
     }
 
+    public int countWithId(Long id) {
+        return jdbcTemplate.queryForObject("select count(*) from note where id = ?", Integer.class, id);
+    }
+
+    public void delete(Long id) {
+        jdbcTemplate.update("delete from note where id = ?", id);
+    }
+
 }

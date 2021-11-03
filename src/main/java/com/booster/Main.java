@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: UPDATE_VOCABULARY_ENTRY command
         // todo: fix: 'uve \id=1 \n' results in 'Unknown command.'
         // todo: fix: if there is no handler for the command - 'Unknown command.'. A more expressive error message?
         // todo: uve \as \aa \rs \ra (add/remove syn/ant) \cac (override cac)
@@ -24,7 +23,6 @@ public class Main {
         // todo: can exit the training session before it ends
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
-        // todo: I can delete a note
         // todo: I can tag the note
         // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
         // todo: I can have a calc training session
