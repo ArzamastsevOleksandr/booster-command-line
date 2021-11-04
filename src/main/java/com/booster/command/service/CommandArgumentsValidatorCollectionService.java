@@ -16,10 +16,6 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class CommandArgumentsValidatorCollectionService {
 
-    private static final CommandWithArgs UNRECOGNIZED = CommandWithArgs.builder()
-            .command(Command.UNRECOGNIZED)
-            .build();
-
     private final Map<Command, ArgValidator> argValidators;
     private final CommandLineAdapter adapter;
 
@@ -34,7 +30,7 @@ public class CommandArgumentsValidatorCollectionService {
     public CommandWithArgs validate(CommandWithArgs commandWithArgs) {
         return Optional.ofNullable(argValidators.get(commandWithArgs.getCommand()))
                 .map(argValidator -> argValidator.validate(commandWithArgs))
-                .orElse(UNRECOGNIZED);
+                .orElse(commandWithArgs);
     }
 
     //    @PostConstruct

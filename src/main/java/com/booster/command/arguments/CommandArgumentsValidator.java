@@ -18,8 +18,10 @@ public class CommandArgumentsValidator {
         CommandWithArgs commandWithArgs = transformer.fromString(line);
         if (Command.isExit(commandWithArgs.getCommand())) {
             return commandWithArgs;
+        } else if (commandWithArgs.hasNoErrors()) {
+            return commandArgumentsValidatorCollectionService.validate(commandWithArgs);
         }
-        return commandArgumentsValidatorCollectionService.validate(commandWithArgs);
+        return commandWithArgs;
     }
 
 }
