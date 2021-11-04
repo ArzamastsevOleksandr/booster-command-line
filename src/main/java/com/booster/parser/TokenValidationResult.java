@@ -1,9 +1,9 @@
 package com.booster.parser;
 
+import com.booster.util.ObjectUtil;
 import lombok.Value;
 
 import java.util.List;
-import java.util.Objects;
 
 @Value
 class TokenValidationResult {
@@ -21,11 +21,11 @@ class TokenValidationResult {
     }
 
     static TokenValidationResult withErrors(List<String> errors) {
-        return new TokenValidationResult(List.of(), Objects.requireNonNull(errors));
+        return new TokenValidationResult(List.of(), ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"));
     }
 
     static TokenValidationResult success(List<Token> tokens) {
-        return new TokenValidationResult(Objects.requireNonNull(tokens), List.of());
+        return new TokenValidationResult(ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null"), List.of());
     }
 
 }

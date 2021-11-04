@@ -2,6 +2,7 @@ package com.booster.parser;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
+import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import static java.util.stream.Collectors.toSet;
 class TokenSequenceTransformer {
 
     CommandWithArgs transform(List<Token> tokens) {
+        ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {

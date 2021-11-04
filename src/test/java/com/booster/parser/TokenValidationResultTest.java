@@ -32,13 +32,15 @@ class TokenValidationResultTest {
     @Test
     void throwsExceptionWhenNullIsPassedInsteadOfTokens() {
         assertThatThrownBy(() -> TokenValidationResult.success(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("tokens can not be null");
     }
 
     @Test
     void throwsExceptionWhenNullIsPassedInsteadOfErrors() {
         assertThatThrownBy(() -> TokenValidationResult.withErrors(null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("errors can not be null");
     }
 
 }

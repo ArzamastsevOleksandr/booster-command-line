@@ -14,7 +14,7 @@ import java.util.Objects;
 @Configuration
 @PropertySource("classpath:database.properties")
 @RequiredArgsConstructor
-public class DbConfig {
+class DbConfig {
 
     private final Environment environment;
 
@@ -24,7 +24,7 @@ public class DbConfig {
         driverManagerDataSource.setUrl(environment.getProperty("dburl"));
         driverManagerDataSource.setUsername(environment.getProperty("dbuser"));
         driverManagerDataSource.setPassword(environment.getProperty("dbpassword"));
-        driverManagerDataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("dbdriver")));
+        driverManagerDataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("dbdriver"), "db driver can not be null"));
         return driverManagerDataSource;
     }
 

@@ -23,7 +23,7 @@ public class AddSettingsDaoParams {
     }
 
     public static AddSettingsDaoParams of(Long languageId) {
-        return new AddSettingsDaoParams(Objects.requireNonNull(languageId));
+        return new AddSettingsDaoParams(Objects.requireNonNull(languageId, "language id can not be null"));
     }
 
 }

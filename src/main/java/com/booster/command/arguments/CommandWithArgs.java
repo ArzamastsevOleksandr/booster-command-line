@@ -1,6 +1,7 @@
 package com.booster.command.arguments;
 
 import com.booster.command.Command;
+import com.booster.util.ObjectUtil;
 import lombok.Builder;
 import lombok.Value;
 
@@ -67,7 +68,7 @@ public class CommandWithArgs {
 
     public static CommandWithArgs withErrors(List<String> errors) {
         return CommandWithArgs.builder()
-                .errors(errors)
+                .errors(ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"))
                 .build();
     }
 

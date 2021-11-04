@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Configuration
-public class AdapterConfig {
+class AdapterConfig {
 
     @Bean
     CommandLineAdapter commandLineAdapter() {
