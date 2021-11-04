@@ -11,9 +11,9 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 @Component
-public class TokenSequenceTransformer {
+class TokenSequenceTransformer {
 
-    public CommandWithArgs transform(List<Token> tokens) {
+    CommandWithArgs transform(List<Token> tokens) {
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {

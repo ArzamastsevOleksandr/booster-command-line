@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-public enum FlagType {
+enum FlagType {
 
     NAME("n"),
     ID("id"),
@@ -18,16 +18,16 @@ public enum FlagType {
     CONTENT("c"),
     UNKNOWN("UNKNOWN");
 
-    public final String value;
+    final String value;
 
-    public static FlagType fromString(String s) {
+    static FlagType fromString(String s) {
         return Arrays.stream(values())
                 .filter(flagType -> flagType.value.equals(s))
                 .findFirst()
                 .orElse(UNKNOWN);
     }
 
-    public static boolean isKnown(FlagType flagType) {
+    static boolean isKnown(FlagType flagType) {
         return flagType != UNKNOWN;
     }
 

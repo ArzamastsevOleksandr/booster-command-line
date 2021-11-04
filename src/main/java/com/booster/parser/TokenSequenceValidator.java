@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class TokenSequenceValidator {
+class TokenSequenceValidator {
 
-    // todo: package-private access modifiers
     // todo: implement support for flags with no values
-    public TokenValidationResult validate(List<Token> tokens) {
+    TokenValidationResult validate(List<Token> tokens) {
         if (tokens.isEmpty()) {
             return TokenValidationResult.withErrors(List.of("Token sequence must consist of at least one argument"));
         }

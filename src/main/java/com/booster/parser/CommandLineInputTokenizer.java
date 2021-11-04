@@ -10,9 +10,9 @@ import java.util.List;
 import static com.booster.parser.Token.*;
 
 @Component
-public class CommandLineInputTokenizer {
+class CommandLineInputTokenizer {
 
-    public List<Token> parseIntoTokens(String input) {
+    List<Token> parseIntoTokens(String input) {
         return parse(input.toCharArray(), new LinkedList<>());
     }
 
