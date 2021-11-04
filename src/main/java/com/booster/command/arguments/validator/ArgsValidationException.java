@@ -8,7 +8,7 @@ public class ArgsValidationException extends RuntimeException {
     public final List<String> errors;
 
     public ArgsValidationException(String... errors) {
-        this.errors = List.of(Objects.requireNonNull(errors));
+        this.errors = List.of(Objects.requireNonNull(errors, "errors can not be null"));
     }
 
 }

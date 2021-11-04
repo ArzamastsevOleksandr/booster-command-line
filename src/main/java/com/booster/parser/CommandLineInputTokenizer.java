@@ -1,6 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
+import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ import static com.booster.parser.Token.*;
 class CommandLineInputTokenizer {
 
     List<Token> parseIntoTokens(String input) {
+        ObjectUtil.requireNonNullOrElseThrowIAE(input, "input can not be null");
         return parse(input.toCharArray(), new LinkedList<>());
     }
 

@@ -1,5 +1,6 @@
 package com.booster.parser;
 
+import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ class TokenSequenceValidator {
 
     // todo: implement support for flags with no values
     TokenValidationResult validate(List<Token> tokens) {
+        ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
         if (tokens.isEmpty()) {
             return TokenValidationResult.withErrors(List.of("Token sequence must consist of at least one argument"));
         }
