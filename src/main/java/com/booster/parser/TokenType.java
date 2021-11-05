@@ -6,5 +6,4 @@ enum TokenType {
     NUMBER,
     SEPARATOR,
     FLAG;
-
 }
