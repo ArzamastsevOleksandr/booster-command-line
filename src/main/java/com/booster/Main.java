@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: add contexts to the ve
         // todo: fix: dve does not work
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
@@ -16,7 +17,6 @@ public class Main {
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
         // todo: I can search for the ve by a substring
-        // todo: add contexts to the ve
         // todo: can exit the training session before it ends
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
