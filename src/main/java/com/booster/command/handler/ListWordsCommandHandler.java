@@ -26,9 +26,8 @@ public class ListWordsCommandHandler implements CommandHandler {
             adapter.writeLine("There are no words in the system yet.");
         } else {
             adapter.writeLine("All words:");
-            for (var word : words) {
-                adapter.writeLine(word.toString());
-            }
+
+            words.forEach(adapter::writeLine);
         }
     }
 

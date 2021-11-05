@@ -28,9 +28,7 @@ public class ListTagsCommandHandler implements CommandHandler {
             adapter.writeLine("All tags:");
             adapter.newLine();
 
-            for (var tag : tags) {
-                adapter.writeLine(tag.toString());
-            }
+            tags.forEach(adapter::writeLine);
         }
     }
 
