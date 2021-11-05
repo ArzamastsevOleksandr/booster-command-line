@@ -4,12 +4,14 @@ import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.UpdateVocabularyEntryDaoParams;
+import com.booster.model.VocabularyEntry;
 import com.booster.model.Word;
 import com.booster.service.VocabularyEntryService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -22,7 +24,6 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     private final WordService wordService;
     private final VocabularyEntryService vocabularyEntryService;
 
-    // todo: flag for cac?
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getId().flatMap(vocabularyEntryService::findById).ifPresent(ve -> {
@@ -37,21 +38,46 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
             commandWithArgs.getDefinition()
                     .ifPresentOrElse(params::setDefinition, () -> ve.getDefinition().ifPresent(params::setDefinition));
 
-            Set<String> synonyms = commandWithArgs.getSynonyms();
-            if (synonyms.isEmpty()) {
-                params.setSynonymIds(getWordIds(ve.getSynonyms()));
-            } else {
-                params.setSynonymIds(getWordIds(synonyms));
-            }
+            commandWithArgs.getCorrectAnswersCount()
+                    .ifPresentOrElse(params::setCorrectAnswersCount, () -> params.setCorrectAnswersCount(ve.getCorrectAnswersCount()));
 
-            Set<String> antonyms = commandWithArgs.getAntonyms();
-            if (antonyms.isEmpty()) {
-                params.setAntonymIds(getWordIds(ve.getAntonyms()));
-            } else {
-                params.setAntonymIds(getWordIds(antonyms));
-            }
+            processSynonyms(commandWithArgs, ve, params);
+            processAntonyms(commandWithArgs, ve, params);
+
             vocabularyEntryDao.update(params);
         });
+    }
+
+    private void processSynonyms(CommandWithArgs commandWithArgs, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
+        Set<String> synonyms = commandWithArgs.getSynonyms();
+        if (synonyms.isEmpty()) {
+            Set<String> veSynonyms = new HashSet<>(ve.getSynonyms());
+            Set<String> addSynonyms = commandWithArgs.getAddSynonyms();
+            Set<String> removeSynonyms = commandWithArgs.getRemoveSynonyms();
+
+            veSynonyms.addAll(addSynonyms);
+            veSynonyms.removeAll(removeSynonyms);
+
+            params.setSynonymIds(getWordIds(veSynonyms));
+        } else {
+            params.setSynonymIds(getWordIds(synonyms));
+        }
+    }
+
+    private void processAntonyms(CommandWithArgs commandWithArgs, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
+        Set<String> antonyms = commandWithArgs.getAntonyms();
+        if (antonyms.isEmpty()) {
+            Set<String> veAntonyms = new HashSet<>(ve.getAntonyms());
+            Set<String> addAntonyms = commandWithArgs.getAddAntonyms();
+            Set<String> removeAntonyms = commandWithArgs.getRemoveAntonyms();
+
+            veAntonyms.addAll(addAntonyms);
+            veAntonyms.removeAll(removeAntonyms);
+
+            params.setAntonymIds(getWordIds(veAntonyms));
+        } else {
+            params.setAntonymIds(getWordIds(antonyms));
+        }
     }
 
     @Override

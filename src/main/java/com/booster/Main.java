@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: uve \as \aa \rs \ra (add/remove syn/ant)
         // todo: unit test tokenizer, validator
         // todo: I can tag the ve
         // todo: I can search for words by tags
