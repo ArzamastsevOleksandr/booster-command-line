@@ -15,7 +15,6 @@ public class AddLanguageCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getName()
-                .map(String::toUpperCase)
                 .ifPresent(languageDao::add);
     }
 
