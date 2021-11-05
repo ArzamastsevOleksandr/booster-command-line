@@ -122,7 +122,7 @@ class TokenSequenceValidatorTest {
     @Test
     void idMustBePositiveLongNumber() {
         Token command = Token.command("h");
-        Token flag = Token.flag(FlagType.ID.value);
+        Token flag = Token.flag("id");
         Token separator = Token.separator();
         Token text = Token.text("a");
 
@@ -138,7 +138,7 @@ class TokenSequenceValidatorTest {
     @Test
     void languageIdMustBePositiveLongNumber() {
         Token command = Token.command("h");
-        Token flag = Token.flag(FlagType.LANGUAGE_ID.value);
+        Token flag = Token.flag("lid");
         Token separator = Token.separator();
         Token text = Token.text("a");
 
@@ -149,6 +149,22 @@ class TokenSequenceValidatorTest {
 
         assertThat(validationResult.getErrors())
                 .containsOnly("Language id argument must be a positive long number, got: " + text.getValue());
+    }
+
+    @Test
+    void correctAnswersCountMustBePositiveIntegerNumber() {
+        Token command = Token.command("h");
+        Token flag = Token.flag("cac");
+        Token separator = Token.separator();
+        Token text = Token.text("a");
+
+        List<Token> tokens = List.of(command, flag, separator, text);
+        TokenValidationResult validationResult = validator.validate(tokens);
+
+        assertThat(validationResult.getTokens()).hasSize(0);
+
+        assertThat(validationResult.getErrors())
+                .containsOnly("Correct answers count argument must be a positive integer number, got: " + text.getValue());
     }
 
     @Test

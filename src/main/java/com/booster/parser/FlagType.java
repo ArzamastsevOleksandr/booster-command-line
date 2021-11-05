@@ -18,6 +18,7 @@ enum FlagType {
     MODE("m"),
     FILE("f"),
     CONTENT("c"),
+    CORRECT_ANSWERS_COUNT("cac"),
     UNKNOWN("UNKNOWN");
 
     final String value;

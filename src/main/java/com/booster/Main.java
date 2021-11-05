@@ -9,9 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: fix: 'uve \id=1 \n' results in 'Unknown command.'
-        // todo: fix: if there is no handler for the command - 'Unknown command.'. A more expressive error message?
-        // todo: uve \as \aa \rs \ra (add/remove syn/ant) \cac (override cac)
+        // todo: uve \as \aa \rs \ra (add/remove syn/ant)
         // todo: unit test tokenizer, validator
         // todo: I can tag the ve
         // todo: I can search for words by tags

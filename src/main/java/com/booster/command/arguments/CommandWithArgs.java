@@ -22,6 +22,7 @@ public class CommandWithArgs {
     String filename;
     String mode;
     String content;
+    Integer correctAnswersCount;
     @Builder.Default
     Set<String> synonyms = Set.of();
     @Builder.Default
@@ -56,6 +57,10 @@ public class CommandWithArgs {
 
     public Optional<String> getContent() {
         return Optional.ofNullable(content);
+    }
+
+    public Optional<Integer> getCorrectAnswersCount() {
+        return Optional.ofNullable(correctAnswersCount);
     }
 
     public Set<String> getSynonyms() {
