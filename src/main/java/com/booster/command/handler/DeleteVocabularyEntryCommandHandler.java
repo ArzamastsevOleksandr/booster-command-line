@@ -12,7 +12,6 @@ public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
 
     private final VocabularyEntryDao vocabularyEntryDao;
 
-//    todo: fix Key (id)=(1) is still referenced from table "vocabulary_entry__synonym__jt"
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getId().ifPresent(vocabularyEntryDao::delete);
