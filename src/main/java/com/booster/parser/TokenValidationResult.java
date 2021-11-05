@@ -20,6 +20,8 @@ class TokenValidationResult {
         return errors.size() == 0;
     }
 
+    // todo: Supplier for string concatenation?
+    // todo: var arg
     static TokenValidationResult withErrors(List<String> errors) {
         return new TokenValidationResult(List.of(), ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"));
     }

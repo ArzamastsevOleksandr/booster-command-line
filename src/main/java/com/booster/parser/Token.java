@@ -37,4 +37,20 @@ class Token {
         return new Token(value, TokenType.FLAG);
     }
 
+    static boolean isFlag(Token token) {
+        return !isNotFlag(token);
+    }
+
+    static boolean isNotFlag(Token token) {
+        return token.getType() != TokenType.FLAG;
+    }
+
+    static boolean isNotCommand(Token token) {
+        return token.getType() != TokenType.COMMAND;
+    }
+
+    static boolean isNotSeparator(Token token) {
+        return token.getType() != TokenType.SEPARATOR;
+    }
+
 }

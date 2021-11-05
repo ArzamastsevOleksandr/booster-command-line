@@ -10,6 +10,8 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
+// todo: test
+// todo: custom service to allow clean unit tests?
 // todo: group commands based on functionality (HELP command will use it to print data expressively).
 @RequiredArgsConstructor
 public enum Command {

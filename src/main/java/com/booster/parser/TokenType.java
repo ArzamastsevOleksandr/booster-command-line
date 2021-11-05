@@ -7,8 +7,4 @@ enum TokenType {
     SEPARATOR,
     FLAG;
 
-    static boolean isNotCommand(TokenType tokenType) {
-        return tokenType != COMMAND;
-    }
-
 }
