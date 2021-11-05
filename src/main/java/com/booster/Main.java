@@ -29,7 +29,6 @@ public class Main {
         // todo: use over(), rank() and partition by when searching for which ves to output
         // todo: use indexes in tables where frequent search is done
         // todo: add benchmarks for standard sql and sql with indexes
-        // todo: global exception handler to allow the program not to crash on unexpected errors
         // todo: if a transaction fails - rollback all the changes
         // todo: import/export includes notes, settings and calc info
         // docker-compose logs -f (--tail=0 to see only new ones)

@@ -27,13 +27,21 @@ public class Launcher {
         CommandWithArgs commandWithArgs = nextCommandWithArguments();
         Command command = commandWithArgs.getCommand();
         while (Command.isNotExit(command)) {
-            commandHandlerCollectionService.handle(commandWithArgs);
+            handleCommandWithArguments(commandWithArgs);
 
             commonOperations.askForInput();
             commandWithArgs = nextCommandWithArguments();
             command = commandWithArgs.getCommand();
         }
         commonOperations.end();
+    }
+
+    private void handleCommandWithArguments(CommandWithArgs commandWithArgs) {
+        try {
+            commandHandlerCollectionService.handle(commandWithArgs);
+        } catch (Throwable t) {
+            adapter.writeLine("Error: " + t.getMessage());
+        }
     }
 
     // todo: SRP + naming
