@@ -336,10 +336,11 @@ public class VocabularyEntryDao {
     public void update(UpdateVocabularyEntryDaoParams params) {
         jdbcTemplate.update(
                 "update vocabulary_entry " +
-                        "set word_id = ?, definition = ? " +
+                        "set word_id = ?, definition = ?, correct_answers_count = ? " +
                         "where id = ?",
                 params.getWordId(),
                 params.getDefinition(),
+                params.getCorrectAnswersCount(),
                 params.getId()
         );
         jdbcTemplate.update(

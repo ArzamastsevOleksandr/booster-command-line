@@ -16,6 +16,7 @@ public class UpdateVocabularyEntryDaoParams {
     long id;
     long wordId;
     String definition;
+    int correctAnswersCount;
 
     @Builder.Default
     Set<Long> synonymIds = Set.of();
