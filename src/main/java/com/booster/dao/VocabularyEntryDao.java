@@ -84,9 +84,12 @@ public class VocabularyEntryDao {
     }
 
     public void delete(long id) {
-        jdbcTemplate.update(
-                "delete from vocabulary_entry " +
-                        "where id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry__synonym__jt sjt " +
+                "where sjt.vocabulary_entry_id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry__antonym__jt ajt " +
+                "where ajt.vocabulary_entry_id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry " +
+                "where id = ?", id);
     }
 
     public void addWithDefaultValues(AddVocabularyEntryDaoParams params) {

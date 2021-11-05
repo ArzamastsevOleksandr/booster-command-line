@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class Main {
     public static void main(String[] args) {
         // todo: add contexts to the ve
-        // todo: fix: dve does not work
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
         // todo: I can search for words by tags
