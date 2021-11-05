@@ -100,6 +100,7 @@ class TokenSequenceValidator {
                 checkIfLanguageIdIsPositiveLongNumber(expectedValue.getValue());
                 break;
             case CORRECT_ANSWERS_COUNT:
+            case PAGINATION:
                 checkIfCorrectAnswersCountIsPositiveIntegerNumber(expectedValue.getValue());
                 break;
         }

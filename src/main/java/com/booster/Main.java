@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: for commands where pagination is enabled - if none is specified,
+        //  use a preprocessor that will set the default pagination value
         // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
@@ -35,6 +37,7 @@ public class Main {
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
         var launcher = applicationContext.getBean("launcher", Launcher.class);
         launcher.launch();
+        // todo: window functions (row_number() etc)
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:
         //  null-safe api (2 methods, 1 accepts a null, 2 has fewer variables and allows you not to pass a null);

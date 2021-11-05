@@ -23,6 +23,7 @@ public class CommandWithArgs {
     String mode;
     String content;
     Integer correctAnswersCount;
+    Integer pagination;
     @Builder.Default
     Set<String> addAntonyms = Set.of();
     @Builder.Default
@@ -69,6 +70,10 @@ public class CommandWithArgs {
 
     public Optional<Integer> getCorrectAnswersCount() {
         return Optional.ofNullable(correctAnswersCount);
+    }
+
+    public Optional<Integer> getPagination() {
+        return Optional.ofNullable(pagination);
     }
 
     public Set<String> getSynonyms() {

@@ -76,6 +76,9 @@ class TokenSequenceTransformer {
                 case REMOVE_SYNONYMS:
                     argumentsBuilder = argumentsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
                     break;
+                case PAGINATION:
+                    argumentsBuilder = argumentsBuilder.pagination(Integer.parseInt(flagValue));
+                    break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }
