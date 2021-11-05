@@ -64,6 +64,18 @@ class TokenSequenceTransformer {
                 case CORRECT_ANSWERS_COUNT:
                     argumentsBuilder = argumentsBuilder.correctAnswersCount(Integer.parseInt(flagValue));
                     break;
+                case ADD_ANTONYMS:
+                    argumentsBuilder = argumentsBuilder.addAntonyms(getWordEquivalentNames(flagValue));
+                    break;
+                case ADD_SYNONYMS:
+                    argumentsBuilder = argumentsBuilder.addSynonyms(getWordEquivalentNames(flagValue));
+                    break;
+                case REMOVE_ANTONYMS:
+                    argumentsBuilder = argumentsBuilder.removeAntonyms(getWordEquivalentNames(flagValue));
+                    break;
+                case REMOVE_SYNONYMS:
+                    argumentsBuilder = argumentsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
+                    break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }

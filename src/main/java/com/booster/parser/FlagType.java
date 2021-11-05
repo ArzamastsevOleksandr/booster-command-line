@@ -19,6 +19,10 @@ enum FlagType {
     FILE("f"),
     CONTENT("c"),
     CORRECT_ANSWERS_COUNT("cac"),
+    ADD_ANTONYMS("aa"),
+    ADD_SYNONYMS("as"),
+    REMOVE_ANTONYMS("ra"),
+    REMOVE_SYNONYMS("rs"),
     UNKNOWN("UNKNOWN");
 
     final String value;
