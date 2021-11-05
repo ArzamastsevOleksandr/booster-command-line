@@ -24,6 +24,14 @@ public class CommandWithArgs {
     String content;
     Integer correctAnswersCount;
     @Builder.Default
+    Set<String> addAntonyms = Set.of();
+    @Builder.Default
+    Set<String> addSynonyms = Set.of();
+    @Builder.Default
+    Set<String> removeAntonyms = Set.of();
+    @Builder.Default
+    Set<String> removeSynonyms = Set.of();
+    @Builder.Default
     Set<String> synonyms = Set.of();
     @Builder.Default
     Set<String> antonyms = Set.of();
