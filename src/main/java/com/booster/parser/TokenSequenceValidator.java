@@ -99,7 +99,15 @@ class TokenSequenceValidator {
             case LANGUAGE_ID:
                 checkIfLanguageIdIsPositiveLongNumber(expectedValue.getValue());
                 break;
+            case CORRECT_ANSWERS_COUNT:
+                checkIfCorrectAnswersCountIsPositiveIntegerNumber(expectedValue.getValue());
+                break;
         }
+    }
+
+    private void checkIfCorrectAnswersCountIsPositiveIntegerNumber(String value) {
+        if (NumberUtil.isNotPositiveInteger(value))
+            throw new TokenValidationException("Correct answers count argument must be a positive integer number, got: " + value);
     }
 
     private void checkIfIdIsPositiveLongNumber(String value) {

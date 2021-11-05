@@ -61,6 +61,9 @@ class TokenSequenceTransformer {
                 case CONTENT:
                     argumentsBuilder = argumentsBuilder.content(flagValue);
                     break;
+                case CORRECT_ANSWERS_COUNT:
+                    argumentsBuilder = argumentsBuilder.correctAnswersCount(Integer.parseInt(flagValue));
+                    break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }

@@ -10,7 +10,7 @@ public class CommonOperations {
     private final CommandLineAdapter adapter;
 
     public void greeting() {
-        adapter.writeLine("Welcome to the Language Booster!");
+        adapter.writeLine("Welcome to the Booster!");
     }
 
     public void help() {
