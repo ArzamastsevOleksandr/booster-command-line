@@ -8,7 +8,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.booster.parser.Token.*;
+import static com.booster.parser.Token.FLAG_MARKER;
+import static com.booster.parser.Token.SEPARATOR;
 
 @Component
 class CommandLineInputTokenizer {
@@ -30,7 +31,7 @@ class CommandLineInputTokenizer {
         if (isWhitespace(firstChar)) {
             return getRidOfFrontWhitespaces(chars);
         } else if (isLetter(firstChar)) {
-            return eatFrontWhileLettersOrDigitsOrWhitespaces(chars, tokens);
+            return eatFrontWhileNotCommandFlag(chars, tokens);
         } else if (isFlagMarker(firstChar)) {
             return eatFrontFlagOrText(chars, tokens);
         } else if (isSeparator(firstChar)) {
@@ -121,22 +122,19 @@ class CommandLineInputTokenizer {
         }
     }
 
+    // todo: feat: flexible flag recognition. change one place to change flag from \<flag> to -->flag> etc
     private boolean isFlagMarker(char character) {
         return FLAG_MARKER.equals(Character.toString(character));
     }
 
-    private char[] eatFrontWhileLettersOrDigitsOrWhitespaces(char[] chars, List<Token> tokens) {
+    private char[] eatFrontWhileNotCommandFlag(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
-        while (i < chars.length && (Character.isLetterOrDigit(chars[i]) || isWhitespace(chars[i]) || isWordEquivalentDelimiter(chars[i]))) {
+        while (i < chars.length && (!FLAG_MARKER.equals(Character.toString(chars[i])))) {
             sb.append(chars[i++]);
         }
         addCommandOrText(tokens, sb);
         return Arrays.copyOfRange(chars, i, chars.length);
-    }
-
-    private boolean isWordEquivalentDelimiter(char character) {
-        return WORD_EQUIVALENT_DELIMITER.equals(Character.toString(character));
     }
 
     private void addCommandOrText(List<Token> tokens, StringBuilder sb) {
