@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 
+// todo: test
+// todo: custom service to allow clean unit tests?
 @RequiredArgsConstructor
 enum FlagType {
 
