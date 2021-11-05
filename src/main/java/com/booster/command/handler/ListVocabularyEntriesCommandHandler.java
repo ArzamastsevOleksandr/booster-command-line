@@ -20,10 +20,10 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
 
-    // todo: default pagination + pagination flags
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresentOrElse(this::displayVocabularyEntryById, this::displayAllVocabularyEntries);
+        commandWithArgs.getId()
+                .ifPresentOrElse(this::displayVocabularyEntryById, () -> displayAllVocabularyEntries(commandWithArgs));
     }
 
     @Override
@@ -32,20 +32,41 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        adapter.writeLine(vocabularyEntryService.findById(id).get().toString());
+        vocabularyEntryService.findById(id).ifPresent(ve -> adapter.writeLine(ve.toString()));
     }
 
-    private void displayAllVocabularyEntries() {
-        List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
+    private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
+        commandWithArgs.getPagination().ifPresentOrElse(this::displayWithPagination, () -> {
+            List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
 
-        if (vocabularyEntries.isEmpty()) {
-            adapter.writeLine("There are no vocabulary entries yet.");
-        } else {
-            adapter.writeLine("All vocabulary entries:");
-            adapter.newLine();
-            for (var vocabularyEntry : vocabularyEntries) {
+            if (vocabularyEntries.isEmpty()) {
+                adapter.writeLine("There are no vocabulary entries yet.");
+            } else {
+                adapter.writeLine("All vocabulary entries:");
+                adapter.newLine();
+                for (var vocabularyEntry : vocabularyEntries) {
+                    adapter.writeLine(vocabularyEntry.toString());
+                }
+            }
+        });
+    }
+
+    private void displayWithPagination(Integer pagination) {
+        int offset = 1;
+        int limit = offset + pagination;
+        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
+        for (var vocabularyEntry : allInRange) {
+            adapter.writeLine(vocabularyEntry.toString());
+        }
+        String line = adapter.readLine();
+        while (!line.strip().equals("e")) {
+            offset = limit;
+            limit += pagination;
+            allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
+            for (var vocabularyEntry : allInRange) {
                 adapter.writeLine(vocabularyEntry.toString());
             }
+            line = adapter.readLine();
         }
     }
 

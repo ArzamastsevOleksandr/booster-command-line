@@ -368,4 +368,40 @@ public class VocabularyEntryDao {
                 createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), params.getId()));
     }
 
+    public List<VocabularyEntry> findAllInRange(int offset, int limit) {
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
+                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                        "w.name as w_name, w.id as w_id, " +
+                        "l.name as l_name, l.id as l_id " +
+                        "from (select row_number() over () as row_num, * from vocabulary_entry) ve " +
+                        "join word w " +
+                        "on ve.word_id = w.id " +
+                        "join language l " +
+                        "on ve.language_id = l.id " +
+                        "where ve.row_num >= ? " +
+                        "and ve.row_num < ?", rs2VocabularyEntry, offset, limit);
+
+        var veId2Synonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as synonym " +
+                        "from vocabulary_entry__synonym__jt ves " +
+                        "join word w " +
+                        "on ves.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on ves.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("synonym"));
+
+        var veId2Antonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as antonym " +
+                        "from vocabulary_entry__antonym__jt vea " +
+                        "join word w " +
+                        "on vea.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on vea.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("antonym"));
+
+        return vocabularyEntries.stream()
+                .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
+                .collect(toList());
+    }
+
 }
