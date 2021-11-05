@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: unit test tokenizer, validator
+        // todo: fix: dve does not work
+        // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions

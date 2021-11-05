@@ -9,6 +9,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class TokenValidationResultTest {
 
+    // todo: nested class for DRY
     @Test
     void createsSuccessResultWithTokensAndNoErrors() {
         List<Token> tokens = List.of(Token.separator());

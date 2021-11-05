@@ -4,8 +4,10 @@ import com.booster.model.Language;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
@@ -46,11 +48,17 @@ public class LanguageDao {
                         "where l.name = ?", Integer.class, name);
     }
 
-    public void add(String name) {
-        jdbcTemplate.update(
-                "insert into language " +
-                        "(name) " +
-                        "values (?)", name);
+    public long add(String name) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    "insert into language " +
+                            "(name) " +
+                            "values (?)", new String[]{"id"});
+            ps.setString(1, name);
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     public void delete(Long id) {
