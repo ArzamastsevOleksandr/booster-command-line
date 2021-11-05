@@ -3,6 +3,11 @@ package com.booster.parser;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.*;
 
 // todo: test
 // todo: custom service to allow clean unit tests?
@@ -24,6 +29,24 @@ enum FlagType {
     REMOVE_ANTONYMS("ra"),
     REMOVE_SYNONYMS("rs"),
     UNKNOWN("UNKNOWN");
+
+    // if any of the flag types have shared values - crash the program early
+    static {
+        Map<String, Long> value2Count = Arrays.stream(values())
+                .map(v -> v.value)
+                .collect(groupingBy(Function.identity(), counting()));
+
+        Predicate<Map.Entry<String, Long>> isSharedValue = e -> e.getValue() > 1;
+
+        Map<String, Long> sharedValues = value2Count.entrySet()
+                .stream()
+                .filter(isSharedValue)
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        if (!sharedValues.isEmpty()) {
+            throw new AssertionError("Duplicate flag types detected: " + sharedValues);
+        }
+    }
 
     final String value;
 
