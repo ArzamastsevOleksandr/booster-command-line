@@ -48,8 +48,7 @@ public class CommandHandlerCollectionService {
         adapter.writeLine("Registered the following commands: ");
         adapter.newLine();
 
-        commandHandlers.keySet()
-                .forEach(command -> adapter.writeLine(command.toString()));
+        commandHandlers.keySet().forEach(adapter::writeLine);
         adapter.newLine();
     }
 

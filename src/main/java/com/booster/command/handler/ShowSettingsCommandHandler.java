@@ -18,7 +18,7 @@ public class ShowSettingsCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         settingsService.findOne().ifPresentOrElse(
-                settings -> adapter.writeLine(settings.toString()),
+                adapter::writeLine,
                 () -> adapter.writeLine("There are no settings in the system now.")
         );
     }

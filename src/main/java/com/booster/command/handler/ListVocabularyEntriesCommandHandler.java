@@ -32,7 +32,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        vocabularyEntryService.findById(id).ifPresent(ve -> adapter.writeLine(ve.toString()));
+        vocabularyEntryService.findById(id).ifPresent(adapter::writeLine);
     }
 
     private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
@@ -44,9 +44,8 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
             } else {
                 adapter.writeLine("All vocabulary entries:");
                 adapter.newLine();
-                for (var vocabularyEntry : vocabularyEntries) {
-                    adapter.writeLine(vocabularyEntry.toString());
-                }
+
+                vocabularyEntries.forEach(adapter::writeLine);
             }
         });
     }
@@ -55,17 +54,14 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         int offset = 1;
         int limit = offset + pagination;
         List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
-        for (var vocabularyEntry : allInRange) {
-            adapter.writeLine(vocabularyEntry.toString());
-        }
+        allInRange.forEach(adapter::writeLine);
+
         String line = adapter.readLine();
         while (!line.strip().equals("e")) {
             offset = limit;
             limit += pagination;
             allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
-            for (var vocabularyEntry : allInRange) {
-                adapter.writeLine(vocabularyEntry.toString());
-            }
+            allInRange.forEach(adapter::writeLine);
             line = adapter.readLine();
         }
     }

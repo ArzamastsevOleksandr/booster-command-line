@@ -38,8 +38,7 @@ public class CommandArgumentsValidatorCollectionService {
         adapter.writeLine("Registered the following command arg resolvers: ");
         adapter.newLine();
 
-        argValidators.keySet()
-                .forEach(command -> adapter.writeLine(command.toString()));
+        argValidators.keySet().forEach(adapter::writeLine);
         adapter.newLine();
     }
 

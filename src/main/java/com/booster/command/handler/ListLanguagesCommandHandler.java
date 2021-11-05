@@ -28,9 +28,7 @@ public class ListLanguagesCommandHandler implements CommandHandler {
             adapter.writeLine("All languages:");
             adapter.newLine();
 
-            for (var language : languages) {
-                adapter.writeLine(language.toString());
-            }
+            languages.forEach(adapter::writeLine);
         }
     }
 

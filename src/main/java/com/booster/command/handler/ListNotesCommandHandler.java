@@ -28,9 +28,7 @@ public class ListNotesCommandHandler implements CommandHandler {
             adapter.writeLine("All notes:");
             adapter.newLine();
 
-            for (var note : notes) {
-                adapter.writeLine(note.toString());
-            }
+            notes.forEach(adapter::writeLine);
         }
     }
 

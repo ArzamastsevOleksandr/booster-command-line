@@ -24,12 +24,12 @@ public class CommandLineAdapter {
         }
     }
 
-    public void writeLine(String str) {
-        System.out.println(str);
+    public void writeLine(Object obj) {
+        System.out.println(obj);
     }
 
-    public void write(String str) {
-        System.out.print(str);
+    public void write(Object obj) {
+        System.out.print(obj);
     }
 
     public void newLine() {
