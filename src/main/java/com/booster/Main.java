@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: display a counter of entries for ve \p=N
+        // todo: fix: ve \ss=ss has no results but no error message is present
         // todo: use settings in the preprocessor
         // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
@@ -22,6 +22,7 @@ public class Main {
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
         // todo: I can tag the note
+        // todo: search ve by lid
         // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
         // todo: I can have a calc training session
         // todo: I have a level in calc

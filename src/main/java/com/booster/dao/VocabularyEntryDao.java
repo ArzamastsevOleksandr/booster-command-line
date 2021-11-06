@@ -368,7 +368,7 @@ public class VocabularyEntryDao {
                 createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), params.getId()));
     }
 
-    public List<VocabularyEntry> findAllInRange(int offset, int limit) {
+    public List<VocabularyEntry> findAllInRange(int startInclusive, int endInclusive) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
@@ -379,7 +379,7 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on ve.language_id = l.id " +
                         "where ve.row_num >= ? " +
-                        "and ve.row_num < ?", rs2VocabularyEntry, offset, limit);
+                        "and ve.row_num <= ?", rs2VocabularyEntry, startInclusive, endInclusive);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
@@ -439,7 +439,7 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
-    public List<VocabularyEntry> findAllInRangeWithSubstring(int offset, int limit, String substring) {
+    public List<VocabularyEntry> findAllInRangeWithSubstring(int startInclusive, int endInclusive, String substring) {
         var likeParameter = "%" + substring + "%";
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve_id, created_at, cac, definition, " +
@@ -455,7 +455,7 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on v_l_id = l.id " +
                         "where ve.row_num >= ? " +
-                        "and ve.row_num < ?", rs2VocabularyEntry, likeParameter, offset, limit);
+                        "and ve.row_num <= ?", rs2VocabularyEntry, likeParameter, startInclusive, endInclusive);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
@@ -478,6 +478,10 @@ public class VocabularyEntryDao {
         return vocabularyEntries.stream()
                 .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
                 .collect(toList());
+    }
+
+    public int countTotal() {
+        return jdbcTemplate.queryForObject("select count(*) from vocabulary_entry", Integer.class);
     }
 
 }

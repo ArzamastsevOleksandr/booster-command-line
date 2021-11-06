@@ -69,32 +69,39 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     // todo: DRY
     private void displayWithPaginationAndSubstring(Integer pagination, String substring) {
-        int offset = 1;
-        int limit = offset + pagination;
-        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(offset, limit, substring);
+        int startInclusive = 1;
+        int endInclusive = startInclusive + pagination - 1;
+        int count = vocabularyEntryDao.countTotal();
+        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
+        adapter.writeLine(endInclusive + "/" + count);
         allInRange.forEach(adapter::writeLine);
 
         String line = adapter.readLine();
-        while (!line.strip().equals("e")) {
-            offset = limit;
-            limit += pagination;
-            allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(offset, limit, substring);
+        while (!line.equals("e")) {
+            startInclusive = endInclusive;
+            endInclusive += pagination;
+            allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
+            adapter.writeLine(endInclusive + "/" + count);
             allInRange.forEach(adapter::writeLine);
             line = adapter.readLine();
         }
     }
 
     private void displayWithPagination(Integer pagination) {
-        int offset = 1;
-        int limit = offset + pagination;
-        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
+        int startInclusive = 1;
+        int endInclusive = startInclusive + pagination - 1;
+        int count = vocabularyEntryDao.countTotal();
+        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
+        adapter.writeLine(endInclusive + "/" + count);
         allInRange.forEach(adapter::writeLine);
 
         String line = adapter.readLine();
-        while (!line.strip().equals("e")) {
-            offset = limit;
-            limit += pagination;
-            allInRange = vocabularyEntryDao.findAllInRange(offset, limit);
+        // todo: stop flag
+        while (!line.equals("e")) {
+            startInclusive = endInclusive;
+            endInclusive += pagination;
+            allInRange = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
+            adapter.writeLine(endInclusive + "/" + count);
             allInRange.forEach(adapter::writeLine);
             line = adapter.readLine();
         }
