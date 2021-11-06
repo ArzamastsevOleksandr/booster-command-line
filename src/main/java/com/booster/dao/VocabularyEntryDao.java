@@ -484,4 +484,17 @@ public class VocabularyEntryDao {
         return jdbcTemplate.queryForObject("select count(*) from vocabulary_entry", Integer.class);
     }
 
+    public int countWithSubstring(String substring) {
+        var likeParameter = "%" + substring + "%";
+        return jdbcTemplate.queryForObject("select count(*) " +
+                "from vocabulary_entry ve " +
+                "join word w " +
+                "on w.id = ve.word_id " +
+                "where w.name like ?", Integer.class, likeParameter);
+    }
+
+    public int countAny() {
+        return jdbcTemplate.queryForObject("select count(*) from vocabulary_entry", Integer.class);
+    }
+
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: fix: ve \ss=ss has no results but no error message is present
         // todo: use settings in the preprocessor
         // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
@@ -33,6 +32,8 @@ public class Main {
         // todo: add benchmarks for standard sql and sql with indexes
         // todo: if a transaction fails - rollback all the changes
         // todo: import/export includes notes, settings and calc info
+        // todo: concurrent import
+        // todo: concurrent statistics collector
         // docker-compose logs -f (--tail=0 to see only new ones)
         // sudo docker rm -f $(sudo docker container ps -aq) & sudo docker-compose up -d
         var applicationContext = new AnnotationConfigApplicationContext(Main.class);
