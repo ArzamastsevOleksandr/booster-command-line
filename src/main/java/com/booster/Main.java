@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: when no ves are present any more - break out of the loop
         // todo: use settings in the preprocessor
         // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
@@ -31,7 +32,6 @@ public class Main {
         // todo: use indexes in tables where frequent search is done
         // todo: add benchmarks for standard sql and sql with indexes
         // todo: if a transaction fails - rollback all the changes
-        // todo: import/export includes notes
         // todo: I can manually increase/decrease calc session level
         // todo: concurrent import
         // todo: concurrent statistics collector
