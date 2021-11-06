@@ -53,7 +53,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     private void displayWithPaginationAndSubstring(Integer pagination, String substring) {
         int startInclusive = 1;
         int endInclusive = startInclusive + pagination - 1;
-        int count = vocabularyEntryDao.countTotal();
+        int count = vocabularyEntryDao.countTotal(); // todo: fix
         List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
         adapter.writeLine(endInclusive + "/" + count);
         allInRange.forEach(adapter::writeLine);
