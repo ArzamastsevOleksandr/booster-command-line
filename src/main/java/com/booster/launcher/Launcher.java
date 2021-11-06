@@ -6,6 +6,7 @@ import com.booster.command.Command;
 import com.booster.command.arguments.CommandArgumentsValidator;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.service.CommandHandlerCollectionService;
+import com.booster.preprocessor.CommandWithArgsPreprocessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,18 +20,22 @@ public class Launcher {
     private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
 
+    private final CommandWithArgsPreprocessor preprocessor;
+
     public void launch() {
         commonOperations.greeting();
         commonOperations.help();
         commonOperations.askForInput();
 
         CommandWithArgs commandWithArgs = nextCommandWithArguments();
+        commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
         Command command = commandWithArgs.getCommand();
         while (Command.isNotExit(command)) {
             handleCommandWithArguments(commandWithArgs);
 
             commonOperations.askForInput();
             commandWithArgs = nextCommandWithArguments();
+            commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
             command = commandWithArgs.getCommand();
         }
         commonOperations.end();
