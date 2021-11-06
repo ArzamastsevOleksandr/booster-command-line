@@ -36,18 +36,52 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getPagination().ifPresentOrElse(this::displayWithPagination, () -> {
-            List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
+        commandWithArgs.getPagination().ifPresentOrElse(pagination -> {
+            commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
+                displayWithPaginationAndSubstring(pagination, substring);
+            }, () -> displayWithPagination(pagination));
+        }, () -> {
+            commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
+                List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAllWithSubstring(substring);
 
-            if (vocabularyEntries.isEmpty()) {
-                adapter.writeLine("There are no vocabulary entries yet.");
-            } else {
-                adapter.writeLine("All vocabulary entries:");
-                adapter.newLine();
+                if (vocabularyEntries.isEmpty()) {
+                    adapter.writeLine("There are no vocabulary entries with substring: " + substring);
+                } else {
+                    adapter.writeLine("All vocabulary entries with substring: " + substring + ":");
+                    adapter.newLine();
 
-                vocabularyEntries.forEach(adapter::writeLine);
-            }
+                    vocabularyEntries.forEach(adapter::writeLine);
+                }
+            }, () -> {
+                List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
+
+                if (vocabularyEntries.isEmpty()) {
+                    adapter.writeLine("There are no vocabulary entries yet.");
+                } else {
+                    adapter.writeLine("All vocabulary entries:");
+                    adapter.newLine();
+
+                    vocabularyEntries.forEach(adapter::writeLine);
+                }
+            });
         });
+    }
+
+    // todo: DRY
+    private void displayWithPaginationAndSubstring(Integer pagination, String substring) {
+        int offset = 1;
+        int limit = offset + pagination;
+        List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(offset, limit, substring);
+        allInRange.forEach(adapter::writeLine);
+
+        String line = adapter.readLine();
+        while (!line.strip().equals("e")) {
+            offset = limit;
+            limit += pagination;
+            allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(offset, limit, substring);
+            allInRange.forEach(adapter::writeLine);
+            line = adapter.readLine();
+        }
     }
 
     private void displayWithPagination(Integer pagination) {
