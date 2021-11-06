@@ -2,6 +2,7 @@ package com.booster.load;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.LanguageDao;
+import com.booster.dao.NoteDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
@@ -36,6 +37,7 @@ public class XlsxImportComponent {
     private final WordService wordService;
     private final LanguageService languageService;
     private final LanguageDao languageDao;
+    private final NoteDao noteDao;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -44,16 +46,33 @@ public class XlsxImportComponent {
             int numberOfSheets = workbook.getNumberOfSheets();
             for (int i = 0; i < numberOfSheets; ++i) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
-                importSheet(sheet);
+                if (sheet.getSheetName().strip().equalsIgnoreCase("NOTES")) {
+                    importNotes(sheet);
+                } else {
+                    importLanguages(sheet);
+                }
             }
         } catch (IOException e) {
             adapter.writeLine("Error during export process: " + e.getMessage());
         }
     }
 
+    private void importNotes(XSSFSheet sheet) {
+        for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
+            XSSFRow row = sheet.getRow(rowNumber);
+
+            Optional.ofNullable(row)
+                    .map(r -> r.getCell(0))
+                    .map(Cell::getStringCellValue)
+                    .map(String::strip)
+                    .filter(s -> !s.isBlank())
+                    .ifPresent(noteDao::add);
+        }
+    }
+
     // todo: validation
     // todo: reliable way to get number of rows in xlsx
-    private void importSheet(XSSFSheet sheet) {
+    private void importLanguages(XSSFSheet sheet) {
         String sheetName = sheet.getSheetName();
 
         languageService.findByName(sheetName)

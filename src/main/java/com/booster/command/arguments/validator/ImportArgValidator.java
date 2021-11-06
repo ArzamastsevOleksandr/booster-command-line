@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.Optional;
 
 import static com.booster.command.Command.IMPORT;
 
@@ -18,9 +19,13 @@ public class ImportArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getFilename()
-                .ifPresentOrElse(this::checkCustomFileExists, this::checkDefaultImportFileExists);
-
+        Optional<String> filename = commandWithArgs.getFilename();
+        if (filename.isPresent()) {
+            checkCustomFileExists(filename.get());
+            return commandWithArgs;
+        } else {
+            checkDefaultImportFileExists();
+        }
         return commandWithArgs.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
     }
 
