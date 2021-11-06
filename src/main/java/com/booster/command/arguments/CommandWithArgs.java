@@ -24,6 +24,8 @@ public class CommandWithArgs {
     String content;
     Integer correctAnswersCount;
     Integer pagination;
+    String substring;
+
     @Builder.Default
     Set<String> addAntonyms = Set.of();
     @Builder.Default
@@ -76,6 +78,10 @@ public class CommandWithArgs {
         return Optional.ofNullable(pagination);
     }
 
+    public Optional<String> getSubstring() {
+        return Optional.ofNullable(substring);
+    }
+
     public Set<String> getSynonyms() {
         return synonyms == null ? Set.of() : synonyms;
     }
@@ -88,6 +94,10 @@ public class CommandWithArgs {
         return CommandWithArgs.builder()
                 .errors(ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"))
                 .build();
+    }
+
+    public static CommandWithArgs singleCommand(Command command) {
+        return CommandWithArgs.builder().command(command).build();
     }
 
     public boolean hasNoErrors() {

@@ -29,6 +29,7 @@ enum FlagType {
     REMOVE_ANTONYMS("ra"),
     REMOVE_SYNONYMS("rs"),
     PAGINATION("p"),
+    SUBSTRING("ss"),
     UNKNOWN("UNKNOWN");
 
     // if any of the flag types have shared values - crash the program early

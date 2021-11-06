@@ -11,15 +11,18 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
+// todo: analyzer util: smartToString. Get all fields via reflection, group them by null, not null.
+//  Use that for analysis.
 @Component
 class TokenSequenceTransformer {
 
     CommandWithArgs transform(List<Token> tokens) {
         ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
+
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {
-            return CommandWithArgs.builder().command(command).build();
+            return CommandWithArgs.singleCommand(command);
         }
 
         var argumentsBuilder = CommandWithArgs.builder()
@@ -78,6 +81,9 @@ class TokenSequenceTransformer {
                     break;
                 case PAGINATION:
                     argumentsBuilder = argumentsBuilder.pagination(Integer.parseInt(flagValue));
+                    break;
+                case SUBSTRING:
+                    argumentsBuilder = argumentsBuilder.substring(flagValue);
                     break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
