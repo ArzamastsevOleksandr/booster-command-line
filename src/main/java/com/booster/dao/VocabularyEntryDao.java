@@ -404,4 +404,80 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
+    public List<VocabularyEntry> findAllWithSubstring(String substring) {
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
+                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                        "w.name as w_name, w.id as w_id, " +
+                        "l.name as l_name, l.id as l_id " +
+                        "from vocabulary_entry ve " +
+                        "join word w " +
+                        "on ve.word_id = w.id " +
+                        "join language l " +
+                        "on ve.language_id = l.id " +
+                        "where w.name like '%?%'", rs2VocabularyEntry, substring);
+
+        var veId2Synonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as synonym " +
+                        "from vocabulary_entry__synonym__jt ves " +
+                        "join word w " +
+                        "on ves.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on ves.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("synonym"));
+
+        var veId2Antonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as antonym " +
+                        "from vocabulary_entry__antonym__jt vea " +
+                        "join word w " +
+                        "on vea.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on vea.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("antonym"));
+
+        return vocabularyEntries.stream()
+                .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
+                .collect(toList());
+    }
+
+    public List<VocabularyEntry> findAllInRangeWithSubstring(int offset, int limit, String substring) {
+        var likeParameter = "%" + substring + "%";
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
+                "select ve_id, created_at, cac, definition, " +
+                        "w_name, w_id, " +
+                        "l.name as l_name, l.id as l_id " +
+                        "from (select row_number() over () as row_num, " +
+                        "ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, ve.language_id as v_l_id, " +
+                        "ww.name as w_name, ww.id as w_id " +
+                        "from vocabulary_entry ve " +
+                        "join word ww " +
+                        "on ve.word_id = ww.id " +
+                        "where ww.name like ?) as ve " +
+                        "join language l " +
+                        "on v_l_id = l.id " +
+                        "where ve.row_num >= ? " +
+                        "and ve.row_num < ?", rs2VocabularyEntry, likeParameter, offset, limit);
+
+        var veId2Synonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as synonym " +
+                        "from vocabulary_entry__synonym__jt ves " +
+                        "join word w " +
+                        "on ves.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on ves.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("synonym"));
+
+        var veId2Antonyms = jdbcTemplate.query(
+                "select ve.id as ve_id, w.name as antonym " +
+                        "from vocabulary_entry__antonym__jt vea " +
+                        "join word w " +
+                        "on vea.word_id = w.id " +
+                        "join vocabulary_entry ve " +
+                        "on vea.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("antonym"));
+
+        return vocabularyEntries.stream()
+                .map(withSynonymsAndAntonyms(veId2Synonyms, veId2Antonyms))
+                .collect(toList());
+    }
+
 }
