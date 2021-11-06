@@ -27,6 +27,7 @@ public class Launcher {
         commonOperations.help();
         commonOperations.askForInput();
 
+        // todo: nextCommandWithArguments only returns, move real logic here (separation of concerns)
         CommandWithArgs commandWithArgs = nextCommandWithArguments();
         commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
         Command command = commandWithArgs.getCommand();

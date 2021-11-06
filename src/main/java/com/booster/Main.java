@@ -31,7 +31,8 @@ public class Main {
         // todo: use indexes in tables where frequent search is done
         // todo: add benchmarks for standard sql and sql with indexes
         // todo: if a transaction fails - rollback all the changes
-        // todo: import/export includes notes, settings and calc info
+        // todo: import/export includes notes
+        // todo: I can manually increase/decrease calc session level
         // todo: concurrent import
         // todo: concurrent statistics collector
         // docker-compose logs -f (--tail=0 to see only new ones)

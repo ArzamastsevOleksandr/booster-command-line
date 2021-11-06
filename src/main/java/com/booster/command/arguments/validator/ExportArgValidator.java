@@ -9,6 +9,7 @@ import static com.booster.command.Command.EXPORT;
 
 @Component
 @RequiredArgsConstructor
+// todo: validator validates (SRP, separation of concerns, use preprocessor)
 public class ExportArgValidator implements ArgValidator {
 
     private static final String XLSX = ".xlsx";

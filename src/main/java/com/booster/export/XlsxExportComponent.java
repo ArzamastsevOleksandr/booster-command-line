@@ -2,8 +2,10 @@ package com.booster.export;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.LanguageDao;
+import com.booster.dao.NoteDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Language;
+import com.booster.model.Note;
 import com.booster.model.VocabularyEntry;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -23,13 +25,15 @@ public class XlsxExportComponent {
 
     private final LanguageDao languageDao;
     private final VocabularyEntryDao vocabularyEntryDao;
+    private final NoteDao noteDao;
 
     public void export(String filename) {
         try (var workbook = new XSSFWorkbook();
              var outputStream = new FileOutputStream(filename)
         ) {
-            languageDao.findAll()
-                    .forEach(language -> exportLanguage(workbook, language));
+            languageDao.findAll().forEach(language -> exportLanguage(workbook, language));
+
+            exportNotes(workbook);
 
             workbook.write(outputStream);
         } catch (IOException e) {
@@ -37,14 +41,32 @@ public class XlsxExportComponent {
         }
     }
 
+    private void exportNotes(XSSFWorkbook workbook) {
+        List<Note> notes = noteDao.findAll();
+        if (!notes.isEmpty()) {
+            adapter.writeLine("Exporting notes");
+            XSSFSheet sheet = workbook.createSheet("NOTES");
+            XSSFRow row = sheet.createRow(0);
+
+            row.createCell(0).setCellValue("content");
+
+            for (int i = 0; i < notes.size(); ++i) {
+                XSSFRow noteRow = sheet.createRow(i + 1);
+                Note note = notes.get(i);
+                noteRow.createCell(0).setCellValue(note.getContent());
+            }
+        }
+    }
+
     private void exportLanguage(XSSFWorkbook workbook, Language language) {
+        adapter.writeLine("Exporting language: " + language.getName());
         XSSFSheet sheet = workbook.createSheet(language.getName());
 
-        createHeaderRow(sheet);
+        createLanguageHeaderRow(sheet);
         createVocabularyEntryRows(language, sheet);
     }
 
-    private void createHeaderRow(XSSFSheet sheet) {
+    private void createLanguageHeaderRow(XSSFSheet sheet) {
         XSSFRow row = sheet.createRow(0);
 
         row.createCell(0).setCellValue("Word");
