@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: for commands where pagination is enabled - if none is specified,
-        //  use a preprocessor that will set the default pagination value
+        // todo: use settings in the preprocessor
         // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
