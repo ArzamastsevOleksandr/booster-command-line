@@ -32,4 +32,12 @@ public class VocabularyEntryService {
         return vocabularyEntryDao.countWithLanguageId(id) > 0;
     }
 
+    public boolean existAnyWithSubstring(String substring) {
+        return vocabularyEntryDao.countWithSubstring(substring) > 0;
+    }
+
+    public boolean existAny() {
+        return vocabularyEntryDao.countAny() > 0;
+    }
+
 }

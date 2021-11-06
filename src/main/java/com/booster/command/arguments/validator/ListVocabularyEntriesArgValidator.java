@@ -16,11 +16,13 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresent(id -> {
+        commandWithArgs.getId().ifPresentOrElse(id -> {
             checkIfVocabularyEntryExistsWithId(id);
             checkIfSubstringFlagIsUsed(commandWithArgs);
+        }, () -> {
+            commandWithArgs.getSubstring()
+                    .ifPresentOrElse(this::checkIfEntriesExistWithSubstring, this::checkIfAnyEntriesExist);
         });
-
         return commandWithArgs;
     }
 
@@ -34,6 +36,18 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
         commandWithArgs.getSubstring().ifPresent(s -> {
             throw new ArgsValidationException("Only one of id or substring flags can be used.");
         });
+    }
+
+    private void checkIfEntriesExistWithSubstring(String substring) {
+        if (!vocabularyEntryService.existAnyWithSubstring(substring)) {
+            throw new ArgsValidationException("No entries exist with substring " + substring);
+        }
+    }
+
+    private void checkIfAnyEntriesExist() {
+        if (!vocabularyEntryService.existAny()) {
+            throw new ArgsValidationException("There are no vocabulary entries in the system yet.");
+        }
     }
 
     @Override

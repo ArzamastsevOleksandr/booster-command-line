@@ -42,27 +42,9 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
             }, () -> displayWithPagination(pagination));
         }, () -> {
             commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
-                List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAllWithSubstring(substring);
-
-                if (vocabularyEntries.isEmpty()) {
-                    adapter.writeLine("There are no vocabulary entries with substring: " + substring);
-                } else {
-                    adapter.writeLine("All vocabulary entries with substring: " + substring + ":");
-                    adapter.newLine();
-
-                    vocabularyEntries.forEach(adapter::writeLine);
-                }
+                vocabularyEntryDao.findAllWithSubstring(substring).forEach(adapter::writeLine);
             }, () -> {
-                List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAll();
-
-                if (vocabularyEntries.isEmpty()) {
-                    adapter.writeLine("There are no vocabulary entries yet.");
-                } else {
-                    adapter.writeLine("All vocabulary entries:");
-                    adapter.newLine();
-
-                    vocabularyEntries.forEach(adapter::writeLine);
-                }
+                vocabularyEntryDao.findAll().forEach(adapter::writeLine);
             });
         });
     }
@@ -78,7 +60,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
         String line = adapter.readLine();
         while (!line.equals("e")) {
-            startInclusive = endInclusive;
+            startInclusive = endInclusive + 1;
             endInclusive += pagination;
             allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
             adapter.writeLine(endInclusive + "/" + count);
@@ -98,7 +80,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         String line = adapter.readLine();
         // todo: stop flag
         while (!line.equals("e")) {
-            startInclusive = endInclusive;
+            startInclusive = endInclusive + 1;
             endInclusive += pagination;
             allInRange = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
             adapter.writeLine(endInclusive + "/" + count);

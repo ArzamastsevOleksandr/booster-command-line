@@ -35,10 +35,7 @@ public class CommandHandlerCollectionService {
                     () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
             );
         } else {
-            adapter.writeLine("Errors: ");
-            adapter.newLine();
-            commandWithArgs.getErrors()
-                    .forEach(adapter::writeLine);
+            commandWithArgs.getErrors().forEach(adapter::writeLine);
         }
         adapter.newLine();
     }
