@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,23 +25,23 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 
     private final VocabularyEntryDao vocabularyEntryDao;
-
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getMode()
-                .ifPresent(mode -> {
-                    List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
-                    adapter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");
-                    executeTrainingSession(vocabularyEntries, mode);
-                    adapter.writeLine("Training session finished!");
-                });
+        commandWithArgs.getMode().ifPresent(this::executeTrainingSession);
     }
 
     @Override
     public Command getCommand() {
         return Command.START_TRAINING_SESSION;
+    }
+
+    private void executeTrainingSession(TrainingSessionMode mode) {
+        List<VocabularyEntry> entries = findAllForMode(mode);
+        adapter.writeLine("Loaded " + entries.size() + " vocabulary entries.");
+        executeTrainingSessionBasedOnMode(mode, entries);
+        adapter.writeLine("Training session finished!");
     }
 
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
@@ -56,13 +57,17 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
     }
 
-    private void executeTrainingSession(List<VocabularyEntry> vocabularyEntries, TrainingSessionMode mode) {
-        if (mode == TrainingSessionMode.FULL) {
-            executeFullTrainingSession(vocabularyEntries);
-        } else if (mode == TrainingSessionMode.SYNONYMS) {
-            executeSynonymsTrainingSession(vocabularyEntries);
-        } else {
-            executeAntonymsTrainingSession(vocabularyEntries);
+    private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
+        switch (mode) {
+            case FULL:
+                executeFullTrainingSession(entries);
+                break;
+            case SYNONYMS:
+                executeSynonymsTrainingSession(entries);
+                break;
+            case ANTONYMS:
+                executeAntonymsTrainingSession(entries);
+                break;
         }
     }
 
@@ -71,11 +76,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             printCurrentWord(vocabularyEntry);
 
             boolean isCorrectAnswer = checkSynonyms(vocabularyEntry);
-            handleAnswer(isCorrectAnswer);
+            handleAnswerSynonyms(isCorrectAnswer);
 
             if (isCorrectAnswer) {
                 isCorrectAnswer = checkAntonyms(vocabularyEntry);
-                handleAnswer(isCorrectAnswer);
+                handleAnswerSynonyms(isCorrectAnswer);
             }
             updateCorrectAnswersCount(vocabularyEntry, isCorrectAnswer);
         }
@@ -87,7 +92,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private boolean checkSynonyms(VocabularyEntry ve) {
-        adapter.write("Enter synonyms: ");
+        adapter.write("Synonyms >> ");
         String enteredSynonyms = adapter.readLine();
         Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
 
@@ -102,7 +107,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         return antonymsAnswer.equals(ve.getAntonyms());
     }
 
-    private void handleAnswer(boolean isCorrectAnswer) {
+    private void handleAnswerSynonyms(boolean isCorrectAnswer) {
         if (isCorrectAnswer) {
             adapter.writeLine("Correct!");
         } else {
@@ -112,14 +117,43 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private void executeSynonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
-        for (var vocabularyEntry : vocabularyEntries) {
-            printCurrentWord(vocabularyEntry);
+        int index = 0;
 
-            boolean isCorrectAnswer = checkSynonyms(vocabularyEntry);
-            handleAnswer(isCorrectAnswer);
+        VocabularyEntry entry = vocabularyEntries.get(index++);
+        printCurrentWord(entry);
+        adapter.write("Synonyms >> ");
+        String enteredSynonyms = adapter.readLine();
 
-            updateCorrectAnswersCount(vocabularyEntry, isCorrectAnswer);
+        while (!enteredSynonyms.equalsIgnoreCase("e") && index < vocabularyEntries.size()) {
+            Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
+            handleAnswerSynonyms(synonymsAnswer, entry);
+
+            entry = vocabularyEntries.get(index++);
+            printCurrentWord(entry);
+            adapter.write("Synonyms >> ");
+            enteredSynonyms = adapter.readLine();
         }
+    }
+
+    private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntry entry) {
+        if (synonymsAnswer.equals(entry.getSynonyms())) {
+            updateCorrectAnswersCount(entry, true);
+            adapter.writeLine("Correct!");
+        } else {
+            Set<String> synonymsAnswerCopy = new HashSet<>(synonymsAnswer);
+            synonymsAnswerCopy.removeAll(entry.getSynonyms());
+
+            if (synonymsAnswerCopy.isEmpty()) {
+                HashSet<String> originalSynonymsCopy = new HashSet<>(entry.getSynonyms());
+                originalSynonymsCopy.removeAll(synonymsAnswer);
+                updateCorrectAnswersCount(entry, true);
+                adapter.writeLine("Correct. Other synonyms: " + originalSynonymsCopy);
+            } else {
+                updateCorrectAnswersCount(entry, false);
+                adapter.writeLine("Wrong. Answer is: " + entry.getSynonyms());
+            }
+        }
+        adapter.newLine();
     }
 
     private void executeAntonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
@@ -127,7 +161,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             printCurrentWord(vocabularyEntry);
 
             boolean isCorrectAnswer = checkAntonyms(vocabularyEntry);
-            handleAnswer(isCorrectAnswer);
+            handleAnswerSynonyms(isCorrectAnswer);
 
             updateCorrectAnswersCount(vocabularyEntry, isCorrectAnswer);
         }

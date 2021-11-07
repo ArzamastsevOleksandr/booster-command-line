@@ -34,6 +34,10 @@ public class CommandHandlerCollectionService {
                     commandHandler -> commandHandler.handle(commandWithArgs),
                     () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
             );
+        } else if (commandWithArgs.getErrors().contains("Token sequence must consist of at least one argument")) {
+            // todo: use error codes
+            // do nothing
+            return;
         } else {
             commandWithArgs.getErrors().forEach(adapter::writeLine);
         }
