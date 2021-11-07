@@ -18,7 +18,7 @@ public class CommonOperations {
     }
 
     public void askForInput() {
-        adapter.write("> ");
+        adapter.write(">> ");
     }
 
     public void end() {
