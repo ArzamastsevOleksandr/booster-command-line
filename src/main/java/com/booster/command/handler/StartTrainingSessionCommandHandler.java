@@ -30,9 +30,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getMode()
-                // todo: pass enum directly
-                .filter(m -> !TrainingSessionMode.isUnrecognized(m))
-                .map(TrainingSessionMode::fromString)
                 .ifPresent(mode -> {
                     List<VocabularyEntry> vocabularyEntries = findAllForMode(mode);
                     adapter.writeLine("Loaded " + vocabularyEntries.size() + " vocabulary entries.");

@@ -3,6 +3,7 @@ package com.booster.parser;
 import com.booster.command.Command;
 import com.booster.command.FlagType;
 import com.booster.command.arguments.CommandWithArgs;
+import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +55,7 @@ class TokenSequenceTransformer {
                     argumentsBuilder = argumentsBuilder.filename(flagValue);
                     break;
                 case MODE:
-                    argumentsBuilder = argumentsBuilder.mode(flagValue);
+                    argumentsBuilder = argumentsBuilder.mode(TrainingSessionMode.fromString(flagValue));
                     break;
                 case SYNONYMS:
                     argumentsBuilder = argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
