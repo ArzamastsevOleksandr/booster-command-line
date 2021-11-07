@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: when I have seen the ve - update it for it to not appear in the next displays
         // todo: list_flags command
         // todo: HELP <command>
         // todo: pretty print of l, ve, w
