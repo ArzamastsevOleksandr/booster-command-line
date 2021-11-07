@@ -88,6 +88,8 @@ public class VocabularyEntryDao {
                 "where sjt.vocabulary_entry_id = ?", id);
         jdbcTemplate.update("delete from vocabulary_entry__antonym__jt ajt " +
                 "where ajt.vocabulary_entry_id = ?", id);
+        jdbcTemplate.update("delete from vocabulary_entry__context__jt cjt " +
+                "where cjt.vocabulary_entry_id = ?", id);
         jdbcTemplate.update("delete from vocabulary_entry " +
                 "where id = ?", id);
     }
