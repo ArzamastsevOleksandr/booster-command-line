@@ -25,7 +25,9 @@ create table vocabulary_entry
     is_difficult          boolean   default false not null,
 
     word_id               bigint,
-    language_id           bigint
+    language_id           bigint,
+
+    check (correct_answers_count >= 0)
 );
 
 alter table vocabulary_entry
@@ -83,7 +85,7 @@ create table vocabulary_entry__context__jt
 
     constraint vocabulary_entry__context__jt__fkey
         foreign key (vocabulary_entry_id)
-            references vocabulary_entry(id)
+            references vocabulary_entry (id)
 );
 
 create table settings

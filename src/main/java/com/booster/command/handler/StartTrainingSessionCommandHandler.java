@@ -20,8 +20,6 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class StartTrainingSessionCommandHandler implements CommandHandler {
 
-    // todo: configurable db setting
-    private static final int MAX_CORRECT_ANSWERS_COUNT = 10;
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 
     private final VocabularyEntryDao vocabularyEntryDao;
@@ -197,7 +195,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private boolean isValidCorrectAnswersCount(int cacUpdated) {
-        return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated && cacUpdated <= MAX_CORRECT_ANSWERS_COUNT;
+        return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated;
     }
 
     private Set<String> parseEquivalents(String equivalents) {
