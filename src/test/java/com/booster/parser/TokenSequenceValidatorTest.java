@@ -1,5 +1,6 @@
 package com.booster.parser;
 
+import com.booster.command.FlagType;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
+import com.booster.command.FlagType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

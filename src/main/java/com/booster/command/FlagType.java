@@ -1,4 +1,4 @@
-package com.booster.parser;
+package com.booster.command;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.*;
 // todo: test
 // todo: custom service to allow clean unit tests?
 @RequiredArgsConstructor
-enum FlagType {
+public enum FlagType {
 
     NAME("n"),
     ID("id"),
@@ -51,16 +51,16 @@ enum FlagType {
         }
     }
 
-    final String value;
+    public final String value;
 
-    static FlagType fromString(String s) {
+    public static FlagType fromString(String s) {
         return Arrays.stream(values())
                 .filter(flagType -> flagType.value.equals(s))
                 .findFirst()
                 .orElse(UNKNOWN);
     }
 
-    static boolean isKnown(FlagType flagType) {
+    public static boolean isKnown(FlagType flagType) {
         return flagType != UNKNOWN;
     }
 
