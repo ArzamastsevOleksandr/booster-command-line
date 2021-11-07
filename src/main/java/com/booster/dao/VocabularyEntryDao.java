@@ -44,7 +44,8 @@ public class VocabularyEntryDao {
                         "join word w " +
                         "on ve.word_id = w.id " +
                         "join language l " +
-                        "on ve.language_id = l.id", rs2VocabularyEntry);
+                        "on ve.language_id = l.id " +
+                        "order by cac", rs2VocabularyEntry);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
@@ -83,6 +84,7 @@ public class VocabularyEntryDao {
         };
     }
 
+    // todo: srp, use a service
     public void delete(long id) {
         jdbcTemplate.update("delete from vocabulary_entry__synonym__jt sjt " +
                 "where sjt.vocabulary_entry_id = ?", id);
@@ -244,7 +246,8 @@ public class VocabularyEntryDao {
                         "on ve.word_id = w.id " +
                         "join language l " +
                         "on l.id = ve.language_id " +
-                        "where exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)",
+                        "where exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id) " +
+                        "order by cac",
                 rs2VocabularyEntry);
 
         var veId2Synonyms = jdbcTemplate.query(
@@ -273,7 +276,8 @@ public class VocabularyEntryDao {
                         "on ve.word_id = w.id " +
                         "join language l " +
                         "on ve.language_id = l.id " +
-                        "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id)",
+                        "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
+                        "order by cac",
                 rs2VocabularyEntry);
 
         var veId2Antonyms = jdbcTemplate.query(
@@ -301,7 +305,8 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on ve.language_id = l.id " +
                         "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
-                        "and exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)",
+                        "and exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id) " +
+                        "order by cac",
                 rs2VocabularyEntry);
 
         var veId2Antonyms = jdbcTemplate.query("select ve.id as ve_id, w.name as antonym " +
@@ -430,13 +435,13 @@ public class VocabularyEntryDao {
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
-                        "from (select row_number() over () as row_num, * from vocabulary_entry) ve " +
+                        "from (select row_number() over (order by correct_answers_count) as row_num, * from vocabulary_entry) ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
                         "join language l " +
                         "on ve.language_id = l.id " +
                         "where ve.row_num >= ? " +
-                        "and ve.row_num <= ?", rs2VocabularyEntry, startInclusive, endInclusive);
+                        "and ve.row_num <= ? ", rs2VocabularyEntry, startInclusive, endInclusive);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
