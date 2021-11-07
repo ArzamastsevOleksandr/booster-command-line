@@ -520,4 +520,29 @@ public class VocabularyEntryDao {
         return jdbcTemplate.queryForObject("select count(*) from vocabulary_entry", Integer.class);
     }
 
+    public int countWithSynonyms() {
+        return jdbcTemplate.queryForObject("select count(distinct ve_with_synonyms.id) " +
+                "from (select * " +
+                "from vocabulary_entry ve " +
+                "where exists(select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)" +
+                ") ve_with_synonyms", Integer.class);
+    }
+
+    public int countWithAntonyms() {
+        return jdbcTemplate.queryForObject("select count(distinct ve_with_antonyms.id) " +
+                "from (select * " +
+                "from vocabulary_entry ve " +
+                "where exists(select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id)" +
+                ") ve_with_antonyms", Integer.class);
+    }
+
+    public int countWithAntonymsAndSynonyms() {
+        return jdbcTemplate.queryForObject("select count(distinct ve_with_antonyms_and_synonyms.id) " +
+                "from (select * " +
+                "from vocabulary_entry ve " +
+                "where exists(select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
+                "and exists(select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)" +
+                ") ve_with_antonyms_and_synonyms", Integer.class);
+    }
+
 }

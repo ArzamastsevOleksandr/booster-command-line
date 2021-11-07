@@ -58,4 +58,8 @@ public enum TrainingSessionMode {
                 .collect(joining(","));
     }
 
+    public static TrainingSessionMode getDefaultMode() {
+        return SYNONYMS;
+    }
+
 }
