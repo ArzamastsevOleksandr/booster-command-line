@@ -38,6 +38,8 @@ public class CommandWithArgs {
     Set<String> synonyms = Set.of();
     @Builder.Default
     Set<String> antonyms = Set.of();
+    @Builder.Default
+    Set<String> contexts = Set.of();
 
     @Builder.Default
     List<String> errors = List.of();
