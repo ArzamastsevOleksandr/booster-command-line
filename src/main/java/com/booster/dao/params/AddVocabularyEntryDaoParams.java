@@ -28,4 +28,7 @@ public class AddVocabularyEntryDaoParams {
     @Builder.Default
     Set<Long> antonymIds = Set.of();
 
+    @Builder.Default
+    Set<String> contexts = Set.of();
+
 }
