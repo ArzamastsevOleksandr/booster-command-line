@@ -5,6 +5,7 @@ import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class VocabularyEntryService {
 
     private final VocabularyEntryDao vocabularyEntryDao;
+    private final TransactionTemplate transactionTemplate;
 
     public Optional<VocabularyEntry> findById(long id) {
         if (vocabularyEntryDao.countWithId(id) == 1) {
@@ -52,6 +54,15 @@ public class VocabularyEntryService {
             default:
                 return false;
         }
+    }
+
+    public void delete(long id) {
+        transactionTemplate.executeWithoutResult(result -> {
+            vocabularyEntryDao.deleteSynonyms(id);
+            vocabularyEntryDao.deleteAntonyms(id);
+            vocabularyEntryDao.deleteContexts(id);
+            vocabularyEntryDao.delete(id);
+        });
     }
 
 }

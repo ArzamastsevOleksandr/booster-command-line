@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
@@ -86,18 +84,6 @@ public class VocabularyEntryDao {
             }
             return builder.build();
         };
-    }
-
-    // todo: srp, use a service
-    public void delete(long id) {
-        jdbcTemplate.update("delete from vocabulary_entry__synonym__jt sjt " +
-                "where sjt.vocabulary_entry_id = ?", id);
-        jdbcTemplate.update("delete from vocabulary_entry__antonym__jt ajt " +
-                "where ajt.vocabulary_entry_id = ?", id);
-        jdbcTemplate.update("delete from vocabulary_entry__context__jt cjt " +
-                "where cjt.vocabulary_entry_id = ?", id);
-        jdbcTemplate.update("delete from vocabulary_entry " +
-                "where id = ?", id);
     }
 
     public void addWithDefaultValues(AddVocabularyEntryDaoParams params) {
@@ -595,6 +581,26 @@ public class VocabularyEntryDao {
                 "where exists(select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
                 "and exists(select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)" +
                 ") ve_with_antonyms_and_synonyms", Integer.class);
+    }
+
+    public void deleteSynonyms(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry__synonym__jt sjt " +
+                "where sjt.vocabulary_entry_id = ?", id);
+    }
+
+    public void deleteAntonyms(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry__antonym__jt ajt " +
+                "where ajt.vocabulary_entry_id = ?", id);
+    }
+
+    public void deleteContexts(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry__context__jt cjt " +
+                "where cjt.vocabulary_entry_id = ?", id);
+    }
+
+    public void delete(long id) {
+        jdbcTemplate.update("delete from vocabulary_entry " +
+                "where id = ?", id);
     }
 
 }
