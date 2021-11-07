@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.VocabularyEntryDao;
+import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresent(vocabularyEntryDao::delete);
+        commandWithArgs.getId().ifPresent(vocabularyEntryService::delete);
     }
 
     @Override
