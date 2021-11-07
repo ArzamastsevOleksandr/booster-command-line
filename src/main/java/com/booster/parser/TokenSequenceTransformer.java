@@ -1,6 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.Command;
+import com.booster.command.FlagType;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
