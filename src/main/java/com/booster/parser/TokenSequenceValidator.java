@@ -1,6 +1,7 @@
 package com.booster.parser;
 
 import com.booster.command.FlagType;
+import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.util.NumberUtil;
 import com.booster.util.ObjectUtil;
 import org.springframework.stereotype.Component;
@@ -104,6 +105,18 @@ class TokenSequenceValidator {
             case PAGINATION:
                 checkIfCorrectAnswersCountIsPositiveIntegerNumber(expectedValue.getValue());
                 break;
+            case MODE:
+                checkIfTrainingSessionModeIsCorrect(expectedValue.getValue());
+                break;
+        }
+    }
+
+    private void checkIfTrainingSessionModeIsCorrect(String value) {
+        if (TrainingSessionMode.isUnrecognized(value)) {
+            throw new TokenValidationException(
+                    "Unrecognized training session mode: " + value,
+                    "Available modes are: " + TrainingSessionMode.modesToString()
+            );
         }
     }
 

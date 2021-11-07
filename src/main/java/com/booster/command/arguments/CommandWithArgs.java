@@ -20,7 +20,7 @@ public class CommandWithArgs {
     String name;
     String definition;
     String filename;
-    String mode;
+    TrainingSessionMode mode;
     String content;
     Integer correctAnswersCount;
     Integer pagination;
@@ -64,7 +64,7 @@ public class CommandWithArgs {
         return Optional.ofNullable(filename);
     }
 
-    public Optional<String> getMode() {
+    public Optional<TrainingSessionMode> getMode() {
         return Optional.ofNullable(mode);
     }
 

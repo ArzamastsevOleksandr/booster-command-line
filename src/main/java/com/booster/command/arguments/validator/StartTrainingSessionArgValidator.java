@@ -15,29 +15,19 @@ public class StartTrainingSessionArgValidator implements ArgValidator {
 
     private final VocabularyEntryService vocabularyEntryService;
 
-    // todo: pass enum directly
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
         if (commandWithArgs.getMode().isEmpty()) {
             checkIfEntriesExistForMode(TrainingSessionMode.getDefaultMode());
-            return commandWithArgs.toBuilder().mode(TrainingSessionMode.getDefaultMode().getMode()).build();
+            return commandWithArgs.toBuilder().mode(TrainingSessionMode.getDefaultMode()).build();
         }
-        checkIfModeValueIsCorrect(commandWithArgs.getMode().get());
-        checkIfEntriesExistForMode(TrainingSessionMode.fromString(commandWithArgs.getMode().get()));
+        checkIfEntriesExistForMode(commandWithArgs.getMode().get());
         return commandWithArgs;
     }
 
     private void checkIfEntriesExistForMode(TrainingSessionMode mode) {
         if (!vocabularyEntryService.existAnyForTrainingMode(mode)) {
             throw new ArgsValidationException("No entries exist for mode: " + mode);
-        }
-    }
-
-    private void checkIfModeValueIsCorrect(String mode) {
-        if (TrainingSessionMode.isUnrecognized(mode)) {
-            throw new ArgsValidationException(
-                    "Unrecognized training session mode: " + mode,
-                    "Available modes are: " + TrainingSessionMode.modesToString());
         }
     }
 
