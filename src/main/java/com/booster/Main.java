@@ -14,7 +14,6 @@ public class Main {
         // todo: HELP <command>
         // todo: pretty print of l, ve, w
         // todo: write 1-line open comments.
-        // todo: when no ves are present any more - break out of the loop
         // todo: use settings in the preprocessor
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve

@@ -52,16 +52,18 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     // todo: DRY
     private void displayWithPaginationAndSubstring(Integer pagination, String substring) {
         int startInclusive = 1;
+        int count = vocabularyEntryDao.countWithSubstring(substring);
         int endInclusive = startInclusive + pagination - 1;
-        int count = vocabularyEntryDao.countTotal(); // todo: fix
+        endInclusive = Math.min(endInclusive, count);
         List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
         adapter.writeLine(endInclusive + "/" + count);
         allInRange.forEach(adapter::writeLine);
 
         String line = adapter.readLine();
-        while (!line.equals("e")) {
+        while (!line.equals("e") && endInclusive < count) {
             startInclusive = endInclusive + 1;
             endInclusive += pagination;
+            endInclusive = Math.min(endInclusive, count);
             allInRange = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
             adapter.writeLine(endInclusive + "/" + count);
             allInRange.forEach(adapter::writeLine);
@@ -71,17 +73,19 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private void displayWithPagination(Integer pagination) {
         int startInclusive = 1;
-        int endInclusive = startInclusive + pagination - 1;
         int count = vocabularyEntryDao.countTotal();
+        int endInclusive = startInclusive + pagination - 1;
+        endInclusive = Math.min(endInclusive, count);
         List<VocabularyEntry> allInRange = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
         adapter.writeLine(endInclusive + "/" + count);
         allInRange.forEach(adapter::writeLine);
 
         String line = adapter.readLine();
         // todo: stop flag
-        while (!line.equals("e")) {
+        while (!line.equals("e") && endInclusive < count) {
             startInclusive = endInclusive + 1;
             endInclusive += pagination;
+            endInclusive = Math.min(endInclusive, count);
             allInRange = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
             adapter.writeLine(endInclusive + "/" + count);
             allInRange.forEach(adapter::writeLine);
