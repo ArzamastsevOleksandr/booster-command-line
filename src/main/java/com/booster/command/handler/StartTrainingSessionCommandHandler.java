@@ -71,48 +71,36 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
     }
 
+    // todo: DRY
     private void executeFullTrainingSession(List<VocabularyEntry> vocabularyEntries) {
-        for (var vocabularyEntry : vocabularyEntries) {
-            printCurrentWord(vocabularyEntry);
+        int index = 0;
 
-            boolean isCorrectAnswer = checkSynonyms(vocabularyEntry);
-            handleAnswerSynonyms(isCorrectAnswer);
+        VocabularyEntry entry = vocabularyEntries.get(index);
+        printCurrentWord(entry);
+        adapter.write("Synonyms >> ");
+        String enteredSynonyms = adapter.readLine();
 
-            if (isCorrectAnswer) {
-                isCorrectAnswer = checkAntonyms(vocabularyEntry);
-                handleAnswerSynonyms(isCorrectAnswer);
+        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
+            Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
+            handleAnswerSynonyms(synonymsAnswer, entry);
+
+            adapter.write("Antonyms >> ");
+            String enteredAntonyms = adapter.readLine();
+
+            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
+            handleAnswerAntonyms(antonymsAnswer, entry);
+
+            if (index < vocabularyEntries.size()) {
+                entry = vocabularyEntries.get(index);
+                printCurrentWord(entry);
+                adapter.write("Synonyms >> ");
+                enteredSynonyms = adapter.readLine();
             }
-            updateCorrectAnswersCount(vocabularyEntry, isCorrectAnswer);
         }
     }
 
     private void printCurrentWord(VocabularyEntry vocabularyEntry) {
         adapter.writeLine("Current word: [" + vocabularyEntry.getName() + "]");
-        adapter.newLine();
-    }
-
-    private boolean checkSynonyms(VocabularyEntry ve) {
-        adapter.write("Synonyms >> ");
-        String enteredSynonyms = adapter.readLine();
-        Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
-
-        return synonymsAnswer.equals(ve.getSynonyms());
-    }
-
-    private boolean checkAntonyms(VocabularyEntry ve) {
-        adapter.write("Enter antonyms: ");
-        String enteredAntonyms = adapter.readLine();
-        Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
-
-        return antonymsAnswer.equals(ve.getAntonyms());
-    }
-
-    private void handleAnswerSynonyms(boolean isCorrectAnswer) {
-        if (isCorrectAnswer) {
-            adapter.writeLine("Correct!");
-        } else {
-            adapter.writeLine("Wrong!");
-        }
         adapter.newLine();
     }
 
