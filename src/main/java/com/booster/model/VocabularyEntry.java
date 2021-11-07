@@ -27,6 +27,8 @@ public class VocabularyEntry {
     Set<String> synonyms = Set.of();
     @Builder.Default
     Set<String> antonyms = Set.of();
+    @Builder.Default
+    Set<String> contexts = Set.of();
 
     public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);

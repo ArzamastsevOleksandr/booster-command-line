@@ -1,3 +1,5 @@
+-- todo: primary/foreign key AND index naming documentation
+
 create table language
 (
     id   serial primary key,
@@ -69,6 +71,19 @@ create table vocabulary_entry__antonym__jt
     constraint ve_antonym_jt__word__fkey
         foreign key (word_id)
             references word (id)
+);
+
+create table vocabulary_entry__context__jt
+(
+    vocabulary_entry_id bigint       not null,
+    context             varchar(255) not null,
+
+    constraint vocabulary_entry__context__jt__pkey
+        primary key (vocabulary_entry_id, context),
+
+    constraint vocabulary_entry__context__jt__fkey
+        foreign key (vocabulary_entry_id)
+            references vocabulary_entry(id)
 );
 
 create table settings

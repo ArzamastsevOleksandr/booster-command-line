@@ -9,9 +9,12 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: list_flags command
+        // todo: HELP <command>
+        // todo: pretty print of l, ve, w
+        // todo: write 1-line open comments.
         // todo: when no ves are present any more - break out of the loop
         // todo: use settings in the preprocessor
-        // todo: add contexts to the ve
         // todo: s Errors:Token sequence must start with a command
         // todo: I can tag the ve
         // todo: I can search for words by tags
@@ -52,14 +55,9 @@ public class Main {
         // todo: inline types: stack gives more cache-friendliness vs heap
         // todo: Chapter 33: crash JVM examples, Chapter 68, 79, 82, 84, 87, 95, 97
         // todo: custom command grammar and parser?
-        // todo: fix: ave command: description of > 1 word can not be recognized
         // todo: UPDATE_SETTINGS command?
-        // todo: I can delete a language from the system
         // todo: distinguish upper-lower case?
         // todo: if I add the same ve, ask if I want to merge the result
-        // todo: list_flags command
-        // todo: HELP <command>
-        // todo: pretty print of l, ve, w
         // todo: upgrade to latest Java
         // todo: value objects with no getters an setters, having public final fields
         // todo: check deps upgrades with mvn versions:display-dependency-updates (plugin)
@@ -69,7 +67,6 @@ public class Main {
         // todo: play with JShell
         // todo: implement custom annotations (Like, CommandHandler,
         //  to avoid creating redundant comments + to enable fitness function tests (architecture conformity).
-        // todo: write 1-line open comments.
     }
 
 }
