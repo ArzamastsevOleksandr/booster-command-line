@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: in the end of the training session print all words that had mistakes
         // todo: when I have seen the ve - update it for it to not appear in the next displays
         // todo: list_flags command
         // todo: HELP <command>
@@ -20,7 +21,6 @@ public class Main {
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
         // todo: I can search for the ve by a substring
-        // todo: can exit the training session before it ends
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
         // todo: I can tag the note
