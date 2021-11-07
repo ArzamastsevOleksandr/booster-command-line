@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -32,6 +35,7 @@ public class VocabularyEntryDao {
             .build();
 
     private final JdbcTemplate jdbcTemplate;
+    private final TransactionTemplate transactionTemplate;
 
     // todo: one sql query?
     // todo: when pagination is ready, implement DRY
@@ -125,25 +129,27 @@ public class VocabularyEntryDao {
     }
 
     private void add(AddVocabularyEntryDaoParams params, PreparedStatementCreator preparedStatementCreator) {
-        var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(preparedStatementCreator, keyHolder);
+        transactionTemplate.executeWithoutResult(status -> {
+            var keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(preparedStatementCreator, keyHolder);
 
-        long vocabularyEntryId = keyHolder.getKey().longValue();
-        jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__synonym__jt " +
-                        "(vocabulary_entry_id, word_id) " +
-                        "values (?, ?)",
-                createBatchPreparedStatementSetter(new ArrayList<>(params.getSynonymIds()), vocabularyEntryId));
-        jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__antonym__jt " +
-                        "(vocabulary_entry_id, word_id) " +
-                        "values (?, ?)",
-                createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), vocabularyEntryId));
-        jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__context__jt " +
-                        "(vocabulary_entry_id, context) " +
-                        "values (?, ?)",
-                createBatchPreparedStatementSetterForContexts(new ArrayList<>(params.getContexts()), vocabularyEntryId));
+            long vocabularyEntryId = keyHolder.getKey().longValue();
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__synonym__jt " +
+                            "(vocabulary_entry_id, word_id) " +
+                            "values (?, ?)",
+                    createBatchPreparedStatementSetter(new ArrayList<>(params.getSynonymIds()), vocabularyEntryId));
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__antonym__jt " +
+                            "(vocabulary_entry_id, word_id) " +
+                            "values (?, ?)",
+                    createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), vocabularyEntryId));
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__context__jt " +
+                            "(vocabulary_entry_id, context) " +
+                            "values (?, ?)",
+                    createBatchPreparedStatementSetterForContexts(new ArrayList<>(params.getContexts()), vocabularyEntryId));
+        });
     }
 
     private ResultSetExtractor<Map<Long, Set<String>>> createResultSetExtractor(String columnName) {
@@ -401,36 +407,40 @@ public class VocabularyEntryDao {
                         "where language_id = ?", Integer.class, id);
     }
 
+    // todo: optimize, do not update some parameters if not required
     public void update(UpdateVocabularyEntryDaoParams params) {
-        jdbcTemplate.update(
-                "update vocabulary_entry " +
-                        "set word_id = ?, definition = ?, correct_answers_count = ? " +
-                        "where id = ?",
-                params.getWordId(),
-                params.getDefinition(),
-                params.getCorrectAnswersCount(),
-                params.getId()
-        );
-        jdbcTemplate.update(
-                "delete from vocabulary_entry__synonym__jt " +
-                        "where vocabulary_entry_id = ?",
-                params.getId()
-        );
-        jdbcTemplate.update(
-                "delete from vocabulary_entry__antonym__jt " +
-                        "where vocabulary_entry_id = ?",
-                params.getId()
-        );
-        jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__synonym__jt " +
-                        "(vocabulary_entry_id, word_id) " +
-                        "values (?, ?)",
-                createBatchPreparedStatementSetter(new ArrayList<>(params.getSynonymIds()), params.getId()));
-        jdbcTemplate.batchUpdate(
-                "insert into vocabulary_entry__antonym__jt " +
-                        "(vocabulary_entry_id, word_id) " +
-                        "values (?, ?)",
-                createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), params.getId()));
+        transactionTemplate.executeWithoutResult(result -> {
+            jdbcTemplate.update(
+                    "update vocabulary_entry " +
+                            "set word_id = ?, definition = ?, correct_answers_count = ? " +
+                            "where id = ?",
+                    params.getWordId(),
+                    params.getDefinition(),
+                    params.getCorrectAnswersCount(),
+                    params.getId()
+            );
+            jdbcTemplate.update(
+                    "delete from vocabulary_entry__synonym__jt " +
+                            "where vocabulary_entry_id = ?",
+                    params.getId()
+            );
+            jdbcTemplate.update(
+                    "delete from vocabulary_entry__antonym__jt " +
+                            "where vocabulary_entry_id = ?",
+                    params.getId()
+            );
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__synonym__jt " +
+                            "(vocabulary_entry_id, word_id) " +
+                            "values (?, ?)",
+                    createBatchPreparedStatementSetter(new ArrayList<>(params.getSynonymIds()), params.getId()));
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__antonym__jt " +
+                            "(vocabulary_entry_id, word_id) " +
+                            "values (?, ?)",
+                    createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), params.getId()));
+        });
+
     }
 
     public List<VocabularyEntry> findAllInRange(int startInclusive, int endInclusive) {
