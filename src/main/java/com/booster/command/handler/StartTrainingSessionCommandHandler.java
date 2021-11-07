@@ -119,19 +119,21 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private void executeSynonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
         int index = 0;
 
-        VocabularyEntry entry = vocabularyEntries.get(index++);
+        VocabularyEntry entry = vocabularyEntries.get(index);
         printCurrentWord(entry);
         adapter.write("Synonyms >> ");
         String enteredSynonyms = adapter.readLine();
 
-        while (!enteredSynonyms.equalsIgnoreCase("e") && index < vocabularyEntries.size()) {
+        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
 
-            entry = vocabularyEntries.get(index++);
-            printCurrentWord(entry);
-            adapter.write("Synonyms >> ");
-            enteredSynonyms = adapter.readLine();
+            if (index < vocabularyEntries.size()) {
+                entry = vocabularyEntries.get(index);
+                printCurrentWord(entry);
+                adapter.write("Synonyms >> ");
+                enteredSynonyms = adapter.readLine();
+            }
         }
     }
 
@@ -157,14 +159,45 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private void executeAntonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
-        for (var vocabularyEntry : vocabularyEntries) {
-            printCurrentWord(vocabularyEntry);
+        int index = 0;
 
-            boolean isCorrectAnswer = checkAntonyms(vocabularyEntry);
-            handleAnswerSynonyms(isCorrectAnswer);
+        VocabularyEntry entry = vocabularyEntries.get(index);
+        printCurrentWord(entry);
+        adapter.write("Antonyms >> ");
+        String enteredAntonyms = adapter.readLine();
 
-            updateCorrectAnswersCount(vocabularyEntry, isCorrectAnswer);
+        while (!enteredAntonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
+            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
+            handleAnswerAntonyms(antonymsAnswer, entry);
+
+            if (index < vocabularyEntries.size()) {
+                entry = vocabularyEntries.get(index);
+                printCurrentWord(entry);
+                adapter.write("Antonyms >> ");
+                enteredAntonyms = adapter.readLine();
+            }
         }
+    }
+
+    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
+        if (antonymsAnswer.equals(entry.getAntonyms())) {
+            updateCorrectAnswersCount(entry, true);
+            adapter.writeLine("Correct!");
+        } else {
+            Set<String> antonymsAnswerCopy = new HashSet<>(antonymsAnswer);
+            antonymsAnswerCopy.removeAll(entry.getAntonyms());
+
+            if (antonymsAnswerCopy.isEmpty()) {
+                HashSet<String> originalAntonymsCopy = new HashSet<>(entry.getAntonyms());
+                originalAntonymsCopy.removeAll(antonymsAnswer);
+                updateCorrectAnswersCount(entry, true);
+                adapter.writeLine("Correct. Other antonyms: " + originalAntonymsCopy);
+            } else {
+                updateCorrectAnswersCount(entry, false);
+                adapter.writeLine("Wrong. Answer is: " + entry.getAntonyms());
+            }
+        }
+        adapter.newLine();
     }
 
     private void updateCorrectAnswersCount(VocabularyEntry ve, boolean isCorrectAnswer) {
