@@ -46,13 +46,13 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
         switch (mode) {
             case FULL:
-                return vocabularyEntryDao.findAll();
+                return vocabularyEntryDao.findAllWithAntonymsAndSynonyms();
             case SYNONYMS:
                 return vocabularyEntryDao.findAllWithSynonyms();
             case ANTONYMS:
                 return vocabularyEntryDao.findAllWithAntonyms();
             default:
-                return List.of();
+                throw new RuntimeException("Unrecognized mode: " + mode);
         }
     }
 

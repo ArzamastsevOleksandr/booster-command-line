@@ -290,6 +290,40 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
+    public List<VocabularyEntry> findAllWithAntonymsAndSynonyms() {
+        List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
+                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                        "w.name as w_name,  w.id as w_id, " +
+                        "l.name as l_name, l.id as l_id " +
+                        "from vocabulary_entry ve " +
+                        "join word w " +
+                        "on ve.word_id = w.id " +
+                        "join language l " +
+                        "on ve.language_id = l.id " +
+                        "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
+                        "and exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id)",
+                rs2VocabularyEntry);
+
+        var veId2Antonyms = jdbcTemplate.query("select ve.id as ve_id, w.name as antonym " +
+                        "from vocabulary_entry__antonym__jt vea " +
+                        "join word w on vea.word_id = w.id " +
+                        "join vocabulary_entry ve on vea.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("antonym"));
+
+        var veId2Synonyms = jdbcTemplate.query("select ve.id as ve_id, w.name as synonym " +
+                        "from vocabulary_entry__synonym__jt ves " +
+                        "join word w on ves.word_id = w.id " +
+                        "join vocabulary_entry ve on ves.vocabulary_entry_id = ve.id",
+                createResultSetExtractor("synonym"));
+
+        return vocabularyEntries.stream()
+                .map(ve -> ve.toBuilder()
+                        .antonyms(veId2Antonyms.getOrDefault(ve.getId(), Set.of()))
+                        .synonyms(veId2Synonyms.getOrDefault(ve.getId(), Set.of()))
+                        .build())
+                .collect(toList());
+    }
+
     public List<VocabularyEntry> findAllForLanguageId(long id) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
