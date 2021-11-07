@@ -135,6 +135,11 @@ public class VocabularyEntryDao {
                         "(vocabulary_entry_id, word_id) " +
                         "values (?, ?)",
                 createBatchPreparedStatementSetter(new ArrayList<>(params.getAntonymIds()), vocabularyEntryId));
+        jdbcTemplate.batchUpdate(
+                "insert into vocabulary_entry__context__jt " +
+                        "(vocabulary_entry_id, context) " +
+                        "values (?, ?)",
+                createBatchPreparedStatementSetterForContexts(new ArrayList<>(params.getContexts()), vocabularyEntryId));
     }
 
     private ResultSetExtractor<Map<Long, Set<String>>> createResultSetExtractor(String columnName) {
@@ -162,6 +167,22 @@ public class VocabularyEntryDao {
             @Override
             public int getBatchSize() {
                 return ids.size();
+            }
+        };
+    }
+
+    private BatchPreparedStatementSetter createBatchPreparedStatementSetterForContexts(List<String> contexts, long id) {
+        return new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                String context = contexts.get(i);
+                ps.setLong(1, id);
+                ps.setString(2, context);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return contexts.size();
             }
         };
     }

@@ -40,6 +40,8 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
         commandWithArgs.getDefinition().ifPresent(params::setDefinition);
 
+        params.setContexts(commandWithArgs.getContexts());
+
         params.setSynonymIds(getWordIds(commandWithArgs.getSynonyms()));
         params.setAntonymIds(getWordIds(commandWithArgs.getAntonyms()));
 
