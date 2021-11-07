@@ -85,6 +85,9 @@ class TokenSequenceTransformer {
                 case SUBSTRING:
                     argumentsBuilder = argumentsBuilder.substring(flagValue);
                     break;
+                case CONTEXTS:
+                    argumentsBuilder = argumentsBuilder.contexts(getWordEquivalentNames(flagValue));
+                    break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }
