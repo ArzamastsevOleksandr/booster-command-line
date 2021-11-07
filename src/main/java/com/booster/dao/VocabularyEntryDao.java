@@ -236,7 +236,7 @@ public class VocabularyEntryDao {
                 .build();
     }
 
-    public List<VocabularyEntry> findAllWithSynonyms() {
+    public List<VocabularyEntry> findAllWithSynonyms(int limit) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, w.id as w_id, " +
@@ -247,8 +247,9 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on l.id = ve.language_id " +
                         "where exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id) " +
-                        "order by cac",
-                rs2VocabularyEntry);
+                        "order by cac " +
+                        "limit ?",
+                rs2VocabularyEntry, limit);
 
         var veId2Synonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as synonym " +
@@ -266,7 +267,7 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
-    public List<VocabularyEntry> findAllWithAntonyms() {
+    public List<VocabularyEntry> findAllWithAntonyms(int limit) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name,  w.id as w_id, " +
@@ -277,8 +278,9 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on ve.language_id = l.id " +
                         "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
-                        "order by cac",
-                rs2VocabularyEntry);
+                        "order by cac " +
+                        "limit ?",
+                rs2VocabularyEntry, limit);
 
         var veId2Antonyms = jdbcTemplate.query(
                 "select ve.id as ve_id, w.name as antonym " +
@@ -294,7 +296,7 @@ public class VocabularyEntryDao {
                 .collect(toList());
     }
 
-    public List<VocabularyEntry> findAllWithAntonymsAndSynonyms() {
+    public List<VocabularyEntry> findAllWithAntonymsAndSynonyms(int limit) {
         List<VocabularyEntry> vocabularyEntries = jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name,  w.id as w_id, " +
@@ -306,8 +308,9 @@ public class VocabularyEntryDao {
                         "on ve.language_id = l.id " +
                         "where exists (select * from vocabulary_entry__antonym__jt where vocabulary_entry_id = ve.id) " +
                         "and exists (select * from vocabulary_entry__synonym__jt where vocabulary_entry_id = ve.id) " +
-                        "order by cac",
-                rs2VocabularyEntry);
+                        "order by cac " +
+                        "limit ?",
+                rs2VocabularyEntry, limit);
 
         var veId2Antonyms = jdbcTemplate.query("select ve.id as ve_id, w.name as antonym " +
                         "from vocabulary_entry__antonym__jt vea " +

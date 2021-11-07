@@ -21,6 +21,8 @@ import static java.util.stream.Collectors.toSet;
 public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
+    // todo: configurable setting
+    private static final int ENTRIES_PER_TRAINING_SESSION = 10;
 
     private final VocabularyEntryDao vocabularyEntryDao;
     private final CommandLineAdapter adapter;
@@ -45,11 +47,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
         switch (mode) {
             case FULL:
-                return vocabularyEntryDao.findAllWithAntonymsAndSynonyms();
+                return vocabularyEntryDao.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case SYNONYMS:
-                return vocabularyEntryDao.findAllWithSynonyms();
+                return vocabularyEntryDao.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case ANTONYMS:
-                return vocabularyEntryDao.findAllWithAntonyms();
+                return vocabularyEntryDao.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
             default:
                 throw new RuntimeException("Unrecognized mode: " + mode);
         }
