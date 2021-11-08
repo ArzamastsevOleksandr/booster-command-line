@@ -86,8 +86,8 @@ public class VocabularyEntryDao {
         };
     }
 
-    public void addWithDefaultValues(AddVocabularyEntryDaoParams params) {
-        add(params, connection -> {
+    public long addWithDefaultValues(AddVocabularyEntryDaoParams params) {
+        return add(params, connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "insert into vocabulary_entry " +
                             "(word_id, language_id, definition) " +
@@ -114,8 +114,8 @@ public class VocabularyEntryDao {
         });
     }
 
-    private void add(AddVocabularyEntryDaoParams params, PreparedStatementCreator preparedStatementCreator) {
-        transactionTemplate.executeWithoutResult(status -> {
+    private long add(AddVocabularyEntryDaoParams params, PreparedStatementCreator preparedStatementCreator) {
+        return transactionTemplate.execute(status -> {
             var keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(preparedStatementCreator, keyHolder);
 
@@ -135,6 +135,7 @@ public class VocabularyEntryDao {
                             "(vocabulary_entry_id, context) " +
                             "values (?, ?)",
                     createBatchPreparedStatementSetterForContexts(new ArrayList<>(params.getContexts()), vocabularyEntryId));
+            return vocabularyEntryId;
         });
     }
 
