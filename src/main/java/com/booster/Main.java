@@ -9,7 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: when ve is added/updated - print it
+        // todo: when I add a ve, have a component that keeps track of how many I have added so far
+        // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
+        //Arguments must follow a pattern of flag -> separator -> value
+        // todo: when importing a file - do not specify the extension
+        // todo: when n/l/s is added/updated - print it
         // todo: in the end of the training session print all words that had mistakes
         // todo: when I have seen the ve - update it for it to not appear in the next displays
         // todo: list_flags command
