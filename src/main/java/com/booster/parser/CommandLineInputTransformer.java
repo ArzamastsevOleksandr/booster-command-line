@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+// todo: clear naming
 @Component
 @RequiredArgsConstructor
 public class CommandLineInputTransformer {

@@ -123,7 +123,7 @@ class CommandLineInputTokenizer {
         }
     }
 
-    // todo: feat: flexible flag recognition. change one place to change flag from \<flag> to -->flag> etc
+    // todo: feat: flexible flag recognition. change one place to change flag from \<flag> to --<flag> etc
     private boolean isFlagMarker(char character) {
         return FLAG_MARKER.equals(Character.toString(character));
     }

@@ -22,8 +22,7 @@ public class AddSettingsArgValidator implements ArgValidator {
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
         checkIfSettingsAlreadyExist();
 
-        commandWithArgs.getLanguageId()
-                .ifPresent(this::checkIfLanguageExistsWithId);
+        commandWithArgs.getLanguageId().ifPresent(this::checkIfLanguageExistsWithId);
 
         return commandWithArgs;
     }

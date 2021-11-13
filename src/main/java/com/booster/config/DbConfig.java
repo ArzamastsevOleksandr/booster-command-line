@@ -27,7 +27,7 @@ class DbConfig {
         driverManagerDataSource.setUrl(environment.getProperty("dburl"));
         driverManagerDataSource.setUsername(environment.getProperty("dbuser"));
         driverManagerDataSource.setPassword(environment.getProperty("dbpassword"));
-        driverManagerDataSource.setDriverClassName(Objects.requireNonNull(environment.getProperty("dbdriver"), "db driver can not be null"));
+        driverManagerDataSource.setDriverClassName(environment.getProperty("dbdriver"));
         return driverManagerDataSource;
     }
 
@@ -37,7 +37,7 @@ class DbConfig {
     }
 
     @Bean
-    PlatformTransactionManager manager() {
+    PlatformTransactionManager transactionManager() {
         return new JdbcTransactionManager(dataSource());
     }
 

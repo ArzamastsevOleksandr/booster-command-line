@@ -14,8 +14,7 @@ public class AddLanguageCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getName()
-                .ifPresent(languageDao::add);
+        commandWithArgs.getName().ifPresent(languageDao::add);
     }
 
     @Override
