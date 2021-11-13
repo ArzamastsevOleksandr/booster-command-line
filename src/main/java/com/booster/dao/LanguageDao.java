@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LanguageDao {
 
-    public static final RowMapper<Language> rs2Language = (rs, i) -> Language.builder()
+    public static final RowMapper<Language> RS_2_LANGUAGE = (rs, i) -> Language.builder()
             .id(rs.getLong("id"))
             .name(rs.getString("name"))
             .build();
@@ -22,39 +22,26 @@ public class LanguageDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Language> findAll() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from language", rs2Language);
+        return jdbcTemplate.query("select * from language", RS_2_LANGUAGE);
     }
 
     public int countWithId(long id) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from language l " +
-                        "where l.id = ?", Integer.class, id);
+        return jdbcTemplate.queryForObject("select count(*) from language l where l.id = ?", Integer.class, id);
     }
 
     public Language findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from language l " +
-                        "where l.name = ?", rs2Language, name);
+        return jdbcTemplate.queryForObject("select * from language l where l.name = ?", RS_2_LANGUAGE, name);
     }
 
     public int countWithName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from language l " +
-                        "where l.name = ?", Integer.class, name);
+        return jdbcTemplate.queryForObject("select count(*) from language l where l.name = ?", Integer.class, name);
     }
 
     public long add(String name) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into language " +
-                            "(name) " +
-                            "values (?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement("insert into language (name) values (?)",
+                    new String[]{"id"});
             ps.setString(1, name);
             return ps;
         }, keyHolder);
@@ -62,9 +49,11 @@ public class LanguageDao {
     }
 
     public void delete(Long id) {
-        jdbcTemplate.update(
-                "delete from language " +
-                        "where id = ?", id);
+        jdbcTemplate.update("delete from language where id = ?", id);
+    }
+
+    public Language findById(long id) {
+        return jdbcTemplate.queryForObject("select * from language where id = ?", RS_2_LANGUAGE, id);
     }
 
 }

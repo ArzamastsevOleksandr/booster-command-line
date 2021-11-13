@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.VocabularyEntryDao;
@@ -23,6 +24,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
     private final VocabularyEntryService vocabularyEntryService;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
@@ -45,6 +47,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
             processAntonyms(commandWithArgs, ve, params);
 
             vocabularyEntryDao.update(params);
+            adapter.writeLine(vocabularyEntryDao.findById(params.getId()));
         });
     }
 

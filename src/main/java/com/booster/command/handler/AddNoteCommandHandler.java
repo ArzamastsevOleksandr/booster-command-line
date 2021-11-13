@@ -1,5 +1,6 @@
 package com.booster.command.handler;
 
+import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.dao.NoteDao;
@@ -11,10 +12,14 @@ import org.springframework.stereotype.Component;
 public class AddNoteCommandHandler implements CommandHandler {
 
     private final NoteDao noteDao;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getContent().ifPresent(noteDao::add);
+        commandWithArgs.getContent().ifPresent(content -> {
+            long id = noteDao.add(content);
+            adapter.writeLine(noteDao.findById(id));
+        });
     }
 
     @Override

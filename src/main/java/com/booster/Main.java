@@ -13,7 +13,6 @@ public class Main {
         // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
         //Arguments must follow a pattern of flag -> separator -> value
         // todo: when importing a file - do not specify the extension
-        // todo: when n/l/s is added/updated - print it
         // todo: in the end of the training session print all words that had mistakes
         // todo: when I have seen the ve - update it for it to not appear in the next displays
         // todo: validator validates. command handler works with non-optional data and expects a happy path?
