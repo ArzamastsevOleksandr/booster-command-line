@@ -14,8 +14,7 @@ public class AddTagCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getName()
-                .ifPresent(tagDao::add);
+        commandWithArgs.getName().ifPresent(tagDao::add);
     }
 
     @Override

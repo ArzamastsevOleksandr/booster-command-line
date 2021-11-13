@@ -559,6 +559,7 @@ public class VocabularyEntryDao {
         return jdbcTemplate.queryForObject("select count(*) from vocabulary_entry", Integer.class);
     }
 
+    // todo: select distinct vocabulary_entry_id from vocabulary_entry__synonym__jt
     public int countWithSynonyms() {
         return jdbcTemplate.queryForObject("select count(distinct ve_with_synonyms.id) " +
                 "from (select * " +

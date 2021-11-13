@@ -5,6 +5,7 @@ import lombok.Value;
 import java.util.Objects;
 import java.util.Optional;
 
+// todo: KISS
 @Value
 public class AddSettingsDaoParams {
 

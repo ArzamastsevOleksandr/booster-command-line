@@ -14,8 +14,7 @@ public class AddNoteCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getContent()
-                .ifPresent(noteDao::add);
+        commandWithArgs.getContent().ifPresent(noteDao::add);
     }
 
     @Override

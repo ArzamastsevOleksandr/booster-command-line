@@ -129,6 +129,8 @@ public class XlsxImportComponent {
     private Set<Long> getEquivalentIds(XSSFCell cell) {
         return Optional.ofNullable(cell)
                 .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(s -> !s.isBlank())
                 .map(s -> Arrays.stream(s.split(";")))
                 .map(s -> s.map(wordService::findByNameOrCreateAndGet).map(Word::getId).collect(toSet()))
                 .orElse(Collections.emptySet());
