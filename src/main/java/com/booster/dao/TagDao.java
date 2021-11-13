@@ -4,8 +4,10 @@ import com.booster.model.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
@@ -20,8 +22,19 @@ public class TagDao {
         return jdbcTemplate.query("select * from tag", RS_2_TAG);
     }
 
-    public void add(String name) {
-        jdbcTemplate.update("insert into tag (name) values (?)", name);
+    public String add(String name) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("insert into tag (name) values (?)",
+                    new String[]{"name"});
+            ps.setString(1, name);
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKeyAs(String.class);
+    }
+
+    public Tag findByName(String name) {
+        return jdbcTemplate.queryForObject("select * from tag where name = ?", RS_2_TAG, name);
     }
 
 }

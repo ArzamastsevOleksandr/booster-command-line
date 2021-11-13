@@ -5,7 +5,10 @@ import com.booster.model.Settings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
+
+import java.sql.PreparedStatement;
 
 import static java.util.Optional.ofNullable;
 
@@ -20,10 +23,7 @@ public class SettingsDao {
     private final JdbcTemplate jdbcTemplate;
 
     public Settings findOne() {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from settings " +
-                        "limit 1", RS_TO_SETTINGS);
+        return jdbcTemplate.queryForObject("select * from settings", RS_TO_SETTINGS);
     }
 
     private static Long getLongValueOrNull(Object obj) {
@@ -33,24 +33,27 @@ public class SettingsDao {
                 .orElse(null);
     }
 
-    public void add(AddSettingsDaoParams params) {
-        jdbcTemplate.update(
-                "insert into settings " +
-                        "(language_id) " +
-                        "values (?)",
-                params.getLanguageId().orElse(null));
+    public long add(AddSettingsDaoParams params) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("insert into settings (language_id) values (?)",
+                    new String[]{"id"});
+            ps.setObject(1, params.getLanguageId().orElse(null));
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     public void deleteAll() {
-        jdbcTemplate.update(
-                "delete from settings " +
-                        "where id in (select s.id from settings s)");
+        jdbcTemplate.update("delete from settings");
     }
 
     public int count() {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from settings", Integer.class);
+        return jdbcTemplate.queryForObject("select count(*) from settings", Integer.class);
+    }
+
+    public Settings findById(long id) {
+        return jdbcTemplate.queryForObject("select * from settings where id = ?", RS_TO_SETTINGS, id);
     }
 
 }

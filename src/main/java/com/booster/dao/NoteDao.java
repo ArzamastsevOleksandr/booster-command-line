@@ -4,8 +4,10 @@ import com.booster.model.Note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
@@ -23,8 +25,15 @@ public class NoteDao {
         return jdbcTemplate.query("select * from note", RS_2_NOTE);
     }
 
-    public void add(String content) {
-        jdbcTemplate.update("insert into note (content) values (?)", content);
+    public long add(String content) {
+        var keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("insert into note (content) values (?)",
+                    new String[]{"id"});
+            ps.setString(1, content);
+            return ps;
+        }, keyHolder);
+        return keyHolder.getKey().longValue();
     }
 
     public int countWithId(Long id) {
@@ -33,6 +42,10 @@ public class NoteDao {
 
     public void delete(Long id) {
         jdbcTemplate.update("delete from note where id = ?", id);
+    }
+
+    public Note findById(long id) {
+        return jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
     }
 
 }
