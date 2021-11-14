@@ -1,9 +1,12 @@
 package com.booster.util;
 
+import org.springframework.stereotype.Component;
+
 // todo: test
+@Component
 public class NumberUtil {
 
-    public static boolean isPositiveLong(String check) {
+    public boolean isPositiveLong(String check) {
         try {
             long result = Long.parseLong(check);
             return result > 0;
@@ -12,11 +15,11 @@ public class NumberUtil {
         }
     }
 
-    public static boolean isNotPositiveLong(String check) {
+    public boolean isNotPositiveLong(String check) {
         return !isPositiveLong(check);
     }
 
-    public static boolean isPositiveInteger(String check) {
+    public boolean isPositiveInteger(String check) {
         try {
             int result = Integer.parseInt(check);
             return result > 0;
@@ -25,7 +28,7 @@ public class NumberUtil {
         }
     }
 
-    public static boolean isNotPositiveInteger(String check) {
+    public boolean isNotPositiveInteger(String check) {
         return !isPositiveInteger(check);
     }
 

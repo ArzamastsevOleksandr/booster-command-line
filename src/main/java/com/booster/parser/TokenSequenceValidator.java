@@ -4,13 +4,17 @@ import com.booster.command.FlagType;
 import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.util.NumberUtil;
 import com.booster.util.ObjectUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 class TokenSequenceValidator {
+
+    private final NumberUtil numberUtil;
 
     // todo: implement support for flags with no values
     TokenValidationResult validate(List<Token> tokens) {
@@ -102,8 +106,10 @@ class TokenSequenceValidator {
                 checkIfLanguageIdIsPositiveLongNumber(expectedValue.getValue());
                 break;
             case CORRECT_ANSWERS_COUNT:
+                checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
+                break;
             case PAGINATION:
-                checkIfCorrectAnswersCountIsPositiveIntegerNumber(expectedValue.getValue());
+                checkIfValueIsPositiveIntegerNumber("Pagination", expectedValue.getValue());
                 break;
             case MODE:
                 checkIfTrainingSessionModeIsCorrect(expectedValue.getValue());
@@ -120,18 +126,18 @@ class TokenSequenceValidator {
         }
     }
 
-    private void checkIfCorrectAnswersCountIsPositiveIntegerNumber(String value) {
-        if (NumberUtil.isNotPositiveInteger(value))
-            throw new TokenValidationException("Correct answers count argument must be a positive integer number, got: " + value);
+    private void checkIfValueIsPositiveIntegerNumber(String name, String value) {
+        if (numberUtil.isNotPositiveInteger(value))
+            throw new TokenValidationException(name + " argument must be a positive integer number, got: " + value);
     }
 
     private void checkIfIdIsPositiveLongNumber(String value) {
-        if (NumberUtil.isNotPositiveLong(value))
+        if (numberUtil.isNotPositiveLong(value))
             throw new TokenValidationException("Id argument must be a positive long number, got: " + value);
     }
 
     private void checkIfLanguageIdIsPositiveLongNumber(String value) {
-        if (NumberUtil.isNotPositiveLong(value))
+        if (numberUtil.isNotPositiveLong(value))
             throw new TokenValidationException("Language id argument must be a positive long number, got: " + value);
     }
 
