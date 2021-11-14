@@ -108,3 +108,33 @@ create table tag
 (
     name varchar(50) primary key
 );
+
+create table vocabulary_entry__tag__jt
+(
+    vocabulary_entry_id bigint      not null,
+    tag                 varchar(50) not null,
+
+    constraint vocabulary_entry_id__tag__pkey
+        primary key (vocabulary_entry_id, tag),
+
+    constraint vocabulary_entry_id__fkey
+        foreign key (vocabulary_entry_id) references vocabulary_entry (id),
+
+    constraint tag__fkey
+        foreign key (tag) references tag (name)
+);
+
+create table note__tag__jt
+(
+    note_id bigint      not null,
+    tag     varchar(50) not null,
+
+    constraint note_id__tag__pkey
+        primary key (note_id, tag),
+
+    constraint note_id__fkey
+        foreign key (note_id) references note (id),
+
+    constraint tag__fkey
+        foreign key (tag) references tag (name)
+);
