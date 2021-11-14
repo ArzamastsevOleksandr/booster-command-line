@@ -1,18 +1,29 @@
 package com.booster.parser;
 
 import com.booster.command.FlagType;
+import com.booster.util.NumberUtil;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class TokenSequenceValidatorTest {
 
-    TokenSequenceValidator validator = new TokenSequenceValidator();
+    @Mock
+    NumberUtil numberUtil;
+
+    @InjectMocks
+    TokenSequenceValidator validator;
 
     @Test
     void throwsIAEIfTokensAreNull() {
@@ -128,6 +139,8 @@ class TokenSequenceValidatorTest {
         Token text = Token.text("a");
 
         List<Token> tokens = List.of(command, flag, separator, text);
+
+        when(numberUtil.isNotPositiveLong(text.getValue())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
         assertThat(validationResult.getTokens()).hasSize(0);
@@ -144,6 +157,8 @@ class TokenSequenceValidatorTest {
         Token text = Token.text("a");
 
         List<Token> tokens = List.of(command, flag, separator, text);
+
+        when(numberUtil.isNotPositiveLong(text.getValue())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
         assertThat(validationResult.getTokens()).hasSize(0);
@@ -160,12 +175,32 @@ class TokenSequenceValidatorTest {
         Token text = Token.text("a");
 
         List<Token> tokens = List.of(command, flag, separator, text);
+
+        when(numberUtil.isNotPositiveInteger(text.getValue())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
         assertThat(validationResult.getTokens()).hasSize(0);
 
         assertThat(validationResult.getErrors())
                 .containsOnly("Correct answers count argument must be a positive integer number, got: " + text.getValue());
+    }
+
+    @Test
+    void paginationMustBePositiveIntegerNumber() {
+        Token command = Token.command("ve");
+        Token flag = Token.flag("p");
+        Token separator = Token.separator();
+        Token text = Token.text("a");
+
+        List<Token> tokens = List.of(command, flag, separator, text);
+
+        when(numberUtil.isNotPositiveInteger(text.getValue())).thenReturn(true);
+        TokenValidationResult validationResult = validator.validate(tokens);
+
+        assertThat(validationResult.getTokens()).hasSize(0);
+
+        assertThat(validationResult.getErrors())
+                .containsOnly("Pagination argument must be a positive integer number, got: " + text.getValue());
     }
 
     @Test
