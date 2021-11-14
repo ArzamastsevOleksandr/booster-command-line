@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: if null is returned when querying for count - log the error and return 0
+        // todo: fix: ve load contexts
+        // todo: fix: uve enable \ctx
+        // todo: add logging to a file
         // todo: when I add a ve, have a component that keeps track of how many I have added so far
         // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
         //Arguments must follow a pattern of flag -> separator -> value
