@@ -17,6 +17,8 @@ public class CommandWithArgs {
 
     Long id;
     Long languageId;
+    Long noteId;
+    Long vocabularyEntryId;
     String name;
     String definition;
     String filename;
@@ -25,6 +27,7 @@ public class CommandWithArgs {
     Integer correctAnswersCount;
     Integer pagination;
     String substring;
+    String tag;
 
     @Builder.Default
     Set<String> addAntonyms = Set.of();
@@ -48,6 +51,14 @@ public class CommandWithArgs {
         return Optional.ofNullable(id);
     }
 
+    public Optional<Long> getNoteId() {
+        return Optional.ofNullable(noteId);
+    }
+
+    public Optional<Long> getVocabularyEntryId() {
+        return Optional.ofNullable(vocabularyEntryId);
+    }
+
     public Optional<Long> getLanguageId() {
         return Optional.ofNullable(languageId);
     }
@@ -62,6 +73,10 @@ public class CommandWithArgs {
 
     public Optional<String> getFilename() {
         return Optional.ofNullable(filename);
+    }
+
+    public Optional<String> getTag() {
+        return Optional.ofNullable(tag);
     }
 
     public Optional<TrainingSessionMode> getMode() {

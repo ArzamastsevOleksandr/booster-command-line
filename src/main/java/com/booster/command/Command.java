@@ -45,6 +45,8 @@ public enum Command {
 
     ADD_TAG(Set.of("at")),
     LIST_TAGS(Set.of("t")),
+    // todo: DELETE_TAG
+    USE_TAG(Set.of("ut")),
 
     MARK_VOCABULARY_ENTRY_DIFFICULT(Set.of("md")),
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),

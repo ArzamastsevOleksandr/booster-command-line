@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: load tags when displaying notes/ves
+        // todo: export/import tags
+        // todo: I can list the tags along with the count of items related to them
         // todo: if null is returned when querying for count - log the error and return 0
         // todo: fix: ve load contexts
         // todo: fix: uve enable \ctx

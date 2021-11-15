@@ -1,4 +1,5 @@
 -- todo: primary/foreign key AND index naming documentation
+-- todo: use one style when creating pkeys, fkeys, indexes
 
 create table language
 (

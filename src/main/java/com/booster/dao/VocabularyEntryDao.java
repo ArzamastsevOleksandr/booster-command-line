@@ -1,5 +1,6 @@
 package com.booster.dao;
 
+import com.booster.dao.params.AddTagToVocabularyEntryDaoParams;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.dao.params.UpdateVocabularyEntryDaoParams;
 import com.booster.model.VocabularyEntry;
@@ -599,6 +600,11 @@ public class VocabularyEntryDao {
     public void delete(long id) {
         jdbcTemplate.update("delete from vocabulary_entry " +
                 "where id = ?", id);
+    }
+
+    public void addTag(AddTagToVocabularyEntryDaoParams params) {
+        jdbcTemplate.update("insert into vocabulary_entry__tag__jt (vocabulary_entry_id, tag) values (?, ?)",
+                params.getVocabularyEntryId(), params.getTag());
     }
 
 }
