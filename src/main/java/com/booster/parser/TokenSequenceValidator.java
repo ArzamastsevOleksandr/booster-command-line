@@ -100,10 +100,16 @@ class TokenSequenceValidator {
         FlagType flagType = FlagType.fromString(expectedFlag.getValue());
         switch (flagType) {
             case ID:
-                checkIfIdIsPositiveLongNumber(expectedValue.getValue());
+                checkIfIdIsPositiveLongNumber("Id", expectedValue.getValue());
                 break;
             case LANGUAGE_ID:
-                checkIfLanguageIdIsPositiveLongNumber(expectedValue.getValue());
+                checkIfIdIsPositiveLongNumber("Language id", expectedValue.getValue());
+                break;
+            case NOTE_ID:
+                checkIfIdIsPositiveLongNumber("Note id", expectedValue.getValue());
+                break;
+            case VOCABULARY_ENTRY_ID:
+                checkIfIdIsPositiveLongNumber("Vocabulary entry id", expectedValue.getValue());
                 break;
             case CORRECT_ANSWERS_COUNT:
                 checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
@@ -131,14 +137,9 @@ class TokenSequenceValidator {
             throw new TokenValidationException(name + " argument must be a positive integer number, got: " + value);
     }
 
-    private void checkIfIdIsPositiveLongNumber(String value) {
+    private void checkIfIdIsPositiveLongNumber(String name, String value) {
         if (numberUtil.isNotPositiveLong(value))
-            throw new TokenValidationException("Id argument must be a positive long number, got: " + value);
-    }
-
-    private void checkIfLanguageIdIsPositiveLongNumber(String value) {
-        if (numberUtil.isNotPositiveLong(value))
-            throw new TokenValidationException("Language id argument must be a positive long number, got: " + value);
+            throw new TokenValidationException(name + " argument must be a positive long number, got: " + value);
     }
 
     private String tokenTypeToLowerCaseString(Token token) {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +36,12 @@ public class TagDao {
 
     public Tag findByName(String name) {
         return jdbcTemplate.queryForObject("select * from tag where name = ?", RS_2_TAG, name);
+    }
+
+    public int countWithName(String tag) {
+        var count = jdbcTemplate.queryForObject("select count(*) from tag where name = ?",
+                Integer.class, tag);
+        return Objects.requireNonNullElse(count, 0);
     }
 
 }

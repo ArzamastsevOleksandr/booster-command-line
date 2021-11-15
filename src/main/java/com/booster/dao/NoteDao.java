@@ -1,5 +1,6 @@
 package com.booster.dao;
 
+import com.booster.dao.params.AddTagToNoteDaoParams;
 import com.booster.model.Note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -46,6 +47,11 @@ public class NoteDao {
 
     public Note findById(long id) {
         return jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
+    }
+
+    public void addTag(AddTagToNoteDaoParams params) {
+        jdbcTemplate.update("insert into note__tag__jt (note_id, tag) values (?, ?)",
+                params.getNoteId(), params.getTag());
     }
 
 }
