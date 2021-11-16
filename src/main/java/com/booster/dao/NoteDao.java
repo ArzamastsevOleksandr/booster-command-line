@@ -4,12 +4,15 @@ import com.booster.dao.params.AddTagToNoteDaoParams;
 import com.booster.model.Note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
-import java.util.List;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +26,22 @@ public class NoteDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Note> findAll() {
-        return jdbcTemplate.query("select * from note", RS_2_NOTE);
+        List<Note> notes = jdbcTemplate.query("select * from note", RS_2_NOTE);
+        Map<Long, Set<String>> noteId2Tags = jdbcTemplate.query("select * from note__tag__jt ", resultSetExtractor());
+        return notes.stream()
+                .map(n -> n.toBuilder().tags(noteId2Tags.getOrDefault(n.getId(), Set.of())).build())
+                .collect(toList());
+    }
+
+    private ResultSetExtractor<Map<Long, Set<String>>> resultSetExtractor() {
+        return rs -> {
+            Map<Long, Set<String>> veId2Values = new HashMap<>();
+            while (rs.next()) {
+                veId2Values.computeIfAbsent(rs.getLong("note_id"), k -> new HashSet<>())
+                        .add(rs.getString("tag"));
+            }
+            return veId2Values;
+        };
     }
 
     public long add(String content) {
@@ -45,8 +63,12 @@ public class NoteDao {
         jdbcTemplate.update("delete from note where id = ?", id);
     }
 
+    // todo: make dao simple, group all logic in the service?
     public Note findById(long id) {
-        return jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
+        Note note = jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
+        List<String> tags = jdbcTemplate.query("select tag from note__tag__jt where note_id = ?",
+                (rs, i) -> rs.getString("tag"), id);
+        return note.toBuilder().tags(new HashSet<>(tags)).build();
     }
 
     public void addTag(AddTagToNoteDaoParams params) {

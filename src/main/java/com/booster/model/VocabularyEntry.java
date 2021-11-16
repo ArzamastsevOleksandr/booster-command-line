@@ -17,7 +17,7 @@ public class VocabularyEntry {
     Timestamp createdAt;
     int correctAnswersCount;
 
-//    todo: custom ds
+    // todo: custom ds
     Long languageId;
     String languageName;
 
@@ -29,6 +29,8 @@ public class VocabularyEntry {
     Set<String> antonyms = Set.of();
     @Builder.Default
     Set<String> contexts = Set.of();
+    @Builder.Default
+    Set<String> tags = Set.of();
 
     public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);
