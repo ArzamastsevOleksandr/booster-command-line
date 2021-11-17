@@ -2,12 +2,14 @@ package com.booster.load;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.LanguageDao;
-import com.booster.dao.NoteDao;
 import com.booster.dao.VocabularyEntryDao;
+import com.booster.dao.params.AddNoteDaoParams;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
 import com.booster.model.Word;
 import com.booster.service.LanguageService;
+import com.booster.service.NoteService;
+import com.booster.service.TagService;
 import com.booster.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -37,7 +39,8 @@ public class XlsxImportComponent {
     private final WordService wordService;
     private final LanguageService languageService;
     private final LanguageDao languageDao;
-    private final NoteDao noteDao;
+    private final NoteService noteService;
+    private final TagService tagService;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -66,7 +69,11 @@ public class XlsxImportComponent {
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
                     .filter(s -> !s.isBlank())
-                    .ifPresent(noteDao::add);
+                    .ifPresent(content -> {
+                        Set<String> tags = getTags(row.getCell(1));
+                        tagService.createIfNotExist(tags);
+                        noteService.add(AddNoteDaoParams.builder().content(content).tags(tags).build());
+                    });
         }
     }
 
@@ -106,6 +113,9 @@ public class XlsxImportComponent {
                         int correctAnswersCount = (int) row.getCell(4).getNumericCellValue();
                         Timestamp createdAt = Timestamp.valueOf(row.getCell(5).getStringCellValue());
 
+                        Set<String> tags = getTags(row.getCell(6));
+                        tagService.createIfNotExist(tags);
+                        // todo: dao methods do 1 thing, service uses all dao methods
                         var params = AddVocabularyEntryDaoParams.builder()
                                 .wordId(wordId)
                                 .languageId(languageId)
@@ -114,10 +124,21 @@ public class XlsxImportComponent {
                                 .correctAnswersCount(correctAnswersCount)
                                 .createdAt(createdAt)
                                 .definition(definition)
+                                .tags(tags)
                                 .build();
                         vocabularyEntryDao.addWithAllValues(params);
                     });
         }
+    }
+
+    private Set<String> getTags(XSSFCell cell) {
+        return Optional.ofNullable(cell)
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(s -> !s.isBlank())
+                .map(s -> Arrays.stream(s.split(";")))
+                .map(s -> s.map(String::strip).filter(str -> !str.isBlank()).collect(toSet()))
+                .orElse(Set.of());
     }
 
     private String readDefinition(XSSFCell cell) {
@@ -132,8 +153,12 @@ public class XlsxImportComponent {
                 .map(String::strip)
                 .filter(s -> !s.isBlank())
                 .map(s -> Arrays.stream(s.split(";")))
-                .map(s -> s.map(wordService::findByNameOrCreateAndGet).map(Word::getId).collect(toSet()))
-                .orElse(Collections.emptySet());
+                .map(s -> s.map(String::strip)
+                        .filter(str -> !str.isBlank())
+                        .map(wordService::findByNameOrCreateAndGet)
+                        .map(Word::getId)
+                        .collect(toSet())
+                ).orElse(Collections.emptySet());
     }
 
 }

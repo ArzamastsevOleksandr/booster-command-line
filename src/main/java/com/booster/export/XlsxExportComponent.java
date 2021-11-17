@@ -48,12 +48,15 @@ public class XlsxExportComponent {
             XSSFSheet sheet = workbook.createSheet("NOTES");
             XSSFRow row = sheet.createRow(0);
 
+            // todo: COLUMN_NAMES constants
             row.createCell(0).setCellValue("content");
+            row.createCell(1).setCellValue("Tags");
 
             for (int i = 0; i < notes.size(); ++i) {
                 XSSFRow noteRow = sheet.createRow(i + 1);
                 Note note = notes.get(i);
                 noteRow.createCell(0).setCellValue(note.getContent());
+                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
             }
         }
     }
@@ -75,6 +78,7 @@ public class XlsxExportComponent {
         row.createCell(3).setCellValue("Antonyms");
         row.createCell(4).setCellValue("Correct answer count");
         row.createCell(5).setCellValue("Created at");
+        row.createCell(6).setCellValue("Tags");
     }
 
     private void createVocabularyEntryRows(Language languageToExport, XSSFSheet sheet) {
@@ -94,6 +98,7 @@ public class XlsxExportComponent {
         row.createCell(3).setCellValue(String.join(";", vocabularyEntry.getAntonyms()));
         row.createCell(4).setCellValue(vocabularyEntry.getCorrectAnswersCount());
         row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt().toString());
+        row.createCell(6).setCellValue(String.join(";", vocabularyEntry.getTags()));
     }
 
 }
