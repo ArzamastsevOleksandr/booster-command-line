@@ -155,6 +155,11 @@ public class VocabularyEntryDao {
                             "(vocabulary_entry_id, context) " +
                             "values (?, ?)",
                     batchPreparedStatementSetterForContexts(new ArrayList<>(params.getContexts()), vocabularyEntryId));
+            jdbcTemplate.batchUpdate(
+                    "insert into vocabulary_entry__tag__jt " +
+                            "(vocabulary_entry_id, tag) " +
+                            "values (?, ?)",
+                    batchPreparedStatementSetterForTags(new ArrayList<>(params.getTags()), vocabularyEntryId));
             return vocabularyEntryId;
         });
     }
@@ -200,6 +205,23 @@ public class VocabularyEntryDao {
             @Override
             public int getBatchSize() {
                 return contexts.size();
+            }
+        };
+    }
+
+    // todo: DRY
+    private BatchPreparedStatementSetter batchPreparedStatementSetterForTags(List<String> tags, long id) {
+        return new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                String tag = tags.get(i);
+                ps.setLong(1, id);
+                ps.setString(2, tag);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return tags.size();
             }
         };
     }
