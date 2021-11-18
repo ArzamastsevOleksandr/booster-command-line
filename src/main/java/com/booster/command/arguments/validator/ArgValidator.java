@@ -9,6 +9,10 @@ public interface ArgValidator {
         throw new ArgsValidationException("Id is missing");
     };
 
+    Runnable NAME_IS_MISSING = () -> {
+        throw new ArgsValidationException("Name is missing");
+    };
+
     default CommandWithArgs validate(CommandWithArgs commandWithArgs) {
         try {
             return validateAndReturn(commandWithArgs);

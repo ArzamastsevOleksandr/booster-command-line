@@ -3,10 +3,7 @@ package com.booster.command.arguments.validator;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.model.Settings;
-import com.booster.service.LanguageService;
-import com.booster.service.SettingsService;
-import com.booster.service.VocabularyEntryService;
-import com.booster.service.WordService;
+import com.booster.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +17,12 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
     private final SettingsService settingsService;
     private final WordService wordService;
     private final LanguageService languageService;
+    private final TagService tagService;
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
         if (commandWithArgs.getName().isEmpty()) {
-            throw new ArgsValidationException("Name is missing");
+            NAME_IS_MISSING.run();
         }
         commandWithArgs.getLanguageId().ifPresentOrElse(languageId -> {
             checkIfLanguageExistsWithId(languageId);
@@ -37,7 +35,15 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
                     long wordId = getWordIdByWordName(commandWithArgs.getName().get());
                     checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
                 }, this::languageIdAndSettingsAreMissing));
+
+        commandWithArgs.getTag().ifPresent(this::checkIfTagExists);
         return commandWithArgs;
+    }
+
+    private void checkIfTagExists(String tag) {
+        if (!tagService.existsWithName(tag)) {
+            throw new ArgsValidationException("Tag does not exist: " + tag);
+        }
     }
 
     private void languageIdAndSettingsAreMissing() {

@@ -9,9 +9,14 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: feat n \ss=<substr>
+        // todo: feat: ve \ss=<substr> should also search for ve with syn/ant to return ANY match
+        // todo: enable adding ve/n with many tags
+        // todo: uve \t \at \rt
+        // todo: fix: Key (id)=(26) is still referenced from table "note__tag__jt"
+        // todo: fix: Key (id)=(114) is still referenced from table "vocabulary_entry__tag__jt"
         // todo: add entities via service and return
         // todo: show notes by id
-        // todo: export/import tags
         // todo: I can list the tags along with the count of items related to them
         // todo: if null is returned when querying for count - log the error and return 0
         // todo: fix: ve load contexts

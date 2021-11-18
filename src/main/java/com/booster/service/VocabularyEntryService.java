@@ -3,6 +3,7 @@ package com.booster.service;
 import com.booster.command.arguments.TrainingSessionMode;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddTagToVocabularyEntryDaoParams;
+import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.VocabularyEntry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,11 @@ public class VocabularyEntryService {
     public VocabularyEntry addTag(AddTagToVocabularyEntryDaoParams params) {
         vocabularyEntryDao.addTag(params);
         return vocabularyEntryDao.findById(params.getVocabularyEntryId());
+    }
+
+    public VocabularyEntry add(AddVocabularyEntryDaoParams params) {
+        long id = vocabularyEntryDao.addWithDefaultValues(params);
+        return vocabularyEntryDao.findById(id);
     }
 
 }

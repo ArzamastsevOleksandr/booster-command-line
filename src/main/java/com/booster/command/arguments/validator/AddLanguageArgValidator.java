@@ -18,9 +18,7 @@ public class AddLanguageArgValidator implements ArgValidator {
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
         commandWithArgs.getName()
                 .map(String::toUpperCase)
-                .ifPresentOrElse(this::checkIfLanguageAlreadyExistsWithName, () -> {
-                    throw new ArgsValidationException("Name is missing");
-                });
+                .ifPresentOrElse(this::checkIfLanguageAlreadyExistsWithName, NAME_IS_MISSING);
 
         return commandWithArgs;
     }
