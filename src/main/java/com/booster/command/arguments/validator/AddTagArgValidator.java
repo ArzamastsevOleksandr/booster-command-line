@@ -2,10 +2,9 @@ package com.booster.command.arguments.validator;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
+import com.booster.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 import static com.booster.command.Command.ADD_TAG;
 
@@ -13,13 +12,18 @@ import static com.booster.command.Command.ADD_TAG;
 @RequiredArgsConstructor
 public class AddTagArgValidator implements ArgValidator {
 
+    private final TagService tagService;
+
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        Optional<String> optionalName = commandWithArgs.getName();
-        if (optionalName.isEmpty()) {
-            throw new ArgsValidationException("Name is missing");
-        }
+        commandWithArgs.getName().ifPresentOrElse(this::checkIfTagAlreadyExists, NAME_IS_MISSING);
         return commandWithArgs;
+    }
+
+    private void checkIfTagAlreadyExists(String tag) {
+        if (tagService.existsWithName(tag)) {
+            throw new ArgsValidationException("Tag already exists with name: " + tag);
+        }
     }
 
     @Override
