@@ -2,11 +2,14 @@ package com.booster.service;
 
 import com.booster.dao.NoteDao;
 import com.booster.dao.params.AddNoteDaoParams;
-import com.booster.dao.params.AddTagToNoteDaoParams;
 import com.booster.model.Note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -19,18 +22,36 @@ public class NoteService {
         return noteDao.countWithId(id) == 1;
     }
 
-    public Note addTag(AddTagToNoteDaoParams params) {
-        noteDao.addTag(params);
-        return noteDao.findById(params.getNoteId());
+    public Note addTag(String tag, long noteId) {
+        noteDao.addTag(tag, noteId);
+        return findById(noteId);
     }
 
-    // todo: 1 batch insert of tags
+    private Note findById(long noteId) {
+        Note note = noteDao.findById(noteId);
+        List<String> tags = noteDao.findTagsByNoteId(noteId);
+        return note.toBuilder().tags(new HashSet<>(tags)).build();
+    }
+
     public Note add(AddNoteDaoParams params) {
         return transactionTemplate.execute(status -> {
             long noteId = noteDao.add(params.getContent());
-            params.getTags().forEach(tag -> noteDao.addTag(new AddTagToNoteDaoParams(tag, noteId)));
-            return noteDao.findById(noteId);
+            noteDao.addTagsToNote(new ArrayList<>(params.getTags()), noteId);
+            return findById(noteId);
         });
+    }
+
+    public List<Note> findAll() {
+        List<Note> notes = noteDao.findAll();
+        Map<Long, Set<String>> id2Tags = noteDao.queryForNoteId2Tags();
+
+        return notes.stream()
+                .map(n -> n.toBuilder().tags(id2Tags.getOrDefault(n.getId(), Set.of())).build())
+                .collect(toList());
+    }
+
+    public void delete(Long id) {
+        noteDao.delete(id);
     }
 
 }

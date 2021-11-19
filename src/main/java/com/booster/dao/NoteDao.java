@@ -1,8 +1,8 @@
 package com.booster.dao;
 
-import com.booster.dao.params.AddTagToNoteDaoParams;
 import com.booster.model.Note;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,9 +10,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
-
-import static java.util.stream.Collectors.toList;
 
 @Component
 @RequiredArgsConstructor
@@ -25,25 +24,7 @@ public class NoteDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Note> findAll() {
-        List<Note> notes = jdbcTemplate.query("select * from note", RS_2_NOTE);
-        Map<Long, Set<String>> noteId2Tags = jdbcTemplate.query("select * from note__tag__jt ", resultSetExtractor());
-        return notes.stream()
-                .map(n -> n.toBuilder().tags(noteId2Tags.getOrDefault(n.getId(), Set.of())).build())
-                .collect(toList());
-    }
-
-    private ResultSetExtractor<Map<Long, Set<String>>> resultSetExtractor() {
-        return rs -> {
-            Map<Long, Set<String>> veId2Values = new HashMap<>();
-            while (rs.next()) {
-                veId2Values.computeIfAbsent(rs.getLong("note_id"), k -> new HashSet<>())
-                        .add(rs.getString("tag"));
-            }
-            return veId2Values;
-        };
-    }
-
+    // todo: DaoOperations component with common dao actions
     public long add(String content) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -55,7 +36,8 @@ public class NoteDao {
         return keyHolder.getKey().longValue();
     }
 
-    public int countWithId(Long id) {
+    // todo: check in service if it is null
+    public Integer countWithId(Long id) {
         return jdbcTemplate.queryForObject("select count(*) from note where id = ?", Integer.class, id);
     }
 
@@ -63,17 +45,58 @@ public class NoteDao {
         jdbcTemplate.update("delete from note where id = ?", id);
     }
 
-    // todo: make dao simple, group all logic in the service?
     public Note findById(long id) {
-        Note note = jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
-        List<String> tags = jdbcTemplate.query("select tag from note__tag__jt where note_id = ?",
-                (rs, i) -> rs.getString("tag"), id);
-        return note.toBuilder().tags(new HashSet<>(tags)).build();
+        return jdbcTemplate.queryForObject("select * from note where id = ?", RS_2_NOTE, id);
     }
 
-    public void addTag(AddTagToNoteDaoParams params) {
-        jdbcTemplate.update("insert into note__tag__jt (note_id, tag) values (?, ?)",
-                params.getNoteId(), params.getTag());
+    public void addTag(String tag, long noteId) {
+        jdbcTemplate.update("insert into note__tag__jt (note_id, tag) values (?, ?)", noteId, tag);
+    }
+
+    public List<Note> findAll() {
+        return jdbcTemplate.query("select * from note", RS_2_NOTE);
+    }
+
+    public Map<Long, Set<String>> queryForNoteId2Tags() {
+        return jdbcTemplate.query("select * from note__tag__jt ", noteId2TagsResultSetExtractor());
+    }
+
+    private ResultSetExtractor<Map<Long, Set<String>>> noteId2TagsResultSetExtractor() {
+        return rs -> {
+            Map<Long, Set<String>> noteId2Tags = new HashMap<>();
+            while (rs.next()) {
+                noteId2Tags.computeIfAbsent(rs.getLong("note_id"), k -> new HashSet<>())
+                        .add(rs.getString("tag"));
+            }
+            return noteId2Tags;
+        };
+    }
+
+    public List<String> findTagsByNoteId(long id) {
+        return jdbcTemplate.query("select tag from note__tag__jt where note_id = ?",
+                (rs, i) -> rs.getString("tag"), id);
+    }
+
+    public void addTagsToNote(List<String> tags, long noteId) {
+        jdbcTemplate.batchUpdate("insert into note__tag__jt (note_id, tag) values (?, ?)",
+                tagsBatchPreparedStatementSetter(tags, noteId)
+        );
+    }
+
+    private BatchPreparedStatementSetter tagsBatchPreparedStatementSetter(List<String> tags, long id) {
+        return new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                String tag = tags.get(i);
+                ps.setLong(1, id);
+                ps.setString(2, tag);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return tags.size();
+            }
+        };
     }
 
 }

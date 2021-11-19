@@ -2,10 +2,12 @@ package com.booster.dao.params;
 
 import lombok.Value;
 
-@Value
-public class AddTagToNoteDaoParams {
+import java.util.Set;
 
-    String tag;
+@Value
+public class AddTagsToNoteDaoParams {
+
+    Set<String> tags;
     long noteId;
 
 }
