@@ -2,11 +2,11 @@ package com.booster.export;
 
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.dao.LanguageDao;
-import com.booster.dao.NoteDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Language;
 import com.booster.model.Note;
 import com.booster.model.VocabularyEntry;
+import com.booster.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -25,7 +25,7 @@ public class XlsxExportComponent {
 
     private final LanguageDao languageDao;
     private final VocabularyEntryDao vocabularyEntryDao;
-    private final NoteDao noteDao;
+    private final NoteService noteService;
 
     public void export(String filename) {
         try (var workbook = new XSSFWorkbook();
@@ -42,7 +42,7 @@ public class XlsxExportComponent {
     }
 
     private void exportNotes(XSSFWorkbook workbook) {
-        List<Note> notes = noteDao.findAll();
+        List<Note> notes = noteService.findAll();
         if (!notes.isEmpty()) {
             adapter.writeLine("Exporting notes");
             XSSFSheet sheet = workbook.createSheet("NOTES");

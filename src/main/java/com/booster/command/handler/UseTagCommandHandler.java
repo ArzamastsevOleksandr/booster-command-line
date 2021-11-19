@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.params.AddTagToNoteDaoParams;
 import com.booster.dao.params.AddTagToVocabularyEntryDaoParams;
 import com.booster.model.Note;
 import com.booster.model.VocabularyEntry;
@@ -24,7 +23,7 @@ public class UseTagCommandHandler implements CommandHandler {
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getTag().ifPresent(tag -> {
             commandWithArgs.getNoteId().ifPresent(noteId -> {
-                Note note = noteService.addTag(new AddTagToNoteDaoParams(tag, noteId));
+                Note note = noteService.addTag(tag, noteId);
                 adapter.writeLine(note);
             });
             commandWithArgs.getVocabularyEntryId().ifPresent(veId -> {

@@ -233,6 +233,7 @@ public class VocabularyEntryDao {
                         "where ve.id = ?", cacUpdated, id);
     }
 
+    // todo: fix: load contexts
     public VocabularyEntry findById(long id) {
         VocabularyEntry entry = jdbcTemplate.queryForObject(
                 "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
