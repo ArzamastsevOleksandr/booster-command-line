@@ -1,12 +1,12 @@
 package com.booster.export;
 
 import com.booster.adapter.CommandLineAdapter;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Language;
 import com.booster.model.Note;
 import com.booster.model.VocabularyEntry;
 import com.booster.service.LanguageService;
 import com.booster.service.NoteService;
+import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -24,7 +24,7 @@ public class XlsxExportComponent {
     private final CommandLineAdapter adapter;
 
     private final LanguageService languageService;
-    private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
     private final NoteService noteService;
 
     public void export(String filename) {
@@ -82,7 +82,7 @@ public class XlsxExportComponent {
     }
 
     private void createVocabularyEntryRows(Language languageToExport, XSSFSheet sheet) {
-        List<VocabularyEntry> vocabularyEntries = vocabularyEntryDao.findAllForLanguageId(languageToExport.getId());
+        List<VocabularyEntry> vocabularyEntries = vocabularyEntryService.findAllForLanguageId(languageToExport.getId());
 
         for (int rowNumber = 0; rowNumber < vocabularyEntries.size(); ++rowNumber) {
             VocabularyEntry vocabularyEntry = vocabularyEntries.get(rowNumber);

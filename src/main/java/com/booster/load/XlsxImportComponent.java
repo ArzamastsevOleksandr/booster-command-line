@@ -1,15 +1,11 @@
 package com.booster.load;
 
 import com.booster.adapter.CommandLineAdapter;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddNoteDaoParams;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Language;
 import com.booster.model.Word;
-import com.booster.service.LanguageService;
-import com.booster.service.NoteService;
-import com.booster.service.TagService;
-import com.booster.service.WordService;
+import com.booster.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -34,7 +30,7 @@ public class XlsxImportComponent {
 
     private final CommandLineAdapter adapter;
 
-    private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
     private final WordService wordService;
     private final LanguageService languageService;
     private final NoteService noteService;
@@ -124,7 +120,7 @@ public class XlsxImportComponent {
                                 .definition(definition)
                                 .tags(tags)
                                 .build();
-                        vocabularyEntryDao.addWithAllValues(params);
+                        vocabularyEntryService.addWithAllValues(params);
                     });
         }
     }

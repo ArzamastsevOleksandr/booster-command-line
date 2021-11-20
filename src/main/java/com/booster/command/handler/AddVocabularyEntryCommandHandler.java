@@ -52,7 +52,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
         commandWithArgs.getTag().ifPresent(tag -> params.setTags(Set.of(tag)));
 
-        VocabularyEntry vocabularyEntry = vocabularyEntryService.add(params);
+        VocabularyEntry vocabularyEntry = vocabularyEntryService.addWithDefaultValues(params);
         adapter.writeLine(vocabularyEntry);
         adapter.writeLine("Entries added so far: " + sessionTrackerService.getVocabularyEntriesAddedCount());
     }
