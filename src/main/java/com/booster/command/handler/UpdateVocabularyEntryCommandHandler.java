@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.UpdateVocabularyEntryDaoParams;
 import com.booster.model.VocabularyEntry;
 import com.booster.model.Word;
@@ -21,7 +20,6 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
@@ -46,8 +44,8 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
             processSynonyms(commandWithArgs, ve, params);
             processAntonyms(commandWithArgs, ve, params);
 
-            vocabularyEntryDao.update(params);
-            adapter.writeLine(vocabularyEntryDao.findById(params.getId()));
+            VocabularyEntry entry = vocabularyEntryService.update(params);
+            adapter.writeLine(entry);
         });
     }
 

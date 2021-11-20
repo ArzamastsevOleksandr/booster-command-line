@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: show progress of import process
+        // todo: session stats: differentiate add vs import
+        // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
         // todo: Parent entity with id, name?
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
         // todo: n/ve \p=no

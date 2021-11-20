@@ -3,7 +3,6 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
 import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryDao vocabularyEntryDao;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
 
@@ -39,17 +37,17 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
         commandWithArgs.getPagination().ifPresentOrElse(pagination -> {
             commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
-                var p = new Paginator(pagination, vocabularyEntryDao.countWithSubstring(substring));
-                displayWithParameters(p, () -> vocabularyEntryDao.findAllInRangeWithSubstring(p.startInclusive, p.endInclusive, substring));
+                var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
+                displayWithParameters(p, () -> vocabularyEntryService.findAllInRangeWithSubstring(p.startInclusive, p.endInclusive, substring));
             }, () -> {
-                var p = new Paginator(pagination, vocabularyEntryDao.countTotal());
-                displayWithParameters(p, () -> vocabularyEntryDao.findAllInRange(p.startInclusive, p.endInclusive));
+                var p = new Paginator(pagination, vocabularyEntryService.countTotal());
+                displayWithParameters(p, () -> vocabularyEntryService.findAllInRange(p.startInclusive, p.endInclusive));
             });
         }, () -> {
             commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
-                vocabularyEntryDao.findAllWithSubstring(substring).forEach(adapter::writeLine);
+                vocabularyEntryService.findAllWithSubstring(substring).forEach(adapter::writeLine);
             }, () -> {
-                vocabularyEntryDao.findAll().forEach(adapter::writeLine);
+                vocabularyEntryService.findAll().forEach(adapter::writeLine);
             });
         });
     }

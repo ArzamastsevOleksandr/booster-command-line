@@ -23,7 +23,7 @@ class DaoLayerTests {
         rule.check(javaClasses);
     }
 
-    // todo: same for lang, ve, tag etc
+    // todo: repeatable test
     @Test
     void noteDaoIsOnlyAccessedInNoteService() {
         JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
@@ -95,6 +95,21 @@ class DaoLayerTests {
                 .onlyBeAccessed()
                 .byClassesThat()
                 .belongToAnyOf(WordService.class, WordDao.class);
+
+        rule.check(javaClasses);
+    }
+
+    @Test
+    void vocabularyEntryDaoIsOnlyAccessedInVocabularyEntryService() {
+        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
+
+        ArchRule rule = ArchRuleDefinition.classes()
+                .that()
+                .belongToAnyOf(VocabularyEntryDao.class)
+                .should()
+                .onlyBeAccessed()
+                .byClassesThat()
+                .belongToAnyOf(VocabularyEntryService.class, VocabularyEntryDao.class);
 
         rule.check(javaClasses);
     }

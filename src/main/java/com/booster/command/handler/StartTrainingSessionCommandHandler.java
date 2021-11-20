@@ -4,8 +4,8 @@ import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.arguments.TrainingSessionMode;
-import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.VocabularyEntry;
+import com.booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +20,10 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class StartTrainingSessionCommandHandler implements CommandHandler {
 
-    private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
     // todo: configurable setting
     private static final int ENTRIES_PER_TRAINING_SESSION = 10;
 
-    private final VocabularyEntryDao vocabularyEntryDao;
+    private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
 
     @Override
@@ -47,11 +46,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
         switch (mode) {
             case FULL:
-                return vocabularyEntryDao.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
+                return vocabularyEntryService.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case SYNONYMS:
-                return vocabularyEntryDao.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
+                return vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case ANTONYMS:
-                return vocabularyEntryDao.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
+                return vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
             default:
                 throw new RuntimeException("Unrecognized mode: " + mode);
         }
@@ -127,7 +126,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntry entry) {
         if (synonymsAnswer.equals(entry.getSynonyms())) {
-            updateCorrectAnswersCount(entry, true);
+            vocabularyEntryService.updateCorrectAnswersCount(entry, true);
             adapter.writeLine("Correct!");
         } else {
             Set<String> synonymsAnswerCopy = new HashSet<>(synonymsAnswer);
@@ -136,10 +135,10 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             if (synonymsAnswerCopy.isEmpty()) {
                 HashSet<String> originalSynonymsCopy = new HashSet<>(entry.getSynonyms());
                 originalSynonymsCopy.removeAll(synonymsAnswer);
-                updateCorrectAnswersCount(entry, true);
+                vocabularyEntryService.updateCorrectAnswersCount(entry, true);
                 adapter.writeLine("Correct. Other synonyms: " + originalSynonymsCopy);
             } else {
-                updateCorrectAnswersCount(entry, false);
+                vocabularyEntryService.updateCorrectAnswersCount(entry, false);
                 adapter.writeLine("Wrong. Answer is: " + entry.getSynonyms());
             }
         }
@@ -169,7 +168,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
         if (antonymsAnswer.equals(entry.getAntonyms())) {
-            updateCorrectAnswersCount(entry, true);
+            vocabularyEntryService.updateCorrectAnswersCount(entry, true);
             adapter.writeLine("Correct!");
         } else {
             Set<String> antonymsAnswerCopy = new HashSet<>(antonymsAnswer);
@@ -178,27 +177,16 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             if (antonymsAnswerCopy.isEmpty()) {
                 HashSet<String> originalAntonymsCopy = new HashSet<>(entry.getAntonyms());
                 originalAntonymsCopy.removeAll(antonymsAnswer);
-                updateCorrectAnswersCount(entry, true);
+                vocabularyEntryService.updateCorrectAnswersCount(entry, true);
                 adapter.writeLine("Correct. Other antonyms: " + originalAntonymsCopy);
             } else {
-                updateCorrectAnswersCount(entry, false);
+                vocabularyEntryService.updateCorrectAnswersCount(entry, false);
                 adapter.writeLine("Wrong. Answer is: " + entry.getAntonyms());
             }
         }
         adapter.newLine();
     }
 
-    private void updateCorrectAnswersCount(VocabularyEntry ve, boolean isCorrectAnswer) {
-        int correctAnswersCountChange = isCorrectAnswer ? 1 : -1;
-        int cacUpdated = ve.getCorrectAnswersCount() + correctAnswersCountChange;
-        if (isValidCorrectAnswersCount(cacUpdated)) {
-            vocabularyEntryDao.updateCorrectAnswersCount(ve.getId(), cacUpdated);
-        }
-    }
-
-    private boolean isValidCorrectAnswersCount(int cacUpdated) {
-        return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated;
-    }
 
     private Set<String> parseEquivalents(String equivalents) {
         return Arrays.stream(equivalents.split(";"))
