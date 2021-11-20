@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: Parent entity with id, name?
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
         // todo: n/ve \p=no
         // todo: feat n \ss=<substr>

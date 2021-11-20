@@ -1,7 +1,6 @@
 package com.booster.load;
 
 import com.booster.adapter.CommandLineAdapter;
-import com.booster.dao.LanguageDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.dao.params.AddNoteDaoParams;
 import com.booster.dao.params.AddVocabularyEntryDaoParams;
@@ -38,7 +37,6 @@ public class XlsxImportComponent {
     private final VocabularyEntryDao vocabularyEntryDao;
     private final WordService wordService;
     private final LanguageService languageService;
-    private final LanguageDao languageDao;
     private final NoteService noteService;
     private final TagService tagService;
 
@@ -88,8 +86,8 @@ public class XlsxImportComponent {
                     importLanguage(sheet, languageId);
                 }, () -> {
                     adapter.writeLine("Creating language with name: " + sheetName);
-                    long languageId = languageDao.add(sheetName);
-                    importLanguage(sheet, languageId);
+                    Language language = languageService.add(sheetName);
+                    importLanguage(sheet, language.getId());
                 });
     }
 
