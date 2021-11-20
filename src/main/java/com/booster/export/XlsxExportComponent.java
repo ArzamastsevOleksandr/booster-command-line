@@ -1,11 +1,11 @@
 package com.booster.export;
 
 import com.booster.adapter.CommandLineAdapter;
-import com.booster.dao.LanguageDao;
 import com.booster.dao.VocabularyEntryDao;
 import com.booster.model.Language;
 import com.booster.model.Note;
 import com.booster.model.VocabularyEntry;
+import com.booster.service.LanguageService;
 import com.booster.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -23,7 +23,7 @@ public class XlsxExportComponent {
 
     private final CommandLineAdapter adapter;
 
-    private final LanguageDao languageDao;
+    private final LanguageService languageService;
     private final VocabularyEntryDao vocabularyEntryDao;
     private final NoteService noteService;
 
@@ -31,7 +31,7 @@ public class XlsxExportComponent {
         try (var workbook = new XSSFWorkbook();
              var outputStream = new FileOutputStream(filename)
         ) {
-            languageDao.findAll().forEach(language -> exportLanguage(workbook, language));
+            languageService.findAll().forEach(language -> exportLanguage(workbook, language));
 
             exportNotes(workbook);
 

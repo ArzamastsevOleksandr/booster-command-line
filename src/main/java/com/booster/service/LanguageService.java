@@ -5,6 +5,7 @@ import com.booster.model.Language;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,6 +27,19 @@ public class LanguageService {
 
     public boolean existsWithName(String name) {
         return languageDao.countWithName(name) == 1;
+    }
+
+    public Language add(String name) {
+        long id = languageDao.add(name);
+        return languageDao.findById(id);
+    }
+
+    public void delete(Long id) {
+        languageDao.delete(id);
+    }
+
+    public List<Language> findAll() {
+        return languageDao.findAll();
     }
 
 }

@@ -3,7 +3,8 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.LanguageDao;
+import com.booster.model.Language;
+import com.booster.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AddLanguageCommandHandler implements CommandHandler {
 
-    private final LanguageDao languageDao;
+    private final LanguageService languageService;
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getName().ifPresent(name -> {
-            long id = languageDao.add(name);
-            adapter.writeLine(languageDao.findById(id));
+            Language language = languageService.add(name);
+            adapter.writeLine(language);
         });
     }
 
