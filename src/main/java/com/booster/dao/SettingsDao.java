@@ -1,6 +1,5 @@
 package com.booster.dao;
 
-import com.booster.dao.params.AddSettingsDaoParams;
 import com.booster.model.Settings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,12 +32,12 @@ public class SettingsDao {
                 .orElse(null);
     }
 
-    public long add(AddSettingsDaoParams params) {
+    public long add(Long languageId) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement("insert into settings (language_id) values (?)",
                     new String[]{"id"});
-            ps.setObject(1, params.getLanguageId().orElse(null));
+            ps.setObject(1, languageId);
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();

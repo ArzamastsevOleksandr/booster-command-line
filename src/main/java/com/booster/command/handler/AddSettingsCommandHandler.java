@@ -3,8 +3,8 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.SettingsDao;
-import com.booster.dao.params.AddSettingsDaoParams;
+import com.booster.model.Settings;
+import com.booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,18 +12,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AddSettingsCommandHandler implements CommandHandler {
 
-    // todo: use dao in the service layer only?
-    private final SettingsDao settingsDao;
+    private final SettingsService settingsService;
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        AddSettingsDaoParams params = commandWithArgs.getLanguageId()
-                .map(AddSettingsDaoParams::of)
-                .orElseGet(AddSettingsDaoParams::empty);
-
-        long id = settingsDao.add(params);
-        adapter.writeLine(settingsDao.findById(id));
+        Settings settings = settingsService.add(commandWithArgs.getLanguageId().orElse(null));
+        adapter.writeLine(settings);
     }
 
     @Override
