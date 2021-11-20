@@ -5,7 +5,7 @@ import com.booster.model.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,15 +14,19 @@ public class WordService {
     private final WordDao wordDao;
 
     public Word findByNameOrCreateAndGet(String name) {
-        return findByName(name)
-                .orElseGet(() -> wordDao.createWordWithName(name));
+        if (existsWithName(name)) {
+            return wordDao.findByName(name);
+        }
+        long id = wordDao.createWithName(name);
+        return Word.builder().id(id).name(name).build();
     }
 
-    public Optional<Word> findByName(String name) {
-        if (wordDao.countWithName(name) == 1) {
-            return Optional.of(wordDao.findByName(name));
-        }
-        return Optional.empty();
+    private boolean existsWithName(String name) {
+        return wordDao.countWithName(name) == 1;
+    }
+
+    public List<Word> findAll() {
+        return wordDao.findAll();
     }
 
 }
