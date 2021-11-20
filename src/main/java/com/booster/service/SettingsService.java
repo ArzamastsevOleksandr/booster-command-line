@@ -24,4 +24,13 @@ public class SettingsService {
         return settingsDao.count() > 0;
     }
 
+    public Settings add(Long languageId) {
+        long id = settingsDao.add(languageId);
+        return settingsDao.findById(id);
+    }
+
+    public void deleteAll() {
+        settingsDao.deleteAll();
+    }
+
 }

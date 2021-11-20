@@ -2,7 +2,7 @@ package com.booster.command.handler;
 
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.SettingsDao;
+import com.booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DeleteSettingsCommandHandler implements CommandHandler {
 
-    private final SettingsDao settingsDao;
+    private final SettingsService settingsService;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        settingsDao.deleteAll();
+        settingsService.deleteAll();
     }
 
     @Override
