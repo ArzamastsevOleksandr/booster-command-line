@@ -17,6 +17,7 @@ public class VocabularyEntryService {
 
     private final VocabularyEntryDao vocabularyEntryDao;
     private final TransactionTemplate transactionTemplate;
+    private final SessionTrackerService sessionTrackerService;
 
     public Optional<VocabularyEntry> findById(long id) {
         if (vocabularyEntryDao.countWithId(id) == 1) {
@@ -74,6 +75,7 @@ public class VocabularyEntryService {
 
     public VocabularyEntry add(AddVocabularyEntryDaoParams params) {
         long id = vocabularyEntryDao.addWithDefaultValues(params);
+        sessionTrackerService.incVocabularyEntriesAddedCount();
         return vocabularyEntryDao.findById(id);
     }
 

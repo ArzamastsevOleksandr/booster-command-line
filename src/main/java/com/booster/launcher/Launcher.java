@@ -7,6 +7,7 @@ import com.booster.command.arguments.CommandArgumentsValidator;
 import com.booster.command.arguments.CommandWithArgs;
 import com.booster.command.service.CommandHandlerCollectionService;
 import com.booster.preprocessor.CommandWithArgsPreprocessor;
+import com.booster.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +17,10 @@ public class Launcher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandArgumentsValidator commandArgumentsValidator;
-
     private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
-
     private final CommandWithArgsPreprocessor preprocessor;
+    private final SessionTrackerService sessionTrackerService;
 
     public void launch() {
         commonOperations.greeting();
@@ -39,6 +39,10 @@ public class Launcher {
             commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
             command = commandWithArgs.getCommand();
         }
+        sessionTrackerService.getStatistics().ifPresentOrElse(
+                adapter::writeLine,
+                () -> adapter.writeLine("No significant activity observed")
+        );
         commonOperations.end();
     }
 
