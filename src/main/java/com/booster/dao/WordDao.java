@@ -22,13 +22,11 @@ public class WordDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Word> findAll() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from word w", rs2Word);
+        return jdbcTemplate.query("select * from word w", rs2Word);
     }
 
     //    todo: unique name in db
-    public Word createWordWithName(String name) {
+    public long createWithName(String name) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
@@ -38,24 +36,15 @@ public class WordDao {
             ps.setString(1, name);
             return ps;
         }, keyHolder);
-        return Word.builder()
-                .id(keyHolder.getKey().longValue())
-                .name(name)
-                .build();
+        return keyHolder.getKey().longValue();
     }
 
     public Word findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from word w " +
-                        "where w.name = ?", rs2Word, name);
+        return jdbcTemplate.queryForObject("select * from word w where w.name = ?", rs2Word, name);
     }
 
-    public int countWithName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from word w " +
-                        "where w.name = ?", Integer.class, name);
+    public Integer countWithName(String name) {
+        return jdbcTemplate.queryForObject("select count(*) from word w where w.name = ?", Integer.class, name);
     }
 
 }
