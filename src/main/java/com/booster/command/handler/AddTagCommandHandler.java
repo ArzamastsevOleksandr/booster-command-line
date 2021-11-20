@@ -3,7 +3,8 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.TagDao;
+import com.booster.model.Tag;
+import com.booster.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AddTagCommandHandler implements CommandHandler {
 
-    private final TagDao tagDao;
+    private final TagService tagService;
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getName().ifPresent(name -> {
-            String tag = tagDao.add(name);
-            adapter.writeLine(tagDao.findByName(tag));
+            Tag tag = tagService.add(name);
+            adapter.writeLine(tag);
         });
     }
 

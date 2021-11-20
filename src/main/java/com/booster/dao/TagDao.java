@@ -44,4 +44,16 @@ public class TagDao {
         return Objects.requireNonNullElse(count, 0);
     }
 
+    public void addAll(List<String> tagsToCreate) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "insert into tag (name) " +
+                            "select * from (select lower(new_tag) from unnest(?) as new_tag) tags_to_create " +
+                            "except " +
+                            "select lower(name) from tag");
+            ps.setArray(1, con.createArrayOf("varchar", tagsToCreate.toArray()));
+            return ps;
+        });
+    }
+
 }
