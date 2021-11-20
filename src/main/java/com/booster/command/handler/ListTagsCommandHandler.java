@@ -3,8 +3,8 @@ package com.booster.command.handler;
 import com.booster.adapter.CommandLineAdapter;
 import com.booster.command.Command;
 import com.booster.command.arguments.CommandWithArgs;
-import com.booster.dao.TagDao;
 import com.booster.model.Tag;
+import com.booster.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ListTagsCommandHandler implements CommandHandler {
 
-    private final TagDao tagDao;
+    private final TagService tagService;
 
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
-        List<Tag> tags = tagDao.findAll();
+        List<Tag> tags = tagService.findAll();
 
         if (tags.isEmpty()) {
             adapter.writeLine("There are no tags in the system now.");

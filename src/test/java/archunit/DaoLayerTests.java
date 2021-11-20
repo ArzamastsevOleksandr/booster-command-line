@@ -3,9 +3,11 @@ package archunit;
 import com.booster.dao.LanguageDao;
 import com.booster.dao.NoteDao;
 import com.booster.dao.SettingsDao;
+import com.booster.dao.TagDao;
 import com.booster.service.LanguageService;
 import com.booster.service.NoteService;
 import com.booster.service.SettingsService;
+import com.booster.service.TagService;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -69,6 +71,21 @@ class DaoLayerTests {
                 .onlyBeAccessed()
                 .byClassesThat()
                 .belongToAnyOf(SettingsService.class, SettingsDao.class);
+
+        rule.check(javaClasses);
+    }
+
+    @Test
+    void tagDaoIsOnlyAccessedInTagService() {
+        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
+
+        ArchRule rule = ArchRuleDefinition.classes()
+                .that()
+                .belongToAnyOf(TagDao.class)
+                .should()
+                .onlyBeAccessed()
+                .byClassesThat()
+                .belongToAnyOf(TagService.class, TagDao.class);
 
         rule.check(javaClasses);
     }
