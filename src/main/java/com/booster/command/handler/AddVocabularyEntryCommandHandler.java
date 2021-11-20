@@ -7,6 +7,7 @@ import com.booster.dao.params.AddVocabularyEntryDaoParams;
 import com.booster.model.Settings;
 import com.booster.model.VocabularyEntry;
 import com.booster.model.Word;
+import com.booster.service.SessionTrackerService;
 import com.booster.service.SettingsService;
 import com.booster.service.VocabularyEntryService;
 import com.booster.service.WordService;
@@ -25,6 +26,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final SettingsService settingsService;
     private final CommandLineAdapter adapter;
     private final VocabularyEntryService vocabularyEntryService;
+    private final SessionTrackerService sessionTrackerService;
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
@@ -52,6 +54,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
         VocabularyEntry vocabularyEntry = vocabularyEntryService.add(params);
         adapter.writeLine(vocabularyEntry);
+        adapter.writeLine("Entries added so far: " + sessionTrackerService.getVocabularyEntriesAddedCount());
     }
 
     @Override

@@ -17,6 +17,7 @@ public class NoteService {
 
     private final NoteDao noteDao;
     private final TransactionTemplate transactionTemplate;
+    private final SessionTrackerService sessionTrackerService;
 
     public boolean existsWithId(Long id) {
         return noteDao.countWithId(id) == 1;
@@ -37,6 +38,7 @@ public class NoteService {
         return transactionTemplate.execute(status -> {
             long noteId = noteDao.add(params.getContent());
             noteDao.addTagsToNote(new ArrayList<>(params.getTags()), noteId);
+            sessionTrackerService.incNotesAddedCount();
             return findById(noteId);
         });
     }
