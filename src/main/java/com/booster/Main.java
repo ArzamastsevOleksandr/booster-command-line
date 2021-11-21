@@ -22,8 +22,6 @@ public class Main {
         // todo: un \t \at \rt
         // todo: fix: Key (id)=(26) is still referenced from table "note__tag__jt"
         // todo: fix: Key (id)=(114) is still referenced from table "vocabulary_entry__tag__jt"
-        // todo: add entities via service and return
-        // todo: show notes by id
         // todo: I can list the tags along with the count of items related to them
         // todo: if null is returned when querying for count - log the error and return 0
         // todo: fix: ve load contexts
@@ -40,14 +38,12 @@ public class Main {
         // todo: pretty print of l, ve, w
         // todo: write 1-line open comments.
         // todo: use settings in the preprocessor
-        // todo: I can tag the ve
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
         // todo: I can search for the ve by a substring
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
-        // todo: I can tag the note
         // todo: search ve by lid
         // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
         // todo: I can have a calc training session

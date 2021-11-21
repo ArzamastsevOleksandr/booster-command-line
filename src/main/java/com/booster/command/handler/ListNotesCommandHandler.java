@@ -20,6 +20,14 @@ public class ListNotesCommandHandler implements CommandHandler {
 
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
+        commandWithArgs.getId().ifPresentOrElse(this::displayNoteById, this::displayAllNotes);
+    }
+
+    private void displayNoteById(Long id) {
+        adapter.writeLine(noteService.findById(id));
+    }
+
+    private void displayAllNotes() {
         List<Note> notes = noteService.findAll();
 
         if (notes.isEmpty()) {

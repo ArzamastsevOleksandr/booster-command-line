@@ -28,7 +28,7 @@ public class NoteService {
         return findById(noteId);
     }
 
-    private Note findById(long noteId) {
+    public Note findById(long noteId) {
         Note note = noteDao.findById(noteId);
         List<String> tags = noteDao.findTagsByNoteId(noteId);
         return note.toBuilder().tags(new HashSet<>(tags)).build();
