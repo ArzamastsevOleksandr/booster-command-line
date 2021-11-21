@@ -6,110 +6,37 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 class DaoLayerTests {
 
-    @Test
-    void daoClassesShouldHaveAllDependenciesFinal() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
+    JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
 
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .resideInAPackage("com.booster.dao")
-                .should()
-                .haveOnlyFinalFields();
-
-        rule.check(javaClasses);
+    static Stream<Arguments> daoClass2ServiceClassPairs() {
+        return Stream.of(
+                Arguments.of(NoteDao.class, NoteService.class),
+                Arguments.of(LanguageDao.class, LanguageService.class),
+                Arguments.of(SettingsDao.class, SettingsService.class),
+                Arguments.of(TagDao.class, TagService.class),
+                Arguments.of(WordDao.class, WordService.class),
+                Arguments.of(VocabularyEntryDao.class, VocabularyEntryService.class)
+        );
     }
 
-    // todo: repeatable test
-    @Test
-    void noteDaoIsOnlyAccessedInNoteService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
+    @ParameterizedTest(name = "{index} {0} is only used in {1}")
+    @MethodSource("daoClass2ServiceClassPairs")
+    void test(Class<?> daoClass, Class<?> serviceClass) {
         ArchRule rule = ArchRuleDefinition.classes()
                 .that()
-                .belongToAnyOf(NoteDao.class)
+                .belongToAnyOf(daoClass)
                 .should()
                 .onlyBeAccessed()
                 .byClassesThat()
-                .belongToAnyOf(NoteService.class, NoteDao.class);
-
-        rule.check(javaClasses);
-    }
-
-    @Test
-    void languageDaoIsOnlyAccessedInLanguageService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .belongToAnyOf(LanguageDao.class)
-                .should()
-                .onlyBeAccessed()
-                .byClassesThat()
-                .belongToAnyOf(LanguageService.class, LanguageDao.class);
-
-        rule.check(javaClasses);
-    }
-
-    @Test
-    void settingsDaoIsOnlyAccessedInSettingsService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .belongToAnyOf(SettingsDao.class)
-                .should()
-                .onlyBeAccessed()
-                .byClassesThat()
-                .belongToAnyOf(SettingsService.class, SettingsDao.class);
-
-        rule.check(javaClasses);
-    }
-
-    @Test
-    void tagDaoIsOnlyAccessedInTagService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .belongToAnyOf(TagDao.class)
-                .should()
-                .onlyBeAccessed()
-                .byClassesThat()
-                .belongToAnyOf(TagService.class, TagDao.class);
-
-        rule.check(javaClasses);
-    }
-
-    @Test
-    void wordDaoIsOnlyAccessedInWordService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .belongToAnyOf(WordDao.class)
-                .should()
-                .onlyBeAccessed()
-                .byClassesThat()
-                .belongToAnyOf(WordService.class, WordDao.class);
-
-        rule.check(javaClasses);
-    }
-
-    @Test
-    void vocabularyEntryDaoIsOnlyAccessedInVocabularyEntryService() {
-        JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
-
-        ArchRule rule = ArchRuleDefinition.classes()
-                .that()
-                .belongToAnyOf(VocabularyEntryDao.class)
-                .should()
-                .onlyBeAccessed()
-                .byClassesThat()
-                .belongToAnyOf(VocabularyEntryService.class, VocabularyEntryDao.class);
+                .belongToAnyOf(serviceClass, daoClass);
 
         rule.check(javaClasses);
     }
