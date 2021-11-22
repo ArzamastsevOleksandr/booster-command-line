@@ -79,6 +79,7 @@ public class XlsxExportComponent {
         row.createCell(4).setCellValue("Correct answer count");
         row.createCell(5).setCellValue("Created at");
         row.createCell(6).setCellValue("Tags");
+        row.createCell(7).setCellValue("Contexts");
     }
 
     private void createVocabularyEntryRows(Language languageToExport, XSSFSheet sheet) {
@@ -91,6 +92,7 @@ public class XlsxExportComponent {
         }
     }
 
+    // todo: export and import must use the same separators (shared component)
     private void exportVocabularyEntry(VocabularyEntry vocabularyEntry, XSSFRow row) {
         row.createCell(0).setCellValue(vocabularyEntry.getName());
         row.createCell(1).setCellValue(vocabularyEntry.getDefinition().orElse(""));
@@ -99,6 +101,7 @@ public class XlsxExportComponent {
         row.createCell(4).setCellValue(vocabularyEntry.getCorrectAnswersCount());
         row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt().toString());
         row.createCell(6).setCellValue(String.join(";", vocabularyEntry.getTags()));
+        row.createCell(7).setCellValue(String.join("/", vocabularyEntry.getContexts()));
     }
 
 }

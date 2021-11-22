@@ -25,14 +25,16 @@ public class VocabularyEntryService {
     private final TransactionTemplate transactionTemplate;
     private final SessionTrackerService sessionTrackerService;
 
-    // todo: fix: load contexts
     public Optional<VocabularyEntry> findById(long id) {
         if (existsWithId(id)) {
             VocabularyEntry entry = vocabularyEntryDao.findById(id);
+
             Map<Long, Set<String>> synonymsById = vocabularyEntryDao.getSynonymsById(id);
             Map<Long, Set<String>> antonymsById = vocabularyEntryDao.getAntonymsById(id);
-            Map<Long, Set<String>> tagsByIdMap = vocabularyEntryDao.getTagsByIdMap(id);
-            return Optional.of(withCollections(synonymsById, antonymsById, tagsByIdMap).apply(entry));
+            Map<Long, Set<String>> tagsById = vocabularyEntryDao.getTagsByIdMap(id);
+            Map<Long, Set<String>> contextsById = vocabularyEntryDao.getContextsByIdMap(id);
+
+            return Optional.of(withCollections(synonymsById, antonymsById, tagsById, contextsById).apply(entry));
         }
         return Optional.empty();
     }
@@ -112,15 +114,17 @@ public class VocabularyEntryService {
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
         Map<Long, Set<String>> id2Tags = vocabularyEntryDao.getId2TagsMap();
+        Map<Long, Set<String>> id2Contexts = vocabularyEntryDao.getId2ContextsMap();
 
         return entries.stream()
-                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags))
+                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags, id2Contexts))
                 .collect(toList());
     }
 
     private Function<VocabularyEntry, VocabularyEntry> withCollections(Map<Long, Set<String>> id2Synonyms,
                                                                        Map<Long, Set<String>> id2Antonyms,
-                                                                       Map<Long, Set<String>> id2Tags) {
+                                                                       Map<Long, Set<String>> id2Tags,
+                                                                       Map<Long, Set<String>> id2Contexts) {
         return ve -> {
             var builder = ve.toBuilder();
             if (id2Synonyms.containsKey(ve.getId())) {
@@ -131,6 +135,9 @@ public class VocabularyEntryService {
             }
             if (id2Tags.containsKey(ve.getId())) {
                 builder = builder.tags(id2Tags.getOrDefault(ve.getId(), Set.of()));
+            }
+            if (id2Contexts.containsKey(ve.getId())) {
+                builder = builder.contexts(id2Contexts.getOrDefault(ve.getId(), Set.of()));
             }
             return builder.build();
         };
@@ -188,9 +195,10 @@ public class VocabularyEntryService {
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMapForLanguageId(id);
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMapForLanguageId(id);
         Map<Long, Set<String>> id2Tags = vocabularyEntryDao.getId2TagsMapForLanguageId(id);
+        Map<Long, Set<String>> id2Contexts = vocabularyEntryDao.getId2ContextsMapForLanguageId(id);
 
         return entries.stream()
-                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags))
+                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags, id2Contexts))
                 .collect(toList());
     }
 
@@ -219,9 +227,10 @@ public class VocabularyEntryService {
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
         Map<Long, Set<String>> id2Tags = vocabularyEntryDao.getId2TagsMap();
+        Map<Long, Set<String>> id2Contexts = vocabularyEntryDao.getId2ContextsMap();
 
         return entries.stream()
-                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags))
+                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags, id2Contexts))
                 .collect(toList());
     }
 
@@ -232,9 +241,10 @@ public class VocabularyEntryService {
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
         Map<Long, Set<String>> id2Tags = vocabularyEntryDao.getId2TagsMap();
+        Map<Long, Set<String>> id2Contexts = vocabularyEntryDao.getId2ContextsMap();
 
         return entries.stream()
-                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags))
+                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags, id2Contexts))
                 .collect(toList());
     }
 
@@ -245,9 +255,10 @@ public class VocabularyEntryService {
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
         Map<Long, Set<String>> id2Tags = vocabularyEntryDao.getId2TagsMap();
+        Map<Long, Set<String>> id2Contexts = vocabularyEntryDao.getId2ContextsMap();
 
         return entries.stream()
-                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags))
+                .map(withCollections(id2Synonyms, id2Antonyms, id2Tags, id2Contexts))
                 .collect(toList());
     }
 

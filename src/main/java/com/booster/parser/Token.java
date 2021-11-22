@@ -9,6 +9,7 @@ class Token {
     static final String SEPARATOR = "=";
     static final String FLAG_MARKER = "\\";
     static final String WORD_EQUIVALENT_DELIMITER = ";";
+    static final String CONTEXT_DELIMITER = "/";
 
     String value;
     TokenType type;

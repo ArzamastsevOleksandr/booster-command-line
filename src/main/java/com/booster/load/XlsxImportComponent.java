@@ -64,7 +64,7 @@ public class XlsxImportComponent {
                     .map(String::strip)
                     .filter(s -> !s.isBlank())
                     .ifPresent(content -> {
-                        Set<String> tags = getTags(row.getCell(1));
+                        Set<String> tags = getStringValues(row.getCell(1), ";");
                         tagService.createIfNotExist(tags);
                         noteService.add(AddNoteDaoParams.builder().content(content).tags(tags).build());
                     });
@@ -107,9 +107,10 @@ public class XlsxImportComponent {
                         int correctAnswersCount = (int) row.getCell(4).getNumericCellValue();
                         Timestamp createdAt = Timestamp.valueOf(row.getCell(5).getStringCellValue());
 
-                        Set<String> tags = getTags(row.getCell(6));
+                        Set<String> tags = getStringValues(row.getCell(6), ";");
+                        Set<String> contexts = getStringValues(row.getCell(7), "/");
                         tagService.createIfNotExist(tags);
-                        // todo: dao methods do 1 thing, service uses all dao methods
+
                         var params = AddVocabularyEntryDaoParams.builder()
                                 .wordId(wordId)
                                 .languageId(languageId)
@@ -119,18 +120,19 @@ public class XlsxImportComponent {
                                 .createdAt(createdAt)
                                 .definition(definition)
                                 .tags(tags)
+                                .contexts(contexts)
                                 .build();
                         vocabularyEntryService.addWithAllValues(params);
                     });
         }
     }
 
-    private Set<String> getTags(XSSFCell cell) {
+    private Set<String> getStringValues(XSSFCell cell, String separator) {
         return Optional.ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
                 .filter(s -> !s.isBlank())
-                .map(s -> Arrays.stream(s.split(";")))
+                .map(s -> Arrays.stream(s.split(separator)))
                 .map(s -> s.map(String::strip).filter(str -> !str.isBlank()).collect(toSet()))
                 .orElse(Set.of());
     }
