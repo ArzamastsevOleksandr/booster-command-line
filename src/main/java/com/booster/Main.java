@@ -9,10 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: feat: show all ves with descriptions/contexts only
+        // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
         // todo: show progress of import process
         // todo: session stats: differentiate add vs import
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
-        // todo: Parent entity with id, name?
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
         // todo: n/ve \p=no
         // todo: feat n \ss=<substr>
@@ -24,7 +25,6 @@ public class Main {
         // todo: fix: Key (id)=(114) is still referenced from table "vocabulary_entry__tag__jt"
         // todo: I can list the tags along with the count of items related to them
         // todo: if null is returned when querying for count - log the error and return 0
-        // todo: fix: ve load contexts
         // todo: fix: uve enable \ctx
         // todo: add logging to a file
         // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
@@ -41,7 +41,6 @@ public class Main {
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
-        // todo: I can search for the ve by a substring
         // todo: a strategy for which words can be a part of the training session.
         //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
         // todo: search ve by lid
@@ -53,7 +52,6 @@ public class Main {
         // todo: use over(), rank() and partition by when searching for which ves to output
         // todo: use indexes in tables where frequent search is done
         // todo: add benchmarks for standard sql and sql with indexes
-        // todo: if a transaction fails - rollback all the changes
         // todo: I can manually increase/decrease calc session level
         // todo: concurrent import
         // todo: concurrent statistics collector

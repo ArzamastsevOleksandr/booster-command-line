@@ -24,6 +24,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
 
+    // todo: update contexts
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getId().flatMap(vocabularyEntryService::findById).ifPresent(ve -> {

@@ -97,13 +97,20 @@ class TokenSequenceTransformer {
                     argumentsBuilder = argumentsBuilder.substring(flagValue);
                     break;
                 case CONTEXTS:
-                    argumentsBuilder = argumentsBuilder.contexts(getWordEquivalentNames(flagValue));
+                    argumentsBuilder = argumentsBuilder.contexts(getContexts(flagValue));
                     break;
                 default:
                     throw new RuntimeException("Flag does not have a handler: " + flagType);
             }
         }
         return argumentsBuilder.build();
+    }
+
+    private Set<String> getContexts(String value) {
+        return Arrays.stream(value.split(Token.CONTEXT_DELIMITER))
+                .map(String::strip)
+                .filter(s -> !s.isBlank())
+                .collect(toSet());
     }
 
     private Set<String> getWordEquivalentNames(String value) {

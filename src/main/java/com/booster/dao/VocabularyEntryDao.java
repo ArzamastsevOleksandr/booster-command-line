@@ -72,25 +72,46 @@ public class VocabularyEntryDao {
 
     // todo: heavy lifting on db side - return an aggregated result? (id, tags)
     public Map<Long, Set<String>> getId2TagsMap() {
-        return jdbcTemplate.query("select * from vocabulary_entry__tag__jt", tagResultSetExtractor());
+        return jdbcTemplate.query(
+                "select * " +
+                        "from vocabulary_entry__tag__jt",
+                id2ValueResultSetExtractor("tag"));
     }
 
+    public Map<Long, Set<String>> getId2ContextsMap() {
+        return jdbcTemplate.query(
+                "select * " +
+                        "from vocabulary_entry__context__jt",
+                id2ValueResultSetExtractor("context"));
+    }
+
+    // todo: return 1 entry instead of a Map to avoid type confusion
     public Map<Long, Set<String>> getTagsByIdMap(Long id) {
         return jdbcTemplate.query(
                 "select * " +
                         "from vocabulary_entry__tag__jt " +
                         "where vocabulary_entry_id = ?",
-                tagResultSetExtractor(),
+                id2ValueResultSetExtractor("tag"),
                 id
         );
     }
 
-    private ResultSetExtractor<Map<Long, Set<String>>> tagResultSetExtractor() {
+    public Map<Long, Set<String>> getContextsByIdMap(long id) {
+        return jdbcTemplate.query(
+                "select * " +
+                        "from vocabulary_entry__context__jt " +
+                        "where vocabulary_entry_id = ?",
+                id2ValueResultSetExtractor("context"),
+                id
+        );
+    }
+
+    private ResultSetExtractor<Map<Long, Set<String>>> id2ValueResultSetExtractor(String column) {
         return rs -> {
             Map<Long, Set<String>> id2Tags = new HashMap<>();
             while (rs.next()) {
                 id2Tags.computeIfAbsent(rs.getLong("vocabulary_entry_id"), k -> new HashSet<>())
-                        .add(rs.getString("tag"));
+                        .add(rs.getString(column));
             }
             return id2Tags;
         };
@@ -331,7 +352,20 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on l.id = ve.language_id " +
                         "where l.id = ?",
-                tagResultSetExtractor(),
+                id2ValueResultSetExtractor("tag"),
+                id);
+    }
+
+    public Map<Long, Set<String>> getId2ContextsMapForLanguageId(long id) {
+        return jdbcTemplate.query(
+                "select * " +
+                        "from vocabulary_entry__context__jt vecjt " +
+                        "join vocabulary_entry ve " +
+                        "on vecjt.vocabulary_entry_id = ve.id " +
+                        "join language l " +
+                        "on l.id = ve.language_id " +
+                        "where l.id = ?",
+                id2ValueResultSetExtractor("context"),
                 id);
     }
 
