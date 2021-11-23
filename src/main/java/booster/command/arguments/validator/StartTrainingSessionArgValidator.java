@@ -1,0 +1,39 @@
+package booster.command.arguments.validator;
+
+import booster.command.Command;
+import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.TrainingSessionMode;
+import booster.service.VocabularyEntryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import static booster.command.Command.START_TRAINING_SESSION;
+
+@Component
+@RequiredArgsConstructor
+public class StartTrainingSessionArgValidator implements ArgValidator {
+
+    private final VocabularyEntryService vocabularyEntryService;
+
+    @Override
+    public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
+        if (commandWithArgs.getMode().isEmpty()) {
+            checkIfEntriesExistForMode(TrainingSessionMode.getDefaultMode());
+            return commandWithArgs.toBuilder().mode(TrainingSessionMode.getDefaultMode()).build();
+        }
+        checkIfEntriesExistForMode(commandWithArgs.getMode().get());
+        return commandWithArgs;
+    }
+
+    private void checkIfEntriesExistForMode(TrainingSessionMode mode) {
+        if (!vocabularyEntryService.existAnyForTrainingMode(mode)) {
+            throw new ArgsValidationException("No entries exist for mode: " + mode);
+        }
+    }
+
+    @Override
+    public Command command() {
+        return START_TRAINING_SESSION;
+    }
+
+}

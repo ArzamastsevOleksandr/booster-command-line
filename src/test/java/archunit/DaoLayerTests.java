@@ -1,7 +1,7 @@
 package archunit;
 
-import com.booster.dao.*;
-import com.booster.service.*;
+import booster.dao.*;
+import booster.service.*;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
