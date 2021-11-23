@@ -21,8 +21,6 @@ public class Main {
         // todo: enable adding ve/n with many tags
         // todo: uve \t \at \rt
         // todo: un \t \at \rt
-        // todo: fix: Key (id)=(26) is still referenced from table "note__tag__jt"
-        // todo: fix: Key (id)=(114) is still referenced from table "vocabulary_entry__tag__jt"
         // todo: I can list the tags along with the count of items related to them
         // todo: if null is returned when querying for count - log the error and return 0
         // todo: fix: uve enable \ctx

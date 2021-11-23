@@ -56,7 +56,7 @@ public class NoteDao {
                 id);
     }
 
-    public void deleteTagsById(Long id) {
+    public void removeTagAssociationsById(Long id) {
         jdbcTemplate.update(
                 "delete from note__tag__jt " +
                         "where note_id = ?",

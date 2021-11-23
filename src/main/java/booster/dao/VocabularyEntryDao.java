@@ -579,6 +579,13 @@ public class VocabularyEntryDao {
                 id);
     }
 
+    public void removeTagAssociationsById(long id) {
+        jdbcTemplate.update(
+                "delete from vocabulary_entry__tag__jt " +
+                        "where vocabulary_entry_id = ?",
+                id);
+    }
+
     public void delete(long id) {
         jdbcTemplate.update(
                 "delete from vocabulary_entry " +
