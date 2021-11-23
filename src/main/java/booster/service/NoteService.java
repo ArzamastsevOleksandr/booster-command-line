@@ -53,7 +53,10 @@ public class NoteService {
     }
 
     public void delete(Long id) {
-        noteDao.delete(id);
+        transactionTemplate.executeWithoutResult(status -> {
+            noteDao.deleteTagsById(id);
+            noteDao.delete(id);
+        });
     }
 
 }
