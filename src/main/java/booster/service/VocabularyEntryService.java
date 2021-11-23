@@ -77,6 +77,7 @@ public class VocabularyEntryService {
             vocabularyEntryDao.deleteSynonyms(id);
             vocabularyEntryDao.deleteAntonyms(id);
             vocabularyEntryDao.deleteContexts(id);
+            vocabularyEntryDao.removeTagAssociationsById(id);
             vocabularyEntryDao.delete(id);
         });
     }
