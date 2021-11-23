@@ -56,6 +56,13 @@ public class NoteDao {
                 id);
     }
 
+    public void deleteTagsById(Long id) {
+        jdbcTemplate.update(
+                "delete from note__tag__jt " +
+                        "where note_id = ?",
+                id);
+    }
+
     public Note findById(long id) {
         return jdbcTemplate.queryForObject(
                 "select * " +
