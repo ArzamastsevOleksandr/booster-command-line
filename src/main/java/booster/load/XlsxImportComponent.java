@@ -36,6 +36,7 @@ public class XlsxImportComponent {
     private final LanguageService languageService;
     private final NoteService noteService;
     private final TagService tagService;
+    private final ImportProgressTracker importProgressTracker;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -72,8 +73,10 @@ public class XlsxImportComponent {
                                 .content(content)
                                 .tags(tags)
                                 .build());
+                        importProgressTracker.incNotesImportCount();
                     });
         }
+        importProgressTracker.notesImportFinished();
     }
 
     // todo: validation
@@ -129,8 +132,10 @@ public class XlsxImportComponent {
                                 .contexts(contexts)
                                 .build();
                         vocabularyEntryService.addWithAllValues(params);
+                        importProgressTracker.incVocabularyEntriesImportCount();
                     });
         }
+        importProgressTracker.vocabularyEntriesImportFinished();
     }
 
     private Set<String> getStringValues(XSSFCell cell, String separator) {
