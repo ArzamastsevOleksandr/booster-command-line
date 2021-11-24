@@ -11,8 +11,6 @@ public class Main {
     public static void main(String[] args) {
         // todo: feat: show all ves with descriptions/contexts only
         // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
-        // todo: show progress of import process
-        // todo: session stats: differentiate add vs import
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
         // todo: n/ve \p=no
