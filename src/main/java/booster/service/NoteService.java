@@ -38,7 +38,7 @@ public class NoteService {
         return transactionTemplate.execute(status -> {
             long noteId = noteDao.add(params.getContent());
             noteDao.addTagsToNote(new ArrayList<>(params.getTags()), noteId);
-            sessionTrackerService.incNotesAddedCount();
+            sessionTrackerService.incNotesCount(params.getAddCause());
             return findById(noteId);
         });
     }

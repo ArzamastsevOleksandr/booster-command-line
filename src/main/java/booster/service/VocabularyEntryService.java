@@ -105,7 +105,7 @@ public class VocabularyEntryService {
             vocabularyEntryDao.addTags(new ArrayList<>(params.getTags()), id);
             return id;
         });
-        sessionTrackerService.incVocabularyEntriesAddedCount();
+        sessionTrackerService.incVocabularyEntriesCount(params.getAddCause());
         return findById(newId).get();
     }
 
