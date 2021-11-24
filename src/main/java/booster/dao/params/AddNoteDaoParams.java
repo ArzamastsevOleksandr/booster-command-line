@@ -10,7 +10,11 @@ import java.util.Set;
 public class AddNoteDaoParams {
 
     String content;
+
     @Builder.Default
     Set<String> tags = Set.of();
+
+    @Builder.Default
+    AddCause addCause = AddCause.CREATE;
 
 }

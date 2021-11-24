@@ -1,6 +1,7 @@
 package booster.load;
 
 import booster.adapter.CommandLineAdapter;
+import booster.dao.params.AddCause;
 import booster.dao.params.AddNoteDaoParams;
 import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.model.Language;
@@ -66,7 +67,11 @@ public class XlsxImportComponent {
                     .ifPresent(content -> {
                         Set<String> tags = getStringValues(row.getCell(1), ";");
                         tagService.createIfNotExist(tags);
-                        noteService.add(AddNoteDaoParams.builder().content(content).tags(tags).build());
+                        noteService.add(AddNoteDaoParams.builder()
+                                .addCause(AddCause.IMPORT)
+                                .content(content)
+                                .tags(tags)
+                                .build());
                     });
         }
     }
@@ -112,6 +117,7 @@ public class XlsxImportComponent {
                         tagService.createIfNotExist(tags);
 
                         var params = AddVocabularyEntryDaoParams.builder()
+                                .addCause(AddCause.IMPORT)
                                 .wordId(wordId)
                                 .languageId(languageId)
                                 .synonymIds(synonymIds)

@@ -33,4 +33,7 @@ public class AddVocabularyEntryDaoParams {
     @Builder.Default
     Set<String> tags = Set.of();
 
+    @Builder.Default
+    AddCause addCause = AddCause.CREATE;
+
 }
