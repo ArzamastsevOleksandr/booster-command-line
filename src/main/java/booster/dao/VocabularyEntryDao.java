@@ -46,7 +46,7 @@ public class VocabularyEntryDao {
                         "on ve.word_id = w.id " +
                         "join language l " +
                         "on ve.language_id = l.id " +
-                        "order by cac",
+                        "order by cac, ve.last_seen_at",
                 RS_2_VOCABULARY_ENTRY);
     }
 
@@ -289,7 +289,7 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on l.id = ve.language_id " +
                         "where ve.id in (select distinct vocabulary_entry_id from vocabulary_entry__synonym__jt) " +
-                        "order by cac " +
+                        "order by cac, ve.last_seen_at " +
                         "limit ?",
                 RS_2_VOCABULARY_ENTRY,
                 limit);
@@ -306,7 +306,7 @@ public class VocabularyEntryDao {
                         "join language l " +
                         "on ve.language_id = l.id " +
                         "where ve.id in (select distinct vocabulary_entry_id from vocabulary_entry__antonym__jt) " +
-                        "order by cac " +
+                        "order by cac, ve.last_seen_at " +
                         "limit ?",
                 RS_2_VOCABULARY_ENTRY,
                 limit);
@@ -326,7 +326,7 @@ public class VocabularyEntryDao {
                         "(select distinct vocabulary_entry_id from vocabulary_entry__synonym__jt " +
                         "intersect " +
                         "select distinct vocabulary_entry_id from vocabulary_entry__antonym__jt) " +
-                        "order by cac " +
+                        "order by cac, ve.last_seen_at " +
                         "limit ?",
                 RS_2_VOCABULARY_ENTRY,
                 limit);
@@ -463,20 +463,20 @@ public class VocabularyEntryDao {
                 params.getWordId(), params.getDefinition(), params.getCorrectAnswersCount(), params.getId());
     }
 
-    public List<VocabularyEntry> findAllInRange(int startInclusive, int endInclusive) {
+    public List<VocabularyEntry> findAllLimit(Integer limit) {
         return jdbcTemplate.query(
                 "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
-                        "from (select row_number() over (order by correct_answers_count) as row_num, * from vocabulary_entry) ve " +
+                        "from vocabulary_entry ve " +
                         "join word w " +
                         "on ve.word_id = w.id " +
                         "join language l " +
                         "on ve.language_id = l.id " +
-                        "where ve.row_num >= ? " +
-                        "and ve.row_num <= ? ",
+                        "order by ve.last_seen_at " +
+                        "limit ?",
                 RS_2_VOCABULARY_ENTRY,
-                startInclusive, endInclusive);
+                limit);
     }
 
     public List<VocabularyEntry> findAllWithSubstring(String substring) {
@@ -486,33 +486,29 @@ public class VocabularyEntryDao {
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
                         "join word w " +
-                        "on ve.word_id = w.id " +
+                        "on ve.word_id = w.id and w.name like ? " +
                         "join language l " +
                         "on ve.language_id = l.id " +
-                        "where w.name like '%?%'",
+                        "order by ve.last_seen_at",
                 RS_2_VOCABULARY_ENTRY,
                 substring);
     }
 
-    public List<VocabularyEntry> findAllInRangeWithSubstring(int startInclusive, int endInclusive, String substring) {
+    public List<VocabularyEntry> findWithSubstringLimit(String substring, Integer limit) {
         var likeParameter = "%" + substring + "%";
         return jdbcTemplate.query(
-                "select ve_id, created_at, last_seen_at, cac, definition, " +
-                        "w_name, w_id, " +
+                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                        "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
-                        "from (select row_number() over () as row_num, " +
-                        "ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, ve.language_id as v_l_id, " +
-                        "ww.name as w_name, ww.id as w_id " +
                         "from vocabulary_entry ve " +
-                        "join word ww " +
-                        "on ve.word_id = ww.id " +
-                        "where ww.name like ?) as ve " +
+                        "join word w " +
+                        "on ve.word_id = w.id and w.name like ? " +
                         "join language l " +
-                        "on v_l_id = l.id " +
-                        "where ve.row_num >= ? " +
-                        "and ve.row_num <= ?",
+                        "on ve.language_id = l.id " +
+                        "order by last_seen_at " +
+                        "limit ?",
                 RS_2_VOCABULARY_ENTRY,
-                likeParameter, startInclusive, endInclusive);
+                likeParameter, limit);
     }
 
     public Integer countTotal() {

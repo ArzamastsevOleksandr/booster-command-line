@@ -223,8 +223,8 @@ public class VocabularyEntryService {
     }
 
     // todo: use range OR veIds for synonyms, antonyms, contexts, tags to improve performance
-    public List<VocabularyEntry> findAllInRange(int startInclusive, int endInclusive) {
-        List<VocabularyEntry> entries = vocabularyEntryDao.findAllInRange(startInclusive, endInclusive);
+    public List<VocabularyEntry> findAllLimit(Integer limit) {
+        List<VocabularyEntry> entries = vocabularyEntryDao.findAllLimit(limit);
 
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
@@ -251,8 +251,8 @@ public class VocabularyEntryService {
     }
 
     // todo: use veIds for synonyms, antonyms, contexts, tags to improve performance
-    public List<VocabularyEntry> findAllInRangeWithSubstring(int startInclusive, int endInclusive, String substring) {
-        List<VocabularyEntry> entries = vocabularyEntryDao.findAllInRangeWithSubstring(startInclusive, endInclusive, substring);
+    public List<VocabularyEntry> findWithSubstringLimit(String substring, Integer limit) {
+        List<VocabularyEntry> entries = vocabularyEntryDao.findWithSubstringLimit(substring, limit);
 
         Map<Long, Set<String>> id2Synonyms = vocabularyEntryDao.getId2SynonymsMap();
         Map<Long, Set<String>> id2Antonyms = vocabularyEntryDao.getId2AntonymsMap();
