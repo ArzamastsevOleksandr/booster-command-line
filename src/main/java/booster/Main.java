@@ -29,7 +29,6 @@ public class Main {
         //Arguments must follow a pattern of flag -> separator -> value
         // todo: when importing a file - do not specify the extension
         // todo: in the end of the training session print all words that had mistakes
-        // todo: when I have seen the ve - update it for it to not appear in the next displays
         // todo: validator validates. command handler works with non-optional data and expects a happy path?
         // todo: list_flags command
         // todo: HELP <command>

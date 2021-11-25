@@ -24,7 +24,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandWithArgs commandWithArgs) {
         commandWithArgs.getId()
-                .ifPresentOrElse(this::displayVocabularyEntryById, () -> displayAllVocabularyEntries(commandWithArgs));
+                .ifPresentOrElse(this::displayVocabularyEntryById, () -> displayVocabularyEntries(commandWithArgs));
     }
 
     @Override
@@ -39,14 +39,14 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         });
     }
 
-    private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
+    private void displayVocabularyEntries(CommandWithArgs commandWithArgs) {
         commandWithArgs.getPagination().ifPresentOrElse(pagination -> {
             commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
                 var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
-                displayWithParameters(p, () -> vocabularyEntryService.findAllInRangeWithSubstring(p.startInclusive, p.endInclusive, substring));
+                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, pagination));
             }, () -> {
                 var p = new Paginator(pagination, vocabularyEntryService.countTotal());
-                displayWithParameters(p, () -> vocabularyEntryService.findAllInRange(p.startInclusive, p.endInclusive));
+                display(p, () -> vocabularyEntryService.findAllLimit(pagination));
             });
         }, () -> {
             commandWithArgs.getSubstring()
@@ -58,10 +58,6 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private void displayAllAtOnce(List<VocabularyEntry> entries) {
         entries.forEach(adapter::writeLine);
-        updateLastSeenAtByIds(entries);
-    }
-
-    private void updateLastSeenAtByIds(List<VocabularyEntry> entries) {
         vocabularyEntryService.updateLastSeenAtByIds(entries.stream().map(VocabularyEntry::getId).collect(toList()));
     }
 
@@ -85,20 +81,20 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         }
     }
 
-    private void displayWithParameters(Paginator p, Supplier<List<VocabularyEntry>> supplier) {
-        List<VocabularyEntry> allInRange = supplier.get();
-        displayCounter(p);
-        allInRange.forEach(adapter::writeLine);
-        updateLastSeenAtByIds(allInRange);
+    private void display(Paginator p, Supplier<List<VocabularyEntry>> supplier) {
+        displayAndUpdateLastSeenAt(p, supplier);
 
         String line = adapter.readLine();
         while (!line.equals("e") && p.isInRange()) {
             p.updateRange();
-            allInRange = supplier.get();
-            displayCounter(p);
-            allInRange.forEach(adapter::writeLine);
+            displayAndUpdateLastSeenAt(p, supplier);
             line = adapter.readLine();
         }
+    }
+
+    private void displayAndUpdateLastSeenAt(Paginator p, Supplier<List<VocabularyEntry>> supplier) {
+        displayCounter(p);
+        displayAllAtOnce(supplier.get());
     }
 
     private void displayCounter(Paginator p) {
