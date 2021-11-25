@@ -117,6 +117,10 @@ public class XlsxImportComponent {
 
                         Set<String> tags = getStringValues(row.getCell(6), ";");
                         Set<String> contexts = getStringValues(row.getCell(7), "/");
+
+                        // todo: column index is not a magic number
+                        Timestamp lastSeenAt = Timestamp.valueOf(row.getCell(8).getStringCellValue());
+
                         tagService.createIfNotExist(tags);
 
                         var params = AddVocabularyEntryDaoParams.builder()
@@ -127,11 +131,13 @@ public class XlsxImportComponent {
                                 .antonymIds(antonymIds)
                                 .correctAnswersCount(correctAnswersCount)
                                 .createdAt(createdAt)
+                                .lastSeenAt(lastSeenAt)
                                 .definition(definition)
                                 .tags(tags)
                                 .contexts(contexts)
                                 .build();
                         vocabularyEntryService.addWithAllValues(params);
+                        // todo: DRY (use SessionTrackerService inside)
                         importProgressTracker.incVocabularyEntriesImportCount();
                     });
         }

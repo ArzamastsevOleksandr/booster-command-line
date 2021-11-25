@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: test dao layer (containers?)
+        // todo: fix: when I use ve and all ves are displayed - stop pagination
         // todo: feat: show all ves with descriptions/contexts only
         // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)

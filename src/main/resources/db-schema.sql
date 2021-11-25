@@ -20,6 +20,7 @@ create table vocabulary_entry
 (
     id                    serial primary key,
     created_at            timestamp default now() not null,
+    last_seen_at          timestamp default now() not null,
     correct_answers_count smallint  default 0     not null,
 
     definition            varchar(255),

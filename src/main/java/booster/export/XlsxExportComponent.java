@@ -80,6 +80,7 @@ public class XlsxExportComponent {
         row.createCell(5).setCellValue("Created at");
         row.createCell(6).setCellValue("Tags");
         row.createCell(7).setCellValue("Contexts");
+        row.createCell(8).setCellValue("Last seen at");
     }
 
     private void createVocabularyEntryRows(Language languageToExport, XSSFSheet sheet) {
@@ -102,6 +103,7 @@ public class XlsxExportComponent {
         row.createCell(5).setCellValue(vocabularyEntry.getCreatedAt().toString());
         row.createCell(6).setCellValue(String.join(";", vocabularyEntry.getTags()));
         row.createCell(7).setCellValue(String.join("/", vocabularyEntry.getContexts()));
+        row.createCell(8).setCellValue(vocabularyEntry.getLastSeenAt().toString());
     }
 
 }

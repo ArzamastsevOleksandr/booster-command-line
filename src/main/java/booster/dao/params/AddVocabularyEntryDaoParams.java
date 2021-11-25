@@ -21,6 +21,9 @@ public class AddVocabularyEntryDaoParams {
     @Builder.Default
     Timestamp createdAt = new Timestamp(System.currentTimeMillis());
     @Builder.Default
+    Timestamp lastSeenAt = new Timestamp(System.currentTimeMillis());
+
+    @Builder.Default
     int correctAnswersCount = 0;
 
     @Builder.Default

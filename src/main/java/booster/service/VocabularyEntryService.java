@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Function;
 
@@ -269,6 +270,22 @@ public class VocabularyEntryService {
 
     public int countWithSubstring(String substring) {
         return vocabularyEntryDao.countWithSubstring(substring);
+    }
+
+    public void updateLastSeenAtById(long id) {
+        updateLastSeenAtById(id, new Timestamp(System.currentTimeMillis()));
+    }
+
+    private void updateLastSeenAtById(long id, Timestamp lastSeenAt) {
+        vocabularyEntryDao.updateLastSeenAtById(id, lastSeenAt);
+    }
+
+    public void updateLastSeenAtByIds(List<Long> ids) {
+        updateLastSeenAtByIds(ids, new Timestamp(System.currentTimeMillis()));
+    }
+
+    private void updateLastSeenAtByIds(List<Long> ids, Timestamp lastSeenAt) {
+        vocabularyEntryDao.updateLastSeenAtByIds(ids, lastSeenAt);
     }
 
 }
