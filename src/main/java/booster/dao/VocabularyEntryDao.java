@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
 
@@ -20,9 +21,11 @@ import java.util.*;
 @RequiredArgsConstructor
 public class VocabularyEntryDao {
 
+    // todo: DRY ve query has to be changed in many places
     public static final RowMapper<VocabularyEntry> RS_2_VOCABULARY_ENTRY = (rs, i) -> VocabularyEntry.builder()
             .id(rs.getLong("ve_id"))
             .createdAt(rs.getTimestamp("created_at"))
+            .lastSeenAt(rs.getTimestamp("last_seen_at"))
             .correctAnswersCount(rs.getInt("cac"))
             .name(rs.getString("w_name"))
             .wordId(rs.getLong("w_id"))
@@ -35,7 +38,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAll() {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -137,13 +140,14 @@ public class VocabularyEntryDao {
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
                     "insert into vocabulary_entry " +
-                            "(word_id, language_id, definition, created_at, correct_answers_count) " +
-                            "values (?, ?, ?, ?, ?)", new String[]{"id"});
+                            "(word_id, language_id, definition, created_at, correct_answers_count, last_seen_at) " +
+                            "values (?, ?, ?, ?, ?, ?)", new String[]{"id"});
             ps.setLong(1, params.getWordId());
             ps.setLong(2, params.getLanguageId());
             ps.setString(3, params.getDefinition());
             ps.setTimestamp(4, params.getCreatedAt());
             ps.setInt(5, params.getCorrectAnswersCount());
+            ps.setTimestamp(6, params.getLastSeenAt());
             return ps;
         }, keyHolder);
         return keyHolder.getKey().longValue();
@@ -237,7 +241,7 @@ public class VocabularyEntryDao {
 
     public VocabularyEntry findById(long id) {
         return jdbcTemplate.queryForObject(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -276,7 +280,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllWithSynonyms(int limit) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                "select ve.id as ve_id, ve.created_at,  ve.last_seen_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -293,7 +297,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllWithAntonyms(int limit) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                "select ve.id as ve_id, ve.created_at,  ve.last_seen_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name,  w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -310,7 +314,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllWithAntonymsAndSynonyms(int limit) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                "select ve.id as ve_id, ve.created_at,  ve.last_seen_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name,  w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -330,7 +334,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllForLanguageId(long id) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition, " +
+                "select ve.id as ve_id, ve.created_at,  ve.last_seen_at, ve.correct_answers_count as cac, ve.definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -461,7 +465,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllInRange(int startInclusive, int endInclusive) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from (select row_number() over (order by correct_answers_count) as row_num, * from vocabulary_entry) ve " +
@@ -477,7 +481,7 @@ public class VocabularyEntryDao {
 
     public List<VocabularyEntry> findAllWithSubstring(String substring) {
         return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, " +
+                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
                         "w.name as w_name, w.id as w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from vocabulary_entry ve " +
@@ -493,11 +497,11 @@ public class VocabularyEntryDao {
     public List<VocabularyEntry> findAllInRangeWithSubstring(int startInclusive, int endInclusive, String substring) {
         var likeParameter = "%" + substring + "%";
         return jdbcTemplate.query(
-                "select ve_id, created_at, cac, definition, " +
+                "select ve_id, created_at, last_seen_at, cac, definition, " +
                         "w_name, w_id, " +
                         "l.name as l_name, l.id as l_id " +
                         "from (select row_number() over () as row_num, " +
-                        "ve.id as ve_id, ve.created_at, ve.correct_answers_count as cac, ve.definition as definition, ve.language_id as v_l_id, " +
+                        "ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, ve.language_id as v_l_id, " +
                         "ww.name as w_name, ww.id as w_id " +
                         "from vocabulary_entry ve " +
                         "join word ww " +
@@ -599,6 +603,26 @@ public class VocabularyEntryDao {
                         "(vocabulary_entry_id, tag) " +
                         "values (?, ?)",
                 id, tag);
+    }
+
+    public void updateLastSeenAtById(long id, Timestamp lastSeenAt) {
+        jdbcTemplate.update(
+                "update vocabulary_entry " +
+                        "set last_seen_at = ? " +
+                        "where id = ?",
+                lastSeenAt, id);
+    }
+
+    public void updateLastSeenAtByIds(List<Long> ids, Timestamp lastSeenAt) {
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(
+                    "update vocabulary_entry " +
+                            "set last_seen_at = ? " +
+                            "where id in (select * from unnest(?))");
+            ps.setTimestamp(1, lastSeenAt);
+            ps.setArray(2, con.createArrayOf("bigint", ids.toArray(new Long[ids.size()])));
+            return ps;
+        });
     }
 
 }

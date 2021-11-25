@@ -101,6 +101,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private void printCurrentWord(VocabularyEntry vocabularyEntry) {
         adapter.writeLine("Current word: [" + vocabularyEntry.getName() + "]");
         adapter.newLine();
+        vocabularyEntryService.updateLastSeenAtById(vocabularyEntry.getId());
     }
 
     private void executeSynonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {

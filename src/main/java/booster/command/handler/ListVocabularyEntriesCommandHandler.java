@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
+
 @Component
 @RequiredArgsConstructor
 public class ListVocabularyEntriesCommandHandler implements CommandHandler {
@@ -31,7 +33,10 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        vocabularyEntryService.findById(id).ifPresent(adapter::writeLine);
+        vocabularyEntryService.findById(id).ifPresent(vocabularyEntry -> {
+            adapter.writeLine(vocabularyEntry);
+            vocabularyEntryService.updateLastSeenAtById(vocabularyEntry.getId());
+        });
     }
 
     private void displayAllVocabularyEntries(CommandWithArgs commandWithArgs) {
@@ -44,12 +49,20 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
                 displayWithParameters(p, () -> vocabularyEntryService.findAllInRange(p.startInclusive, p.endInclusive));
             });
         }, () -> {
-            commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
-                vocabularyEntryService.findAllWithSubstring(substring).forEach(adapter::writeLine);
-            }, () -> {
-                vocabularyEntryService.findAll().forEach(adapter::writeLine);
-            });
+            commandWithArgs.getSubstring()
+                    .ifPresentOrElse(
+                            substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
+                            () -> displayAllAtOnce(vocabularyEntryService.findAll()));
         });
+    }
+
+    private void displayAllAtOnce(List<VocabularyEntry> entries) {
+        entries.forEach(adapter::writeLine);
+        updateLastSeenAtByIds(entries);
+    }
+
+    private void updateLastSeenAtByIds(List<VocabularyEntry> entries) {
+        vocabularyEntryService.updateLastSeenAtByIds(entries.stream().map(VocabularyEntry::getId).collect(toList()));
     }
 
     private static class Paginator {
@@ -76,6 +89,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         List<VocabularyEntry> allInRange = supplier.get();
         displayCounter(p);
         allInRange.forEach(adapter::writeLine);
+        updateLastSeenAtByIds(allInRange);
 
         String line = adapter.readLine();
         while (!line.equals("e") && p.isInRange()) {

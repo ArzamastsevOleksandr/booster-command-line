@@ -15,6 +15,7 @@ public class VocabularyEntry {
     String name;
     long wordId;
     Timestamp createdAt;
+    Timestamp lastSeenAt;
     int correctAnswersCount;
 
     // todo: custom ds
