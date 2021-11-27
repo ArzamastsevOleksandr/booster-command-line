@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.StartTrainingSessionCommandArgs;
 import booster.command.arguments.TrainingSessionMode;
 import booster.model.VocabularyEntry;
 import booster.service.VocabularyEntryService;
@@ -27,8 +28,9 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getMode().ifPresent(this::executeTrainingSession);
+    public void handle(CommandArgs commandArgs) {
+        var args = (StartTrainingSessionCommandArgs) commandArgs;
+        executeTrainingSession(args.mode());
     }
 
     @Override

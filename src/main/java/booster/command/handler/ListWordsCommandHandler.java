@@ -2,7 +2,7 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
 import booster.model.Word;
 import booster.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +15,10 @@ import java.util.List;
 public class ListWordsCommandHandler implements CommandHandler {
 
     private final WordService wordService;
-
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
+    public void handle(CommandArgs commandArgs) {
         List<Word> words = wordService.findAll();
 
         if (words.isEmpty()) {

@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.ListNotesCommandArgs;
 import booster.model.Note;
 import booster.service.NoteService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,12 @@ import java.util.List;
 public class ListNotesCommandHandler implements CommandHandler {
 
     private final NoteService noteService;
-
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresentOrElse(this::displayNoteById, this::displayAllNotes);
+    public void handle(CommandArgs commandArgs) {
+        var args = (ListNotesCommandArgs) commandArgs;
+        args.id().ifPresentOrElse(this::displayNoteById, this::displayAllNotes);
     }
 
     private void displayNoteById(Long id) {

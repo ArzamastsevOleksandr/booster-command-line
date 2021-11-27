@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.AddLanguageCommandArgs;
+import booster.command.arguments.CommandArgs;
 import booster.model.Language;
 import booster.service.LanguageService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,10 @@ public class AddLanguageCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getName().ifPresent(name -> {
-            Language language = languageService.add(name);
-            adapter.writeLine(language);
-        });
+    public void handle(CommandArgs commandArgs) {
+        var args = (AddLanguageCommandArgs) commandArgs;
+        Language language = languageService.add(args.name());
+        adapter.writeLine(language);
     }
 
     @Override

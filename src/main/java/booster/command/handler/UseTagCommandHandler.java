@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.UseTagCommandArgs;
 import booster.dao.params.AddTagToVocabularyEntryDaoParams;
 import booster.model.Note;
 import booster.model.VocabularyEntry;
@@ -20,16 +21,15 @@ public class UseTagCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getTag().ifPresent(tag -> {
-            commandWithArgs.getNoteId().ifPresent(noteId -> {
-                Note note = noteService.addTag(tag, noteId);
-                adapter.writeLine(note);
-            });
-            commandWithArgs.getVocabularyEntryId().ifPresent(veId -> {
-                VocabularyEntry vocabularyEntry = vocabularyEntryService.addTag(new AddTagToVocabularyEntryDaoParams(tag, veId));
-                adapter.writeLine(vocabularyEntry);
-            });
+    public void handle(CommandArgs commandArgs) {
+        var args = (UseTagCommandArgs) commandArgs;
+        args.noteId().ifPresent(id -> {
+            Note note = noteService.addTag(args.tag(), id);
+            adapter.writeLine(note);
+        });
+        args.vocabularyEntryId().ifPresent(id -> {
+            VocabularyEntry vocabularyEntry = vocabularyEntryService.addTag(new AddTagToVocabularyEntryDaoParams(args.tag(), id));
+            adapter.writeLine(vocabularyEntry);
         });
     }
 

@@ -2,7 +2,7 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
 import booster.model.Language;
 import booster.service.LanguageService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +15,10 @@ import java.util.List;
 public class ListLanguagesCommandHandler implements CommandHandler {
 
     private final LanguageService languageService;
-
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
+    public void handle(CommandArgs commandArgs) {
         List<Language> languages = languageService.findAll();
 
         if (languages.isEmpty()) {

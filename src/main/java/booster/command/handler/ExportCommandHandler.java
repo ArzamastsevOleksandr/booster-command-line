@@ -1,7 +1,8 @@
 package booster.command.handler;
 
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.ExportCommandArgs;
 import booster.export.XlsxExportComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,9 @@ public class ExportCommandHandler implements CommandHandler {
     private final XlsxExportComponent exportComponent;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getFilename().ifPresent(exportComponent::export);
+    public void handle(CommandArgs commandArgs) {
+        var args = (ExportCommandArgs) commandArgs;
+        exportComponent.export(args.filename());
     }
 
     @Override
