@@ -119,7 +119,12 @@ public class XlsxImportComponent {
                         Set<String> contexts = getStringValues(row.getCell(7), "/");
 
                         // todo: column index is not a magic number
-                        Timestamp lastSeenAt = Timestamp.valueOf(row.getCell(8).getStringCellValue());
+                        Timestamp lastSeenAt = Optional.ofNullable(row.getCell(8))
+                                .map(XSSFCell::getStringCellValue)
+                                .map(String::strip)
+                                .filter(s -> !s.isBlank())
+                                .map(Timestamp::valueOf)
+                                .orElse(new Timestamp(System.currentTimeMillis()));
 
                         tagService.createIfNotExist(tags);
 
