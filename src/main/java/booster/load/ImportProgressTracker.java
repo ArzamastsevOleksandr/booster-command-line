@@ -31,7 +31,6 @@ class ImportProgressTracker {
         }
     }
 
-
     public void vocabularyEntriesImportFinished() {
         if (enabled) {
             adapter.writeLine("Vocabulary entries import process finished");

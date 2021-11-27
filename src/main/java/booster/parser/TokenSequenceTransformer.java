@@ -38,70 +38,29 @@ class TokenSequenceTransformer {
 
             FlagType flagType = FlagType.fromString(flag.getValue());
             String flagValue = value.getValue();
-            switch (flagType) {
-                case ID:
-                    argumentsBuilder = argumentsBuilder.id(Long.parseLong(flagValue));
-                    break;
-                case LANGUAGE_ID:
-                    argumentsBuilder = argumentsBuilder.languageId(Long.parseLong(flagValue));
-                    break;
-                case NOTE_ID:
-                    argumentsBuilder = argumentsBuilder.noteId(Long.parseLong(flagValue));
-                    break;
-                case VOCABULARY_ENTRY_ID:
-                    argumentsBuilder = argumentsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
-                    break;
-                case NAME:
-                    argumentsBuilder = argumentsBuilder.name(flagValue);
-                    break;
-                case TAG:
-                    argumentsBuilder = argumentsBuilder.tag(flagValue);
-                    break;
-                case DESCRIPTION:
-                    argumentsBuilder = argumentsBuilder.definition(flagValue);
-                    break;
-                case FILE:
-                    argumentsBuilder = argumentsBuilder.filename(flagValue);
-                    break;
-                case MODE:
-                    argumentsBuilder = argumentsBuilder.mode(TrainingSessionMode.fromString(flagValue));
-                    break;
-                case SYNONYMS:
-                    argumentsBuilder = argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case ANTONYMS:
-                    argumentsBuilder = argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case CONTENT:
-                    argumentsBuilder = argumentsBuilder.content(flagValue);
-                    break;
-                case CORRECT_ANSWERS_COUNT:
-                    argumentsBuilder = argumentsBuilder.correctAnswersCount(Integer.parseInt(flagValue));
-                    break;
-                case ADD_ANTONYMS:
-                    argumentsBuilder = argumentsBuilder.addAntonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case ADD_SYNONYMS:
-                    argumentsBuilder = argumentsBuilder.addSynonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case REMOVE_ANTONYMS:
-                    argumentsBuilder = argumentsBuilder.removeAntonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case REMOVE_SYNONYMS:
-                    argumentsBuilder = argumentsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
-                    break;
-                case PAGINATION:
-                    argumentsBuilder = argumentsBuilder.pagination(Integer.parseInt(flagValue));
-                    break;
-                case SUBSTRING:
-                    argumentsBuilder = argumentsBuilder.substring(flagValue);
-                    break;
-                case CONTEXTS:
-                    argumentsBuilder = argumentsBuilder.contexts(getContexts(flagValue));
-                    break;
-                default:
-                    throw new RuntimeException("Flag does not have a handler: " + flagType);
-            }
+            argumentsBuilder = switch (flagType) {
+                case ID -> argumentsBuilder.id(Long.parseLong(flagValue));
+                case LANGUAGE_ID -> argumentsBuilder.languageId(Long.parseLong(flagValue));
+                case NOTE_ID -> argumentsBuilder.noteId(Long.parseLong(flagValue));
+                case VOCABULARY_ENTRY_ID -> argumentsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
+                case NAME -> argumentsBuilder.name(flagValue);
+                case TAG -> argumentsBuilder.tag(flagValue);
+                case DESCRIPTION -> argumentsBuilder.definition(flagValue);
+                case FILE -> argumentsBuilder.filename(flagValue);
+                case MODE -> argumentsBuilder.mode(TrainingSessionMode.fromString(flagValue));
+                case SYNONYMS -> argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
+                case ANTONYMS -> argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
+                case CONTENT -> argumentsBuilder.content(flagValue);
+                case CORRECT_ANSWERS_COUNT -> argumentsBuilder.correctAnswersCount(Integer.parseInt(flagValue));
+                case ADD_ANTONYMS -> argumentsBuilder.addAntonyms(getWordEquivalentNames(flagValue));
+                case ADD_SYNONYMS -> argumentsBuilder.addSynonyms(getWordEquivalentNames(flagValue));
+                case REMOVE_ANTONYMS -> argumentsBuilder.removeAntonyms(getWordEquivalentNames(flagValue));
+                case REMOVE_SYNONYMS -> argumentsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
+                case PAGINATION -> argumentsBuilder.pagination(Integer.parseInt(flagValue));
+                case SUBSTRING -> argumentsBuilder.substring(flagValue);
+                case CONTEXTS -> argumentsBuilder.contexts(getContexts(flagValue));
+                default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
+            };
         }
         return argumentsBuilder.build();
     }

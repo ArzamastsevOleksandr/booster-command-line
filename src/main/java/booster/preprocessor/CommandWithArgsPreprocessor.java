@@ -13,13 +13,11 @@ public class CommandWithArgsPreprocessor {
 
     public CommandWithArgs preprocess(CommandWithArgs commandWithArgs) {
         Command command = commandWithArgs.getCommand();
-        switch (command) {
-            case LIST_VOCABULARY_ENTRIES:
-                Optional<Integer> pagination = commandWithArgs.getPagination();
-                if (pagination.isEmpty()) {
-                    commandWithArgs = commandWithArgs.toBuilder().pagination(DEFAULT_PAGINATION).build();
-                }
-                break;
+        if (command == Command.LIST_VOCABULARY_ENTRIES) {
+            Optional<Integer> pagination = commandWithArgs.getPagination();
+            if (pagination.isEmpty()) {
+                commandWithArgs = commandWithArgs.toBuilder().pagination(DEFAULT_PAGINATION).build();
+            }
         }
         return commandWithArgs;
     }
