@@ -99,27 +99,13 @@ class TokenSequenceValidator {
     private void validateFlagValueBasedOnFlagType(Token expectedFlag, Token expectedValue) {
         FlagType flagType = FlagType.fromString(expectedFlag.getValue());
         switch (flagType) {
-            case ID:
-                checkIfIdIsPositiveLongNumber("Id", expectedValue.getValue());
-                break;
-            case LANGUAGE_ID:
-                checkIfIdIsPositiveLongNumber("Language id", expectedValue.getValue());
-                break;
-            case NOTE_ID:
-                checkIfIdIsPositiveLongNumber("Note id", expectedValue.getValue());
-                break;
-            case VOCABULARY_ENTRY_ID:
-                checkIfIdIsPositiveLongNumber("Vocabulary entry id", expectedValue.getValue());
-                break;
-            case CORRECT_ANSWERS_COUNT:
-                checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
-                break;
-            case PAGINATION:
-                checkIfValueIsPositiveIntegerNumber("Pagination", expectedValue.getValue());
-                break;
-            case MODE:
-                checkIfTrainingSessionModeIsCorrect(expectedValue.getValue());
-                break;
+            case ID -> checkIfIdIsPositiveLongNumber("Id", expectedValue.getValue());
+            case LANGUAGE_ID -> checkIfIdIsPositiveLongNumber("Language id", expectedValue.getValue());
+            case NOTE_ID -> checkIfIdIsPositiveLongNumber("Note id", expectedValue.getValue());
+            case VOCABULARY_ENTRY_ID -> checkIfIdIsPositiveLongNumber("Vocabulary entry id", expectedValue.getValue());
+            case CORRECT_ANSWERS_COUNT -> checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
+            case PAGINATION -> checkIfValueIsPositiveIntegerNumber("Pagination", expectedValue.getValue());
+            case MODE -> checkIfTrainingSessionModeIsCorrect(expectedValue.getValue());
         }
     }
 

@@ -63,16 +63,12 @@ public class VocabularyEntryService {
     }
 
     public boolean existAnyForTrainingMode(TrainingSessionMode mode) {
-        switch (mode) {
-            case SYNONYMS:
-                return vocabularyEntryDao.countWithSynonyms() > 0;
-            case ANTONYMS:
-                return vocabularyEntryDao.countWithAntonyms() > 0;
-            case FULL:
-                return vocabularyEntryDao.countWithAntonymsAndSynonyms() > 0;
-            default:
-                return false;
-        }
+        return switch (mode) {
+            case SYNONYMS -> vocabularyEntryDao.countWithSynonyms() > 0;
+            case ANTONYMS -> vocabularyEntryDao.countWithAntonyms() > 0;
+            case FULL -> vocabularyEntryDao.countWithAntonymsAndSynonyms() > 0;
+            default -> false;
+        };
     }
 
     public void delete(long id) {
