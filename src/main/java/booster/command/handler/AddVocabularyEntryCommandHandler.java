@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.AddVocabularyEntryCommandArgs;
+import booster.command.arguments.CommandArgs;
 import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.model.Settings;
 import booster.model.VocabularyEntry;
@@ -29,28 +30,25 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final SessionTrackerService sessionTrackerService;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
+    public void handle(CommandArgs commandArgs) {
+        var args = (AddVocabularyEntryCommandArgs) commandArgs;
         var params = new AddVocabularyEntryDaoParams();
 
-        commandWithArgs.getName().ifPresent(name -> {
-            long wordId = wordService.findByNameOrCreateAndGet(name).getId();
-            params.setWordId(wordId);
-        });
+        long wordId = wordService.findByNameOrCreateAndGet(args.getName()).getId();
+        params.setWordId(wordId);
 
-        commandWithArgs.getLanguageId().ifPresentOrElse(params::setLanguageId, () -> {
+        args.languageId().ifPresentOrElse(params::setLanguageId, () -> {
             settingsService.findOne()
                     .flatMap(Settings::getLanguageId)
                     .ifPresent(params::setLanguageId);
         });
+        args.definition().ifPresent(params::setDefinition);
 
-        commandWithArgs.getDefinition().ifPresent(params::setDefinition);
+        params.setContexts(args.getContexts());
+        params.setSynonymIds(getWordIds(args.getSynonyms()));
+        params.setAntonymIds(getWordIds(args.getAntonyms()));
 
-        params.setContexts(commandWithArgs.getContexts());
-
-        params.setSynonymIds(getWordIds(commandWithArgs.getSynonyms()));
-        params.setAntonymIds(getWordIds(commandWithArgs.getAntonyms()));
-
-        commandWithArgs.getTag().ifPresent(tag -> params.setTags(Set.of(tag)));
+        args.tag().ifPresent(tag -> params.setTags(Set.of(tag)));
 
         VocabularyEntry vocabularyEntry = vocabularyEntryService.addWithDefaultValues(params);
         adapter.writeLine(vocabularyEntry);

@@ -2,7 +2,7 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
 import booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,11 +12,10 @@ import org.springframework.stereotype.Component;
 public class ShowSettingsCommandHandler implements CommandHandler {
 
     private final SettingsService settingsService;
-
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
+    public void handle(CommandArgs commandArgs) {
         settingsService.findOne().ifPresentOrElse(
                 adapter::writeLine,
                 () -> adapter.writeLine("There are no settings in the system now.")

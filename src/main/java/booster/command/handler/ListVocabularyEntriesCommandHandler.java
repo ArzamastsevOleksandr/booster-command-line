@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.ListVocabularyEntriesCommandArgs;
 import booster.model.VocabularyEntry;
 import booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,9 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     // todo: assert that pagination is present always
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId()
-                .ifPresentOrElse(this::displayVocabularyEntryById, () -> displayVocabularyEntries(commandWithArgs));
+    public void handle(CommandArgs commandArgs) {
+        var args = (ListVocabularyEntriesCommandArgs) commandArgs;
+        args.id().ifPresentOrElse(this::displayVocabularyEntryById, () -> displayVocabularyEntries(args));
     }
 
     @Override
@@ -39,9 +40,9 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         });
     }
 
-    private void displayVocabularyEntries(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getPagination().ifPresentOrElse(pagination -> {
-            commandWithArgs.getSubstring().ifPresentOrElse(substring -> {
+    private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
+        args.pagination().ifPresentOrElse(pagination -> {
+            args.substring().ifPresentOrElse(substring -> {
                 var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
                 display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, pagination));
             }, () -> {
@@ -49,7 +50,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
                 display(p, () -> vocabularyEntryService.findAllLimit(pagination));
             });
         }, () -> {
-            commandWithArgs.getSubstring()
+            args.substring()
                     .ifPresentOrElse(
                             substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
                             () -> displayAllAtOnce(vocabularyEntryService.findAll()));

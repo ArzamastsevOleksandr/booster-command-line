@@ -1,7 +1,8 @@
 package booster.command.handler;
 
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.DeleteNoteCommandArgs;
 import booster.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,9 @@ public class DeleteNoteCommandHandler implements CommandHandler {
     private final NoteService noteService;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresent(noteService::delete);
+    public void handle(CommandArgs commandArgs) {
+        var args = (DeleteNoteCommandArgs) commandArgs;
+        noteService.delete(args.id());
     }
 
     @Override

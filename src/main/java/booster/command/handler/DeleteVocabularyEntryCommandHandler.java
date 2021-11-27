@@ -1,7 +1,8 @@
 package booster.command.handler;
 
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.DeleteVocabularyEntryCommandArgs;
 import booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +14,9 @@ public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresent(vocabularyEntryService::delete);
+    public void handle(CommandArgs commandArgs) {
+        var args = (DeleteVocabularyEntryCommandArgs) commandArgs;
+        vocabularyEntryService.delete(args.id());
     }
 
     @Override

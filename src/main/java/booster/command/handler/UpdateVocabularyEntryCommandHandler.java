@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.CommandArgs;
+import booster.command.arguments.UpdateVocabularyEntryCommandArgs;
 import booster.dao.params.UpdateVocabularyEntryDaoParams;
 import booster.model.VocabularyEntry;
 import booster.model.Word;
@@ -26,36 +27,37 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
     // todo: update contexts
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().flatMap(vocabularyEntryService::findById).ifPresent(ve -> {
-            var params = new UpdateVocabularyEntryDaoParams();
-            params.setId(ve.getId());
+    public void handle(CommandArgs commandArgs) {
+        var args = (UpdateVocabularyEntryCommandArgs) commandArgs;
+        VocabularyEntry entry = vocabularyEntryService.findById(args.getId()).get();
 
-            commandWithArgs.getName().ifPresentOrElse(name -> {
-                Word updatedWord = wordService.findByNameOrCreateAndGet(name);
-                params.setWordId(updatedWord.getId());
-            }, () -> params.setWordId(ve.getWordId()));
+        var params = new UpdateVocabularyEntryDaoParams();
+        params.setId(entry.getId());
 
-            commandWithArgs.getDefinition()
-                    .ifPresentOrElse(params::setDefinition, () -> ve.getDefinition().ifPresent(params::setDefinition));
+        args.getName().ifPresentOrElse(name -> {
+            Word updatedWord = wordService.findByNameOrCreateAndGet(name);
+            params.setWordId(updatedWord.getId());
+        }, () -> params.setWordId(entry.getWordId()));
 
-            commandWithArgs.getCorrectAnswersCount()
-                    .ifPresentOrElse(params::setCorrectAnswersCount, () -> params.setCorrectAnswersCount(ve.getCorrectAnswersCount()));
+        args.getDefinition()
+                .ifPresentOrElse(params::setDefinition, () -> entry.getDefinition().ifPresent(params::setDefinition));
 
-            processSynonyms(commandWithArgs, ve, params);
-            processAntonyms(commandWithArgs, ve, params);
+        args.getCorrectAnswersCount()
+                .ifPresentOrElse(params::setCorrectAnswersCount, () -> params.setCorrectAnswersCount(entry.getCorrectAnswersCount()));
 
-            VocabularyEntry entry = vocabularyEntryService.update(params);
-            adapter.writeLine(entry);
-        });
+        processSynonyms(args, entry, params);
+        processAntonyms(args, entry, params);
+
+        VocabularyEntry updatedEntry = vocabularyEntryService.update(params);
+        adapter.writeLine(updatedEntry);
     }
 
-    private void processSynonyms(CommandWithArgs commandWithArgs, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
-        Set<String> synonyms = commandWithArgs.getSynonyms();
+    private void processSynonyms(UpdateVocabularyEntryCommandArgs args, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
+        Set<String> synonyms = args.getSynonyms();
         if (synonyms.isEmpty()) {
             Set<String> veSynonyms = new HashSet<>(ve.getSynonyms());
-            Set<String> addSynonyms = commandWithArgs.getAddSynonyms();
-            Set<String> removeSynonyms = commandWithArgs.getRemoveSynonyms();
+            Set<String> addSynonyms = args.getAddSynonyms();
+            Set<String> removeSynonyms = args.getRemoveSynonyms();
 
             veSynonyms.addAll(addSynonyms);
             veSynonyms.removeAll(removeSynonyms);
@@ -66,12 +68,12 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
         }
     }
 
-    private void processAntonyms(CommandWithArgs commandWithArgs, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
-        Set<String> antonyms = commandWithArgs.getAntonyms();
+    private void processAntonyms(UpdateVocabularyEntryCommandArgs args, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
+        Set<String> antonyms = args.getAntonyms();
         if (antonyms.isEmpty()) {
             Set<String> veAntonyms = new HashSet<>(ve.getAntonyms());
-            Set<String> addAntonyms = commandWithArgs.getAddAntonyms();
-            Set<String> removeAntonyms = commandWithArgs.getRemoveAntonyms();
+            Set<String> addAntonyms = args.getAddAntonyms();
+            Set<String> removeAntonyms = args.getRemoveAntonyms();
 
             veAntonyms.addAll(addAntonyms);
             veAntonyms.removeAll(removeAntonyms);

@@ -2,7 +2,8 @@ package booster.command.handler;
 
 import booster.adapter.CommandLineAdapter;
 import booster.command.Command;
-import booster.command.arguments.CommandWithArgs;
+import booster.command.arguments.AddSettingsCommandArgs;
+import booster.command.arguments.CommandArgs;
 import booster.model.Settings;
 import booster.service.SettingsService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,9 @@ public class AddSettingsCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandWithArgs commandWithArgs) {
-        Settings settings = settingsService.add(commandWithArgs.getLanguageId().orElse(null));
+    public void handle(CommandArgs commandArgs) {
+        var args = (AddSettingsCommandArgs) commandArgs;
+        Settings settings = settingsService.add(args.languageId());
         adapter.writeLine(settings);
     }
 
