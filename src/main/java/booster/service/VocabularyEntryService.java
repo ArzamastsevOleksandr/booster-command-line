@@ -6,6 +6,7 @@ import booster.dao.params.AddTagToVocabularyEntryDaoParams;
 import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.dao.params.UpdateVocabularyEntryDaoParams;
 import booster.model.VocabularyEntry;
+import booster.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -25,6 +26,7 @@ public class VocabularyEntryService {
     private final VocabularyEntryDao vocabularyEntryDao;
     private final TransactionTemplate transactionTemplate;
     private final SessionTrackerService sessionTrackerService;
+    private final TimeUtil timeUtil;
 
     public Optional<VocabularyEntry> findById(long id) {
         if (existsWithId(id)) {
@@ -273,7 +275,7 @@ public class VocabularyEntryService {
     }
 
     public void updateLastSeenAtById(long id) {
-        updateLastSeenAtById(id, new Timestamp(System.currentTimeMillis()));
+        updateLastSeenAtById(id, timeUtil.timestampNow());
     }
 
     private void updateLastSeenAtById(long id, Timestamp lastSeenAt) {
@@ -281,7 +283,7 @@ public class VocabularyEntryService {
     }
 
     public void updateLastSeenAtByIds(List<Long> ids) {
-        updateLastSeenAtByIds(ids, new Timestamp(System.currentTimeMillis()));
+        updateLastSeenAtByIds(ids, timeUtil.timestampNow());
     }
 
     private void updateLastSeenAtByIds(List<Long> ids, Timestamp lastSeenAt) {
