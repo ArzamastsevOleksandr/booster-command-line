@@ -7,6 +7,7 @@ import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.model.Language;
 import booster.model.Word;
 import booster.service.*;
+import booster.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -37,6 +38,7 @@ public class XlsxImportComponent {
     private final NoteService noteService;
     private final TagService tagService;
     private final ImportProgressTracker importProgressTracker;
+    private final TimeUtil timeUtil;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -124,7 +126,7 @@ public class XlsxImportComponent {
                                 .map(String::strip)
                                 .filter(s -> !s.isBlank())
                                 .map(Timestamp::valueOf)
-                                .orElse(new Timestamp(System.currentTimeMillis()));
+                                .orElse(timeUtil.timestampNow());
 
                         tagService.createIfNotExist(tags);
 
