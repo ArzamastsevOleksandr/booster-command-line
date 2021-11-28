@@ -18,7 +18,6 @@ public class Main {
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
         // todo: n/ve \p=no
         // todo: feat n \ss=<substr>
-        // todo: feat: ve \ss=<substr> should also search for ve with syn/ant to return ANY match
         // todo: enable adding ve/n with many tags
         // todo: uve \t \at \rt
         // todo: un \t \at \rt

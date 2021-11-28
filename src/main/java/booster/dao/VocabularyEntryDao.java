@@ -495,20 +495,23 @@ public class VocabularyEntryDao {
     }
 
     public List<VocabularyEntry> findWithSubstringLimit(String substring, Integer limit) {
-        var likeParameter = "%" + substring + "%";
-        return jdbcTemplate.query(
-                "select ve.id as ve_id, ve.created_at, ve.last_seen_at, ve.correct_answers_count as cac, ve.definition as definition, " +
-                        "w.name as w_name, w.id as w_id, " +
-                        "l.name as l_name, l.id as l_id " +
-                        "from vocabulary_entry ve " +
-                        "join word w " +
-                        "on ve.word_id = w.id and w.name like ? " +
-                        "join language l " +
-                        "on ve.language_id = l.id " +
-                        "order by last_seen_at " +
-                        "limit ?",
-                RS_2_VOCABULARY_ENTRY,
-                likeParameter, limit);
+        String sql = "with substr(s) as (values ('%" + substring + "%')) " +
+                """
+                        select ve_out.id as ve_id, ve_out.created_at, ve_out.last_seen_at, ve_out.correct_answers_count as cac, ve_out.definition as definition,
+                        w_out.name as w_name, w_out.id as w_id,
+                        l.name as l_name, l.id as l_id
+                        from vocabulary_entry ve_out
+                        join word w_out
+                        on ve_out.word_id = w_out.id
+                        join language l
+                        on ve_out.language_id = l.id
+                        where exists(select * from word where id = ve_out.word_id and name like (select s from substr))
+                        or exists(select * from vocabulary_entry__synonym__jt vesj join word w on vesj.word_id = w.id where vocabulary_entry_id = ve_out.id and w.name like (select s from substr))
+                        or exists(select * from vocabulary_entry__antonym__jt veaj join word w on veaj.word_id = w.id where vocabulary_entry_id = ve_out.id and w.name like (select s from substr))
+                        or exists(select * from vocabulary_entry__context__jt vecj where vocabulary_entry_id = ve_out.id and context like (select s from substr))
+                        order by ve_out.last_seen_at
+                        limit ?""";
+        return jdbcTemplate.query(sql, RS_2_VOCABULARY_ENTRY, limit);
     }
 
     public Integer countTotal() {
@@ -516,15 +519,17 @@ public class VocabularyEntryDao {
     }
 
     public Integer countWithSubstring(String substring) {
-        var likeParameter = "%" + substring + "%";
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from vocabulary_entry ve " +
-                        "join word w " +
-                        "on w.id = ve.word_id " +
-                        "where w.name like ?",
-                Integer.class,
-                likeParameter);
+        String sql = "with substr(s) as (values ('%" + substring + "%')) " +
+                """     
+                        select count(*)
+                        from vocabulary_entry ve_out
+                        join word w_out
+                        on ve_out.word_id = w_out.id
+                        where exists(select * from word where id = ve_out.word_id and name like (select s from substr))
+                           or exists(select * from vocabulary_entry__synonym__jt vesj join word w on vesj.word_id = w.id where vocabulary_entry_id = ve_out.id and w.name like (select s from substr))
+                           or exists(select * from vocabulary_entry__antonym__jt veaj join word w on veaj.word_id = w.id where vocabulary_entry_id = ve_out.id and w.name like (select s from substr))
+                           or exists(select * from vocabulary_entry__context__jt vecj where vocabulary_entry_id = ve_out.id and context like (select s from substr))""";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
     }
 
     public Integer countAny() {
