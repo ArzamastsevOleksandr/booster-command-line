@@ -11,7 +11,6 @@ public class Main {
     public static void main(String[] args) {
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
-        // todo: fix: when I use ve and all ves are displayed - stop pagination
         // todo: feat: show all ves with descriptions/contexts only
         // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
@@ -38,9 +37,6 @@ public class Main {
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
-        // todo: a strategy for which words can be a part of the training session.
-        //  If the word has cac=N and lastDatePracticed=Today, exclude this word from the session
-        // todo: search ve by lid
         // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
         // todo: I can have a calc training session
         // todo: I have a level in calc

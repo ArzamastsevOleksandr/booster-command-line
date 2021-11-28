@@ -44,10 +44,10 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         args.pagination().ifPresentOrElse(pagination -> {
             args.substring().ifPresentOrElse(substring -> {
                 var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
-                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, pagination));
+                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, p.limit()));
             }, () -> {
                 var p = new Paginator(pagination, vocabularyEntryService.countTotal());
-                display(p, () -> vocabularyEntryService.findAllLimit(pagination));
+                display(p, () -> vocabularyEntryService.findAllLimit(p.limit()));
             });
         }, () -> {
             args.substring()
@@ -73,29 +73,38 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         }
 
         boolean isInRange() {
-            return endInclusive < count;
+            return startInclusive <= count;
         }
 
         void updateRange() {
             startInclusive = endInclusive + 1;
             endInclusive = Math.min(endInclusive + pagination, count);
         }
+
+        int limit() {
+            int limit = endInclusive - startInclusive + 1;
+            return Math.max(limit, 0);
+        }
     }
 
     private void display(Paginator p, Supplier<List<VocabularyEntry>> supplier) {
         displayAndUpdateLastSeenAt(p, supplier);
 
-        String line = adapter.readLine();
+        String line = readLineIfInRangeOrEnd(p);
         while (!line.equals("e") && p.isInRange()) {
-            p.updateRange();
             displayAndUpdateLastSeenAt(p, supplier);
-            line = adapter.readLine();
+            line = readLineIfInRangeOrEnd(p);
         }
+    }
+
+    private String readLineIfInRangeOrEnd(Paginator p) {
+        return p.isInRange() ? adapter.readLine() : "e";
     }
 
     private void displayAndUpdateLastSeenAt(Paginator p, Supplier<List<VocabularyEntry>> supplier) {
         displayCounter(p);
         displayAllAtOnce(supplier.get());
+        p.updateRange();
     }
 
     private void displayCounter(Paginator p) {
