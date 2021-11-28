@@ -37,4 +37,33 @@ public class VocabularyEntry {
         return Optional.ofNullable(definition);
     }
 
+    @Override
+    public String toString() {
+        var builder = new StringBuilder();
+        builder.append(this.getClass().getSimpleName())
+                .append("(id=").append(id)
+                .append(", name=").append(name)
+                .append(", cac=").append(correctAnswersCount)
+                .append(", language=").append(languageName)
+                .append(", lid=").append(languageId)
+                .append(", createdAt=").append(createdAt)
+                .append(", lastSeenAt=").append(lastSeenAt).append(")\n");
+        if (definition != null) {
+            builder.append("  --definition=").append(definition).append("\n");
+        }
+        if (!synonyms.isEmpty()) {
+            builder.append("  --synonyms=").append(String.join(",", synonyms)).append('\n');
+        }
+        if (!antonyms.isEmpty()) {
+            builder.append("  --antonyms=").append(String.join(",", antonyms)).append('\n');
+        }
+        if (!tags.isEmpty()) {
+            builder.append("  --tags=").append(String.join(",", tags)).append('\n');
+        }
+        if (!contexts.isEmpty()) {
+            builder.append("  --contexts=").append(String.join(",", contexts)).append('\n');
+        }
+        return builder.toString();
+    }
+
 }

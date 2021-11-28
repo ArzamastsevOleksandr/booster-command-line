@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
         // todo: fix: when I use ve and all ves are displayed - stop pagination
         // todo: feat: show all ves with descriptions/contexts only
