@@ -12,9 +12,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static archunit.ArchUnitTestConstants.BOOSTER;
+
 class DaoLayerTests {
 
-    JavaClasses javaClasses = new ClassFileImporter().importPackages("com.booster");
+    JavaClasses javaClasses = new ClassFileImporter().importPackages(BOOSTER);
 
     static Stream<Arguments> daoClass2ServiceClassPairs() {
         return Stream.of(

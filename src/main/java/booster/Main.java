@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: clock that tracks the time the session is active
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
         // todo: feat: show all ves with descriptions/contexts only
