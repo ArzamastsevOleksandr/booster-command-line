@@ -4,6 +4,8 @@ import booster.dao.params.AddCause;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.time.LocalTime;
 import java.util.Optional;
 
 // todo: persist statistics to gather aggregated reports
@@ -11,12 +13,18 @@ import java.util.Optional;
 @Getter
 public class SessionTrackerService {
 
+    private long initStartTime;
     // todo: exact entries, notes, tags, training session details etc
     private int vocabularyEntriesAddedCount;
     private int notesAddedCount;
 
     private int vocabularyEntriesImportedCount;
     private int notesImportedCount;
+
+    @PostConstruct
+    void postConstruct() {
+        initStartTime = System.currentTimeMillis();
+    }
 
     public void incVocabularyEntriesCount(AddCause addCause) {
         if (addCause == AddCause.IMPORT) {
@@ -51,8 +59,23 @@ public class SessionTrackerService {
             builder.append("Notes imported: ").append(notesImportedCount).append("\n");
         }
 
-        String toString = builder.toString();
-        return toString.isBlank() ? Optional.empty() : Optional.of("Session statistics:\n" + toString);
+        long millisSpent = System.currentTimeMillis() - initStartTime;
+
+        builder.append("Time spent: ").append(convertToExpressiveFormat(millisSpent)).append('\n');
+        return Optional.of("Session statistics:\n" + builder);
+    }
+
+    private String convertToExpressiveFormat(long millisSpent) {
+        LocalTime localTime = LocalTime.ofSecondOfDay(millisSpent / 1000);
+        var builder = new StringBuilder();
+        if (localTime.getHour() > 0) {
+            builder.append(localTime.getHour()).append(" h ");
+        }
+        if (localTime.getMinute() > 0) {
+            builder.append(localTime.getMinute()).append(" m ");
+        }
+        builder.append(localTime.getSecond()).append(" s ").append('\n');
+        return builder.toString();
     }
 
 }
