@@ -19,19 +19,19 @@ public class TagDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Tag> findAll() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from tag",
+        return jdbcTemplate.query("""
+                        select *
+                        from tag""",
                 RS_2_TAG);
     }
 
     public String add(String name) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into tag " +
-                            "(name) " +
-                            "values (?)",
+            PreparedStatement ps = connection.prepareStatement("""
+                            insert into tag
+                            (name)
+                            values (?)""",
                     new String[]{"name"});
             ps.setString(1, name);
             return ps;
@@ -40,30 +40,30 @@ public class TagDao {
     }
 
     public Tag findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from tag " +
-                        "where name = ?",
+        return jdbcTemplate.queryForObject("""
+                        select *
+                        from tag
+                        where name = ?""",
                 RS_2_TAG,
                 name);
     }
 
     public Integer countWithName(String tag) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from tag " +
-                        "where name = ?",
+        return jdbcTemplate.queryForObject("""
+                        select count(*)
+                        from tag
+                        where name = ?""",
                 Integer.class,
                 tag);
     }
 
     public void addAll(List<String> tagsToCreate) {
         jdbcTemplate.update(con -> {
-            PreparedStatement ps = con.prepareStatement(
-                    "insert into tag (name) " +
-                            "select * from (select lower(new_tag) from unnest(?) as new_tag) tags_to_create " +
-                            "except " +
-                            "select lower(name) from tag");
+            PreparedStatement ps = con.prepareStatement("""
+                    insert into tag (name)
+                    select * from (select lower(new_tag) from unnest(?) as new_tag) tags_to_create
+                    except
+                    select lower(name) from tag""");
             ps.setArray(1, con.createArrayOf("varchar", tagsToCreate.toArray()));
             return ps;
         });

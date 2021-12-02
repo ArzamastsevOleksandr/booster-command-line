@@ -28,10 +28,10 @@ public class NoteDao {
     public long add(String content) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into note " +
-                            "(content) " +
-                            "values (?)",
+            PreparedStatement ps = connection.prepareStatement("""
+                            insert into note
+                            (content)
+                            values (?)""",
                     new String[]{"id"});
             ps.setString(1, content);
             return ps;
@@ -41,56 +41,56 @@ public class NoteDao {
 
     // todo: check in service if it is null
     public Integer countWithId(Long id) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from note " +
-                        "where id = ?",
+        return jdbcTemplate.queryForObject("""
+                        select count(*)
+                        from note
+                        where id = ?""",
                 Integer.class,
                 id);
     }
 
     public void delete(Long id) {
-        jdbcTemplate.update(
-                "delete from note " +
-                        "where id = ?",
+        jdbcTemplate.update("""
+                        delete from note
+                        where id = ?""",
                 id);
     }
 
     public void removeTagAssociationsById(Long id) {
-        jdbcTemplate.update(
-                "delete from note__tag__jt " +
-                        "where note_id = ?",
+        jdbcTemplate.update("""
+                        delete from note__tag__jt
+                        where note_id = ?""",
                 id);
     }
 
     public Note findById(long id) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from note " +
-                        "where id = ?",
+        return jdbcTemplate.queryForObject("""
+                        select *
+                        from note
+                        where id = ?""",
                 RS_2_NOTE,
                 id);
     }
 
     public void addTag(String tag, long noteId) {
-        jdbcTemplate.update(
-                "insert into note__tag__jt " +
-                        "(note_id, tag) " +
-                        "values (?, ?)",
+        jdbcTemplate.update("""
+                        insert into note__tag__jt
+                        (note_id, tag)
+                        values (?, ?)""",
                 noteId, tag);
     }
 
     public List<Note> findAll() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from note",
+        return jdbcTemplate.query("""
+                        select *
+                        from note""",
                 RS_2_NOTE);
     }
 
     public Map<Long, Set<String>> queryForNoteId2Tags() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from note__tag__jt ",
+        return jdbcTemplate.query("""
+                        select *
+                        from note__tag__jt""",
                 noteId2TagsResultSetExtractor());
     }
 
@@ -106,19 +106,19 @@ public class NoteDao {
     }
 
     public List<String> findTagsByNoteId(long id) {
-        return jdbcTemplate.query(
-                "select tag " +
-                        "from note__tag__jt " +
-                        "where note_id = ?",
+        return jdbcTemplate.query("""
+                        select tag
+                        from note__tag__jt
+                        where note_id = ?""",
                 (rs, i) -> rs.getString("tag"),
                 id);
     }
 
     public void addTagsToNote(List<String> tags, long noteId) {
-        jdbcTemplate.batchUpdate(
-                "insert into note__tag__jt " +
-                        "(note_id, tag) " +
-                        "values (?, ?)",
+        jdbcTemplate.batchUpdate("""
+                        insert into note__tag__jt
+                        (note_id, tag)
+                        values (?, ?)""",
                 tagsBatchPreparedStatementSetter(tags, noteId)
         );
     }

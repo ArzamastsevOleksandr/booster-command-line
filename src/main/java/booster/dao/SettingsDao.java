@@ -22,9 +22,9 @@ public class SettingsDao {
     private final JdbcTemplate jdbcTemplate;
 
     public Settings findOne() {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from settings",
+        return jdbcTemplate.queryForObject("""
+                        select *
+                        from settings""",
                 RS_TO_SETTINGS);
     }
 
@@ -38,10 +38,10 @@ public class SettingsDao {
     public long add(Long languageId) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into settings " +
-                            "(language_id) " +
-                            "values (?)",
+            PreparedStatement ps = connection.prepareStatement("""
+                            insert into settings
+                            (language_id)
+                            values (?)""",
                     new String[]{"id"});
             ps.setObject(1, languageId);
             return ps;
@@ -54,17 +54,17 @@ public class SettingsDao {
     }
 
     public Integer count() {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from settings",
+        return jdbcTemplate.queryForObject("""
+                        select count(*)
+                        from settings""",
                 Integer.class);
     }
 
     public Settings findById(long id) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from settings " +
-                        "where id = ?",
+        return jdbcTemplate.queryForObject("""
+                        select *
+                        from settings
+                        where id = ?""",
                 RS_TO_SETTINGS,
                 id);
     }
