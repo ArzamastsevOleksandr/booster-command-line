@@ -7,11 +7,12 @@ select count(distinct vocabulary_entry_id)
 from vocabulary_entry__antonym__jt;
 
 -- how many vocabulary entries have BOTH antonyms and synonyms?
-select distinct vocabulary_entry_id
+select count(*)
+from (select distinct vocabulary_entry_id
 from vocabulary_entry__synonym__jt
 intersect
 select distinct vocabulary_entry_id
-from vocabulary_entry__antonym__jt;
+from vocabulary_entry__antonym__jt) intersection;
 
 -- insert all new tags from a specified array that do not yet exist in the table (case-insensitive)
 insert into tag (name)
