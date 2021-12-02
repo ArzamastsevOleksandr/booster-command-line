@@ -216,7 +216,7 @@ public class VocabularyEntryService {
 
             vocabularyEntryDao.addSynonyms(new ArrayList<>(params.getSynonymIds()), params.getId());
             vocabularyEntryDao.addAntonyms(new ArrayList<>(params.getAntonymIds()), params.getId());
-            return vocabularyEntryDao.findById(params.getId());
+            return findById(params.getId()).get();
         });
     }
 
