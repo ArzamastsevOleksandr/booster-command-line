@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: implement hints for the training session
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
         // todo: do we need to make read operations transactional?
@@ -29,7 +30,6 @@ public class Main {
         // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
         //Arguments must follow a pattern of flag -> separator -> value
         // todo: when importing a file - do not specify the extension
-        // todo: in the end of the training session print all words that had mistakes
         // todo: validator validates. command handler works with non-optional data and expects a happy path?
         // todo: list_flags command
         // todo: HELP <command>

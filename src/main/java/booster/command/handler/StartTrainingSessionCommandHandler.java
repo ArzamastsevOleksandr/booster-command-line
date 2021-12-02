@@ -24,11 +24,15 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     // todo: configurable setting
     private static final int ENTRIES_PER_TRAINING_SESSION = 10;
 
+    // Do not use in a multi-threaded environment
+    private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
+
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandArgs commandArgs) {
+        wrongAnswers.clear();
         var args = (StartTrainingSessionCommandArgs) commandArgs;
         executeTrainingSession(args.mode());
     }
@@ -42,33 +46,36 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         List<VocabularyEntry> entries = findAllForMode(mode);
         adapter.writeLine("Loaded " + entries.size() + " vocabulary entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
+        displayWrongAnswers();
         adapter.writeLine("Training session finished!");
     }
 
-    private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
-        switch (mode) {
-            case FULL:
-                return vocabularyEntryService.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
-            case SYNONYMS:
-                return vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
-            case ANTONYMS:
-                return vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
-            default:
-                throw new RuntimeException("Unrecognized mode: " + mode);
+    private void displayWrongAnswers() {
+        if (!wrongAnswers.isEmpty()) {
+            adapter.writeLine("*************************************************");
+            adapter.writeLine("Wrong answers:");
+            adapter.newLine();
+            wrongAnswers.forEach(adapter::writeLine);
+            adapter.writeLine("*************************************************");
+            adapter.newLine();
         }
+    }
+
+    private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
+        return switch (mode) {
+            case FULL -> vocabularyEntryService.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
+            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
+            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
+            default -> throw new RuntimeException("Unrecognized mode: " + mode);
+        };
     }
 
     private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
         switch (mode) {
-            case FULL:
-                executeFullTrainingSession(entries);
-                break;
-            case SYNONYMS:
-                executeSynonymsTrainingSession(entries);
-                break;
-            case ANTONYMS:
-                executeAntonymsTrainingSession(entries);
-                break;
+            case FULL -> executeFullTrainingSession(entries);
+            case SYNONYMS -> executeSynonymsTrainingSession(entries);
+            case ANTONYMS -> executeAntonymsTrainingSession(entries);
+            case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode");
         }
     }
 
@@ -84,13 +91,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
-
             adapter.write("Antonyms >> ");
             String enteredAntonyms = adapter.readLine();
 
             Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
             handleAnswerAntonyms(antonymsAnswer, entry);
-
             if (index < vocabularyEntries.size()) {
                 entry = vocabularyEntries.get(index);
                 printCurrentWord(entry);
@@ -117,7 +122,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
-
             if (index < vocabularyEntries.size()) {
                 entry = vocabularyEntries.get(index);
                 printCurrentWord(entry);
@@ -143,6 +147,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             } else {
                 vocabularyEntryService.updateCorrectAnswersCount(entry, false);
                 adapter.writeLine("Wrong. Answer is: " + entry.getSynonyms());
+                wrongAnswers.add(entry);
             }
         }
         adapter.newLine();
@@ -159,7 +164,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         while (!enteredAntonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
             Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
             handleAnswerAntonyms(antonymsAnswer, entry);
-
             if (index < vocabularyEntries.size()) {
                 entry = vocabularyEntries.get(index);
                 printCurrentWord(entry);
@@ -185,6 +189,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             } else {
                 vocabularyEntryService.updateCorrectAnswersCount(entry, false);
                 adapter.writeLine("Wrong. Answer is: " + entry.getAntonyms());
+                wrongAnswers.add(entry);
             }
         }
         adapter.newLine();
