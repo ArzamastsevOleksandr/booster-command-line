@@ -11,6 +11,8 @@ public class Main {
     public static void main(String[] args) {
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
+        // todo: do we need to make read operations transactional?
+        // todo: try using @Transactional (enable it)
         // todo: feat: show all ves with descriptions/contexts only
         // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
