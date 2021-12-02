@@ -22,9 +22,9 @@ public class WordDao {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Word> findAll() {
-        return jdbcTemplate.query(
-                "select * " +
-                        "from word",
+        return jdbcTemplate.query("""
+                        select *
+                        from word""",
                 rs2Word);
     }
 
@@ -32,10 +32,10 @@ public class WordDao {
     public long createWithName(String name) {
         var keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(
-                    "insert into word " +
-                            "(name) " +
-                            "values (?)", new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement("""
+                    insert into word
+                    (name)
+                    values (?)""", new String[]{"id"});
             ps.setString(1, name);
             return ps;
         }, keyHolder);
@@ -43,19 +43,19 @@ public class WordDao {
     }
 
     public Word findByName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select * " +
-                        "from word " +
-                        "where name = ?",
+        return jdbcTemplate.queryForObject("""
+                        select *
+                        from word
+                        where name = ?""",
                 rs2Word,
                 name);
     }
 
     public Integer countWithName(String name) {
-        return jdbcTemplate.queryForObject(
-                "select count(*) " +
-                        "from word " +
-                        "where name = ?",
+        return jdbcTemplate.queryForObject("""
+                        select count(*)
+                        from word
+                        where name = ?""",
                 Integer.class,
                 name);
     }
