@@ -25,10 +25,12 @@ import static java.util.stream.Collectors.toSet;
 public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     // todo: configurable setting
-    private static final int ENTRIES_PER_TRAINING_SESSION = 10;
+    private static final int ENTRIES_PER_TRAINING_SESSION = 5;
+    private static final String SEPARATOR = "*************************************************";
 
     // Do not use in a multi-threaded environment
     private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
+    private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
 
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
@@ -36,6 +38,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         wrongAnswers.clear();
+        correctAnswers.clear();
         var args = (StartTrainingSessionCommandArgs) commandArgs;
         executeTrainingSession(args.mode());
     }
@@ -47,22 +50,50 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private void executeTrainingSession(TrainingSessionMode mode) {
         List<VocabularyEntry> entries = findAllForMode(mode);
-        adapter.writeLine("Loaded " + entries.size() + " vocabulary entries.");
+        adapter.writeLine("Loaded " + entries.size() + " entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
+        displayCorrectAnswers();
         displayWrongAnswers();
         adapter.writeLine(ColorCodes.yellow("Training session finished!"));
+    }
+
+    private void displayCorrectAnswers() {
+        if (!correctAnswers.isEmpty()) {
+            ThreadUtil.sleepSeconds(1);
+            adapter.writeLine(purpleSeparator());
+            adapter.writeLine(ColorCodes.green("Correct answers " + correctFraction()));
+            adapter.newLine();
+            correctAnswers.forEach(adapter::writeLine);
+            adapter.newLine();
+        }
+    }
+
+    private String purpleSeparator() {
+        return ColorCodes.purple(SEPARATOR);
     }
 
     private void displayWrongAnswers() {
         if (!wrongAnswers.isEmpty()) {
             ThreadUtil.sleepSeconds(1);
-            adapter.writeLine("*************************************************");
-            adapter.writeLine("Wrong answers:");
+            adapter.writeLine(purpleSeparator());
+            adapter.writeLine(ColorCodes.red("Wrong answers " + wrongFraction()));
             adapter.newLine();
             wrongAnswers.forEach(adapter::writeLine);
-            adapter.writeLine("*************************************************");
+            adapter.writeLine(purpleSeparator());
             adapter.newLine();
         }
+    }
+
+    private String correctFraction() {
+        return fraction(correctAnswers.size());
+    }
+
+    private String wrongFraction() {
+        return fraction(wrongAnswers.size());
+    }
+
+    private String fraction(int numerator) {
+        return "(" + numerator + "/" + ENTRIES_PER_TRAINING_SESSION + "):";
     }
 
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
@@ -174,6 +205,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private void processCorrectAnswer(VocabularyEntry entry) {
         vocabularyEntryService.updateCorrectAnswersCount(entry, true);
         adapter.writeLine(ColorCodes.green("Correct!"));
+        correctAnswers.add(entry);
     }
 
     private void executeAntonymsTrainingSession(List<VocabularyEntry> entries) {

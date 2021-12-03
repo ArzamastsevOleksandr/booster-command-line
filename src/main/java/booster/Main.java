@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
-        // todo: at the end of the ts - print correct answers as well
+        // todo: fix: at the end of the ts ves are not refreshed (cac, lastSeen at are old)
+        // todo: have a pre-training session, where vocabulary entries are shown 1 by 1 with a delayed interval.
+        //  I can then start the training session with these words.
         // todo: implement hints for the training session
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)
