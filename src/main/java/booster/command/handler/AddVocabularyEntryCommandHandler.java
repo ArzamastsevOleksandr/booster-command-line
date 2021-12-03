@@ -8,10 +8,7 @@ import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.model.Settings;
 import booster.model.VocabularyEntry;
 import booster.model.Word;
-import booster.service.SessionTrackerService;
-import booster.service.SettingsService;
-import booster.service.VocabularyEntryService;
-import booster.service.WordService;
+import booster.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +25,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
     private final VocabularyEntryService vocabularyEntryService;
     private final SessionTrackerService sessionTrackerService;
+    private final ColorProcessor colorProcessor;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -50,8 +48,8 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
         args.tag().ifPresent(tag -> params.setTags(Set.of(tag)));
 
-        VocabularyEntry vocabularyEntry = vocabularyEntryService.addWithDefaultValues(params);
-        adapter.writeLine(vocabularyEntry);
+        VocabularyEntry entry = vocabularyEntryService.addWithDefaultValues(params);
+        adapter.writeLine(colorProcessor.coloredEntry(entry));
         adapter.writeLine("Entries added so far: " + sessionTrackerService.getVocabularyEntriesAddedCount());
     }
 
