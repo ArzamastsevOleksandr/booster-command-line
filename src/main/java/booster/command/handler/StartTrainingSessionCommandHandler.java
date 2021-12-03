@@ -31,6 +31,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     // Do not use in a multi-threaded environment
     private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
+    private final Set<VocabularyEntry> partialAnswers = new HashSet<>();
 
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
@@ -39,6 +40,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         wrongAnswers.clear();
         correctAnswers.clear();
+        partialAnswers.clear();
         var args = (StartTrainingSessionCommandArgs) commandArgs;
         executeTrainingSession(args.mode());
     }
@@ -53,6 +55,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         adapter.writeLine("Loaded " + entries.size() + " entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
         displayCorrectAnswers();
+        displayPartialAnswers();
         displayWrongAnswers();
         adapter.writeLine(ColorCodes.yellow("Training session finished!"));
     }
@@ -68,8 +71,15 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
     }
 
-    private String purpleSeparator() {
-        return ColorCodes.purple(SEPARATOR);
+    private void displayPartialAnswers() {
+        if (!partialAnswers.isEmpty()) {
+            ThreadUtil.sleepSeconds(1);
+            adapter.writeLine(purpleSeparator());
+            adapter.writeLine(ColorCodes.yellow("Partial answers " + partialFraction()));
+            adapter.newLine();
+            partialAnswers.forEach(adapter::writeLine);
+            adapter.newLine();
+        }
     }
 
     private void displayWrongAnswers() {
@@ -84,12 +94,20 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
     }
 
+    private String purpleSeparator() {
+        return ColorCodes.purple(SEPARATOR);
+    }
+
     private String correctFraction() {
         return fraction(correctAnswers.size());
     }
 
     private String wrongFraction() {
         return fraction(wrongAnswers.size());
+    }
+
+    private String partialFraction() {
+        return fraction(partialAnswers.size());
     }
 
     private String fraction(int numerator) {
@@ -184,15 +202,29 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             synonymsAnswerCopy.removeAll(entry.getSynonyms());
 
             if (synonymsAnswerCopy.isEmpty()) {
-                Set<String> originalSynonymsCopy = new HashSet<>(entry.getSynonyms());
-                originalSynonymsCopy.removeAll(synonymsAnswer);
-                vocabularyEntryService.updateCorrectAnswersCount(entry, true);
-                adapter.writeLine("Correct. Other synonyms: " + originalSynonymsCopy);
+                processPartialSynonymsAnswer(synonymsAnswer, entry);
             } else {
                 processWrongAnswer(entry, entry::getSynonyms);
             }
         }
         adapter.newLine();
+    }
+
+    private void processPartialSynonymsAnswer(Set<String> partialAnswer, VocabularyEntry entry) {
+        processPartialAnswer(partialAnswer, entry, entry::getSynonyms, "synonyms");
+    }
+
+    private void processPartialAntonymsAnswer(Set<String> partialAnswer, VocabularyEntry entry) {
+        processPartialAnswer(partialAnswer, entry, entry::getAntonyms, "antonyms");
+    }
+
+    private void processPartialAnswer(Set<String> partialAnswer, VocabularyEntry entry, Supplier<Set<String>> supplier, String label) {
+        Set<String> originalEquivalentsCopy = new HashSet<>(supplier.get());
+        originalEquivalentsCopy.removeAll(partialAnswer);
+        vocabularyEntryService.updateCorrectAnswersCount(entry, true);
+        adapter.writeLine(ColorCodes.yellow("Correct."));
+        adapter.writeLine("Other " + label + ": " + ColorCodes.yellow(String.join(", ", originalEquivalentsCopy)));
+        partialAnswers.add(entry);
     }
 
     private void processWrongAnswer(VocabularyEntry entry, Supplier<Set<String>> supplier) {
@@ -232,10 +264,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             antonymsAnswerCopy.removeAll(entry.getAntonyms());
 
             if (antonymsAnswerCopy.isEmpty()) {
-                Set<String> originalAntonymsCopy = new HashSet<>(entry.getAntonyms());
-                originalAntonymsCopy.removeAll(antonymsAnswer);
-                vocabularyEntryService.updateCorrectAnswersCount(entry, true);
-                adapter.writeLine("Correct. Other antonyms: " + originalAntonymsCopy);
+                processPartialAntonymsAnswer(antonymsAnswer, entry);
             } else {
                 processWrongAnswer(entry, entry::getAntonyms);
             }
