@@ -34,4 +34,8 @@ public interface ColorCodes {
         return ANSI_PURPLE + o.toString() + ANSI_RESET;
     }
 
+    static String blue(Object o) {
+        return ANSI_BLUE + o.toString() + ANSI_RESET;
+    }
+
 }

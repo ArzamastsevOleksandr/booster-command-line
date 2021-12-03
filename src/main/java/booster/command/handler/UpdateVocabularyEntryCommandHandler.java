@@ -7,6 +7,7 @@ import booster.command.arguments.UpdateVocabularyEntryCommandArgs;
 import booster.dao.params.UpdateVocabularyEntryDaoParams;
 import booster.model.VocabularyEntry;
 import booster.model.Word;
+import booster.service.ColorProcessor;
 import booster.service.VocabularyEntryService;
 import booster.service.WordService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     private final WordService wordService;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
+    private final ColorProcessor colorProcessor;
 
     // todo: update contexts
     @Override
@@ -49,7 +51,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
         processAntonyms(args, entry, params);
 
         VocabularyEntry updatedEntry = vocabularyEntryService.update(params);
-        adapter.writeLine(updatedEntry);
+        adapter.writeLine(colorProcessor.coloredEntry(updatedEntry));
     }
 
     private void processSynonyms(UpdateVocabularyEntryCommandArgs args, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {

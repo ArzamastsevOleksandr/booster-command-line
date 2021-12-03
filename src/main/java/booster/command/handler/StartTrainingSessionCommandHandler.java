@@ -6,6 +6,7 @@ import booster.command.arguments.CommandArgs;
 import booster.command.arguments.StartTrainingSessionCommandArgs;
 import booster.command.arguments.TrainingSessionMode;
 import booster.model.VocabularyEntry;
+import booster.service.ColorProcessor;
 import booster.service.VocabularyEntryService;
 import booster.util.ColorCodes;
 import booster.util.ThreadUtil;
@@ -34,6 +35,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private final Set<VocabularyEntry> partialAnswers = new HashSet<>();
 
     private final VocabularyEntryService vocabularyEntryService;
+    private final ColorProcessor colorProcessor;
     private final CommandLineAdapter adapter;
 
     @Override
@@ -66,7 +68,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(ColorCodes.green("Correct answers " + correctFraction()));
             adapter.newLine();
-            correctAnswers.forEach(adapter::writeLine);
+            correctAnswers.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
             adapter.newLine();
         }
     }
@@ -77,7 +79,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(ColorCodes.yellow("Partial answers " + partialFraction()));
             adapter.newLine();
-            partialAnswers.forEach(adapter::writeLine);
+            partialAnswers.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
             adapter.newLine();
         }
     }
@@ -88,7 +90,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(ColorCodes.red("Wrong answers " + wrongFraction()));
             adapter.newLine();
-            wrongAnswers.forEach(adapter::writeLine);
+            wrongAnswers.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
             adapter.writeLine(purpleSeparator());
             adapter.newLine();
         }

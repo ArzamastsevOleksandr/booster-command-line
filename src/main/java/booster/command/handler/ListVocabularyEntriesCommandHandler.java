@@ -5,6 +5,7 @@ import booster.command.Command;
 import booster.command.arguments.CommandArgs;
 import booster.command.arguments.ListVocabularyEntriesCommandArgs;
 import booster.model.VocabularyEntry;
+import booster.service.ColorProcessor;
 import booster.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
+    private final ColorProcessor colorProcessor;
 
     // todo: assert that pagination is present always
     @Override
@@ -34,9 +36,9 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        vocabularyEntryService.findById(id).ifPresent(vocabularyEntry -> {
-            adapter.writeLine(vocabularyEntry);
-            vocabularyEntryService.updateLastSeenAtById(vocabularyEntry.getId());
+        vocabularyEntryService.findById(id).ifPresent(entry -> {
+            adapter.writeLine(colorProcessor.coloredEntry(entry));
+            vocabularyEntryService.updateLastSeenAtById(entry.getId());
         });
     }
 
@@ -50,15 +52,14 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
                 display(p, () -> vocabularyEntryService.findAllLimit(p.limit()));
             });
         }, () -> {
-            args.substring()
-                    .ifPresentOrElse(
-                            substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
-                            () -> displayAllAtOnce(vocabularyEntryService.findAll()));
+            args.substring().ifPresentOrElse(
+                    substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
+                    () -> displayAllAtOnce(vocabularyEntryService.findAll()));
         });
     }
 
     private void displayAllAtOnce(List<VocabularyEntry> entries) {
-        entries.forEach(adapter::writeLine);
+        entries.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
         vocabularyEntryService.updateLastSeenAtByIds(entries.stream().map(VocabularyEntry::getId).collect(toList()));
     }
 
