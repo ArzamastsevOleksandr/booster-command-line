@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: at the end of the ts - print correct answers as well
         // todo: implement hints for the training session
         // todo: custom note impl (if the note is large - pretty print it
         // todo: test dao layer (containers?)

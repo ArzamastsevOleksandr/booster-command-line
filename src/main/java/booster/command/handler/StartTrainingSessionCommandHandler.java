@@ -7,6 +7,8 @@ import booster.command.arguments.StartTrainingSessionCommandArgs;
 import booster.command.arguments.TrainingSessionMode;
 import booster.model.VocabularyEntry;
 import booster.service.VocabularyEntryService;
+import booster.util.ColorCodes;
+import booster.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -47,11 +50,12 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         adapter.writeLine("Loaded " + entries.size() + " vocabulary entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
         displayWrongAnswers();
-        adapter.writeLine("Training session finished!");
+        adapter.writeLine(ColorCodes.yellow("Training session finished!"));
     }
 
     private void displayWrongAnswers() {
         if (!wrongAnswers.isEmpty()) {
+            ThreadUtil.sleepSeconds(1);
             adapter.writeLine("*************************************************");
             adapter.writeLine("Wrong answers:");
             adapter.newLine();
@@ -66,7 +70,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             case FULL -> vocabularyEntryService.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
-            default -> throw new RuntimeException("Unrecognized mode: " + mode);
+            default -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         };
     }
 
@@ -75,121 +79,133 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             case FULL -> executeFullTrainingSession(entries);
             case SYNONYMS -> executeSynonymsTrainingSession(entries);
             case ANTONYMS -> executeAntonymsTrainingSession(entries);
-            case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode");
+            case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
     }
 
     // todo: DRY
-    private void executeFullTrainingSession(List<VocabularyEntry> vocabularyEntries) {
+    private void executeFullTrainingSession(List<VocabularyEntry> entries) {
         int index = 0;
 
-        VocabularyEntry entry = vocabularyEntries.get(index);
-        printCurrentWord(entry);
-        adapter.write("Synonyms >> ");
-        String enteredSynonyms = adapter.readLine();
+        VocabularyEntry entry = fetchNextAndPrint(entries, index);
+        String enteredSynonyms = readSynonyms();
 
-        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
+        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
-            adapter.write("Antonyms >> ");
-            String enteredAntonyms = adapter.readLine();
 
+            String enteredAntonyms = readAntonyms();
             Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
             handleAnswerAntonyms(antonymsAnswer, entry);
-            if (index < vocabularyEntries.size()) {
-                entry = vocabularyEntries.get(index);
-                printCurrentWord(entry);
-                adapter.write("Synonyms >> ");
-                enteredSynonyms = adapter.readLine();
+            if (index < entries.size()) {
+                entry = fetchNextAndPrint(entries, index);
+                enteredSynonyms = readSynonyms();
             }
         }
     }
 
-    private void printCurrentWord(VocabularyEntry vocabularyEntry) {
-        adapter.writeLine("Current word: [" + vocabularyEntry.getName() + "]");
-        adapter.newLine();
-        vocabularyEntryService.updateLastSeenAtById(vocabularyEntry.getId());
+    private VocabularyEntry fetchNextAndPrint(List<VocabularyEntry> entries, int index) {
+        VocabularyEntry entry = entries.get(index);
+        printCurrentWord(entry);
+        return entry;
     }
 
-    private void executeSynonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
+    private String readSynonyms() {
+        return readEquivalents("Synonyms");
+    }
+
+    private String readAntonyms() {
+        return readEquivalents("Antonyms");
+    }
+
+    private String readEquivalents(String label) {
+        adapter.write(label + " >> ");
+        return adapter.readLine();
+    }
+
+    private void printCurrentWord(VocabularyEntry entry) {
+        adapter.writeLine("Word: [" + ColorCodes.cyan(entry.getName()) + "]");
+        adapter.newLine();
+        vocabularyEntryService.updateLastSeenAtById(entry.getId());
+    }
+
+    private void executeSynonymsTrainingSession(List<VocabularyEntry> entries) {
         int index = 0;
 
-        VocabularyEntry entry = vocabularyEntries.get(index);
-        printCurrentWord(entry);
-        adapter.write("Synonyms >> ");
-        String enteredSynonyms = adapter.readLine();
+        VocabularyEntry entry = fetchNextAndPrint(entries, index);
+        String enteredSynonyms = readSynonyms();
 
-        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
+        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
-            if (index < vocabularyEntries.size()) {
-                entry = vocabularyEntries.get(index);
-                printCurrentWord(entry);
-                adapter.write("Synonyms >> ");
-                enteredSynonyms = adapter.readLine();
+            if (index < entries.size()) {
+                entry = fetchNextAndPrint(entries, index);
+                enteredSynonyms = readSynonyms();
             }
         }
     }
 
     private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntry entry) {
         if (synonymsAnswer.equals(entry.getSynonyms())) {
-            vocabularyEntryService.updateCorrectAnswersCount(entry, true);
-            adapter.writeLine("Correct!");
+            processCorrectAnswer(entry);
         } else {
             Set<String> synonymsAnswerCopy = new HashSet<>(synonymsAnswer);
             synonymsAnswerCopy.removeAll(entry.getSynonyms());
 
             if (synonymsAnswerCopy.isEmpty()) {
-                HashSet<String> originalSynonymsCopy = new HashSet<>(entry.getSynonyms());
+                Set<String> originalSynonymsCopy = new HashSet<>(entry.getSynonyms());
                 originalSynonymsCopy.removeAll(synonymsAnswer);
                 vocabularyEntryService.updateCorrectAnswersCount(entry, true);
                 adapter.writeLine("Correct. Other synonyms: " + originalSynonymsCopy);
             } else {
-                vocabularyEntryService.updateCorrectAnswersCount(entry, false);
-                adapter.writeLine("Wrong. Answer is: " + entry.getSynonyms());
-                wrongAnswers.add(entry);
+                processWrongAnswer(entry, entry::getSynonyms);
             }
         }
         adapter.newLine();
     }
 
-    private void executeAntonymsTrainingSession(List<VocabularyEntry> vocabularyEntries) {
+    private void processWrongAnswer(VocabularyEntry entry, Supplier<Set<String>> supplier) {
+        vocabularyEntryService.updateCorrectAnswersCount(entry, false);
+        adapter.writeLine(ColorCodes.red("Wrong."));
+        adapter.writeLine("Answer is: " + ColorCodes.red(String.join(", ", supplier.get())));
+        wrongAnswers.add(entry);
+    }
+
+    private void processCorrectAnswer(VocabularyEntry entry) {
+        vocabularyEntryService.updateCorrectAnswersCount(entry, true);
+        adapter.writeLine(ColorCodes.green("Correct!"));
+    }
+
+    private void executeAntonymsTrainingSession(List<VocabularyEntry> entries) {
         int index = 0;
 
-        VocabularyEntry entry = vocabularyEntries.get(index);
-        printCurrentWord(entry);
-        adapter.write("Antonyms >> ");
-        String enteredAntonyms = adapter.readLine();
+        VocabularyEntry entry = fetchNextAndPrint(entries, index);
+        String enteredAntonyms = readAntonyms();
 
-        while (!enteredAntonyms.equalsIgnoreCase("e") && index++ < vocabularyEntries.size()) {
+        while (!enteredAntonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
             Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
             handleAnswerAntonyms(antonymsAnswer, entry);
-            if (index < vocabularyEntries.size()) {
-                entry = vocabularyEntries.get(index);
-                printCurrentWord(entry);
-                adapter.write("Antonyms >> ");
-                enteredAntonyms = adapter.readLine();
+            if (index < entries.size()) {
+                entry = fetchNextAndPrint(entries, index);
+                enteredAntonyms = readAntonyms();
             }
         }
     }
 
     private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
         if (antonymsAnswer.equals(entry.getAntonyms())) {
-            vocabularyEntryService.updateCorrectAnswersCount(entry, true);
-            adapter.writeLine("Correct!");
+            processCorrectAnswer(entry);
         } else {
             Set<String> antonymsAnswerCopy = new HashSet<>(antonymsAnswer);
             antonymsAnswerCopy.removeAll(entry.getAntonyms());
 
             if (antonymsAnswerCopy.isEmpty()) {
-                HashSet<String> originalAntonymsCopy = new HashSet<>(entry.getAntonyms());
+                Set<String> originalAntonymsCopy = new HashSet<>(entry.getAntonyms());
                 originalAntonymsCopy.removeAll(antonymsAnswer);
                 vocabularyEntryService.updateCorrectAnswersCount(entry, true);
                 adapter.writeLine("Correct. Other antonyms: " + originalAntonymsCopy);
             } else {
-                vocabularyEntryService.updateCorrectAnswersCount(entry, false);
-                adapter.writeLine("Wrong. Answer is: " + entry.getAntonyms());
-                wrongAnswers.add(entry);
+                processWrongAnswer(entry, entry::getAntonyms);
             }
         }
         adapter.newLine();
