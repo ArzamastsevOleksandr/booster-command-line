@@ -3,6 +3,7 @@ package booster.command.handler;
 import booster.adapter.CommandLineAdapter;
 import booster.model.VocabularyEntry;
 import booster.service.ColorProcessor;
+import booster.service.VocabularyEntryService;
 import booster.util.ColorCodes;
 import booster.util.ThreadUtil;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -25,6 +27,7 @@ class TrainingSessionStats {
 
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
+    private final VocabularyEntryService vocabularyEntryService;
 
     private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
@@ -60,7 +63,13 @@ class TrainingSessionStats {
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(label);
             adapter.newLine();
-            answers.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
+            answers.stream()
+                    .map(VocabularyEntry::getId)
+                    .map(vocabularyEntryService::findById)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(colorProcessor::coloredEntry)
+                    .forEach(adapter::writeLine);
             adapter.newLine();
         }
     }
