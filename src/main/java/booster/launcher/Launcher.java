@@ -23,9 +23,9 @@ public class Launcher {
     private final SessionTrackerService sessionTrackerService;
 
     public void launch() {
-        commonOperations.greeting();
+        adapter.writeLine("Welcome to the Booster!");
         commonOperations.help();
-        commonOperations.askForInput();
+        askForInput();
 
         // todo: nextCommandWithArguments only returns, move real logic here (separation of concerns)
         CommandWithArgs commandWithArgs = nextCommandWithArguments();
@@ -34,7 +34,7 @@ public class Launcher {
         while (Command.isNotExit(command)) {
             handleCommandWithArguments(commandWithArgs);
 
-            commonOperations.askForInput();
+            askForInput();
             commandWithArgs = nextCommandWithArguments();
             commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
             command = commandWithArgs.getCommand();
@@ -43,7 +43,8 @@ public class Launcher {
                 adapter::writeLine,
                 () -> adapter.writeLine("No significant activity observed")
         );
-        commonOperations.end();
+        adapter.newLine();
+        adapter.writeLine("See you next time!");
     }
 
     private void handleCommandWithArguments(CommandWithArgs commandWithArgs) {
@@ -58,6 +59,10 @@ public class Launcher {
     private CommandWithArgs nextCommandWithArguments() {
         String line = adapter.readLine();
         return commandArgumentsValidator.validate(line);
+    }
+
+    private void askForInput() {
+        adapter.write(">> ");
     }
 
 }

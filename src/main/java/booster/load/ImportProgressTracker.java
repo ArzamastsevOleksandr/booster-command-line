@@ -1,6 +1,7 @@
 package booster.load;
 
 import booster.adapter.CommandLineAdapter;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @PropertySource("classpath:import.properties")
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class ImportProgressTracker {
 
     private final CommandLineAdapter adapter;
@@ -31,14 +32,14 @@ class ImportProgressTracker {
         }
     }
 
-    public void vocabularyEntriesImportFinished() {
+    void vocabularyEntriesImportFinished() {
         if (enabled) {
             adapter.writeLine("Vocabulary entries import process finished");
             adapter.writeLine("Total entries count: " + vocabularyEntriesImportCount);
         }
     }
 
-    public void incNotesImportCount() {
+    void incNotesImportCount() {
         if (enabled) {
             ++notesImportCount;
 
@@ -48,7 +49,7 @@ class ImportProgressTracker {
         }
     }
 
-    public void notesImportFinished() {
+    void notesImportFinished() {
         if (enabled) {
             adapter.writeLine("Notes import process finished");
             adapter.writeLine("Total notes count: " + notesImportCount);

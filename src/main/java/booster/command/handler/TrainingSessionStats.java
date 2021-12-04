@@ -5,6 +5,7 @@ import booster.model.VocabularyEntry;
 import booster.service.ColorProcessor;
 import booster.util.ColorCodes;
 import booster.util.ThreadUtil;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,7 @@ import java.util.Set;
  * Ensure that the reset() method is called before usage.
  */
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class TrainingSessionStats {
 
     private static final String SEPARATOR = "*************************************************";
@@ -29,13 +30,13 @@ class TrainingSessionStats {
     private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
     private final Set<VocabularyEntry> partialAnswers = new HashSet<>();
 
-    public void reset() {
+    void reset() {
         wrongAnswers.clear();
         correctAnswers.clear();
         partialAnswers.clear();
     }
 
-    public void displayAnswers() {
+    void displayAnswers() {
         displayCorrectAnswers();
         displayPartialAnswers();
         displayWrongAnswers();
@@ -72,15 +73,15 @@ class TrainingSessionStats {
         return "(" + numerator + "/" + ENTRIES_PER_TRAINING_SESSION + "):";
     }
 
-    public void addCorrectAnswer(VocabularyEntry entry) {
+    void addCorrectAnswer(VocabularyEntry entry) {
         correctAnswers.add(entry);
     }
 
-    public void addWrongAnswer(VocabularyEntry entry) {
+    void addWrongAnswer(VocabularyEntry entry) {
         wrongAnswers.add(entry);
     }
 
-    public void addPartialAnswer(VocabularyEntry entry) {
+    void addPartialAnswer(VocabularyEntry entry) {
         partialAnswers.add(entry);
     }
 

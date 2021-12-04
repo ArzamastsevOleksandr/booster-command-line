@@ -9,21 +9,8 @@ public class CommonOperations {
 
     private final CommandLineAdapter adapter;
 
-    public void greeting() {
-        adapter.writeLine("Welcome to the Booster!");
-    }
-
     public void help() {
         adapter.writeLine("Type command or 'h' to get help.");
-    }
-
-    public void askForInput() {
-        adapter.write(">> ");
-    }
-
-    public void end() {
-        adapter.newLine();
-        adapter.writeLine("See you next time!");
     }
 
 }

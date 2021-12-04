@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LanguageDao {
 
-    public static final RowMapper<Language> RS_2_LANGUAGE = (rs, i) -> Language.builder()
+    private static final RowMapper<Language> RS_2_LANGUAGE = (rs, i) -> Language.builder()
             .id(rs.getLong("id"))
             .name(rs.getString("name"))
             .build();

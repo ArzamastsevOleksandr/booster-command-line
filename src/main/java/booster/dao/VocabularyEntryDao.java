@@ -22,7 +22,7 @@ import java.util.*;
 public class VocabularyEntryDao {
 
     // todo: DRY ve query has to be changed in many places
-    public static final RowMapper<VocabularyEntry> RS_2_VOCABULARY_ENTRY = (rs, i) -> VocabularyEntry.builder()
+    private static final RowMapper<VocabularyEntry> RS_2_VOCABULARY_ENTRY = (rs, i) -> VocabularyEntry.builder()
             .id(rs.getLong("ve_id"))
             .createdAt(rs.getTimestamp("created_at"))
             .lastSeenAt(rs.getTimestamp("last_seen_at"))

@@ -4,6 +4,7 @@ import booster.command.FlagType;
 import booster.command.arguments.TrainingSessionMode;
 import booster.util.NumberUtil;
 import booster.util.ObjectUtil;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class TokenSequenceValidator {
 
     private final NumberUtil numberUtil;
