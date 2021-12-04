@@ -8,9 +8,9 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @Service
-public class CommandArgsService {
+class CommandArgsService {
 
-    public CommandArgs getCommandArgs(CommandWithArgs cmdWithArgs) {
+    CommandArgs getCommandArgs(CommandWithArgs cmdWithArgs) {
         return switch (cmdWithArgs.getCommand()) {
             case EXIT, HELP, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, LIST_WORDS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
             case ADD_LANGUAGE -> new AddLanguageCommandArgs(cmdWithArgs.getName().get());

@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WordDao {
 
-    public static final RowMapper<Word> rs2Word = (rs, i) -> Word.builder()
+    private static final RowMapper<Word> rs2Word = (rs, i) -> Word.builder()
             .id(rs.getLong("id"))
             .name(rs.getString("name"))
             .build();

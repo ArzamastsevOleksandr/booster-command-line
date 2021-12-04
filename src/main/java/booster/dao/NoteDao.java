@@ -17,7 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class NoteDao {
 
-    public static final RowMapper<Note> RS_2_NOTE = (rs, i) -> Note.builder()
+    private static final RowMapper<Note> RS_2_NOTE = (rs, i) -> Note.builder()
             .id(rs.getLong("id"))
             .content(rs.getString("content"))
             .build();
