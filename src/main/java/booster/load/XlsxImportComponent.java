@@ -7,6 +7,7 @@ import booster.dao.params.AddVocabularyEntryDaoParams;
 import booster.model.Language;
 import booster.model.Word;
 import booster.service.*;
+import booster.util.StringUtil;
 import booster.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,6 +40,7 @@ public class XlsxImportComponent {
     private final TagService tagService;
     private final ImportProgressTracker importProgressTracker;
     private final TimeUtil timeUtil;
+    private final StringUtil stringUtil;
 
     public void load(String filename) {
         try (var inputStream = new FileInputStream(filename);
@@ -66,7 +68,7 @@ public class XlsxImportComponent {
                     .map(r -> r.getCell(0))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
-                    .filter(s -> !s.isBlank())
+                    .filter(stringUtil::isNotBlank)
                     .ifPresent(content -> {
                         Set<String> tags = getStringValues(row.getCell(1), ";");
                         tagService.createIfNotExist(tags);
@@ -105,7 +107,7 @@ public class XlsxImportComponent {
                     .map(r -> r.getCell(0))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
-                    .filter(s -> !s.isBlank())
+                    .filter(stringUtil::isNotBlank)
                     .ifPresent(vocabularyEntryName -> {
                         long wordId = wordService.findByNameOrCreateAndGet(vocabularyEntryName).getId();
 
@@ -124,7 +126,7 @@ public class XlsxImportComponent {
                         Timestamp lastSeenAt = Optional.ofNullable(row.getCell(8))
                                 .map(XSSFCell::getStringCellValue)
                                 .map(String::strip)
-                                .filter(s -> !s.isBlank())
+                                .filter(stringUtil::isNotBlank)
                                 .map(Timestamp::valueOf)
                                 .orElse(timeUtil.timestampNow());
 
@@ -155,15 +157,17 @@ public class XlsxImportComponent {
         return Optional.ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .map(s -> Arrays.stream(s.split(separator)))
-                .map(s -> s.map(String::strip).filter(str -> !str.isBlank()).collect(toSet()))
+                .map(s -> s.map(String::strip).filter(stringUtil::isNotBlank).collect(toSet()))
                 .orElse(Set.of());
     }
 
     private String readDefinition(XSSFCell cell) {
         return Optional.ofNullable(cell)
                 .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(stringUtil::isNotBlank)
                 .orElse(null);
     }
 
@@ -171,10 +175,10 @@ public class XlsxImportComponent {
         return Optional.ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .map(s -> Arrays.stream(s.split(";")))
                 .map(s -> s.map(String::strip)
-                        .filter(str -> !str.isBlank())
+                        .filter(stringUtil::isNotBlank)
                         .map(wordService::findByNameOrCreateAndGet)
                         .map(Word::getId)
                         .collect(toSet())

@@ -5,6 +5,8 @@ import booster.command.FlagType;
 import booster.command.arguments.CommandWithArgs;
 import booster.command.arguments.TrainingSessionMode;
 import booster.util.ObjectUtil;
+import booster.util.StringUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -16,7 +18,10 @@ import static java.util.stream.Collectors.toSet;
 // todo: analyzer util: smartToString. Get all fields via reflection, group them by null, not null.
 //  Use that for analysis.
 @Component
+@RequiredArgsConstructor
 class TokenSequenceTransformer {
+
+    private final StringUtil stringUtil;
 
     CommandWithArgs transform(List<Token> tokens) {
         ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
@@ -68,14 +73,14 @@ class TokenSequenceTransformer {
     private Set<String> getContexts(String value) {
         return Arrays.stream(value.split(Token.CONTEXT_DELIMITER))
                 .map(String::strip)
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .collect(toSet());
     }
 
     private Set<String> getWordEquivalentNames(String value) {
         return Arrays.stream(value.split(Token.WORD_EQUIVALENT_DELIMITER))
                 .map(String::strip)
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .collect(toSet());
     }
 
