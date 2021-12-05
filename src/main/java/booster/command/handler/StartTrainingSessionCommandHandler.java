@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -45,31 +46,78 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     @RequiredArgsConstructor
     private class EntryTracker {
-        private int index = 0;
-        private final List<VocabularyEntry> entries;
+        // todo: configurable setting
+        final int maxHintsPerEntry = 2;
 
-        private boolean shouldContinue(String answer) {
+        TrainingSessionMode mode = TrainingSessionMode.getDefaultMode();
+        int index = 0;
+        int hintsPerEntryUsed = 0;
+        VocabularyEntry current;
+        final List<VocabularyEntry> entries;
+
+        boolean shouldContinue(String answer) {
             return !"e".equalsIgnoreCase(answer) && hasMoreEntries();
         }
 
-        private boolean hasMoreEntries() {
+        boolean hasMoreEntries() {
             return index < entries.size();
         }
 
-        private VocabularyEntry fetchNextAndPrint() {
-            VocabularyEntry entry = entries.get(index);
-            printCurrentWord(entry);
-            return entry;
+        VocabularyEntry fetchNextAndPrint() {
+            current = entries.get(index);
+            printCurrentWord(current);
+            return current;
         }
 
-        private void printCurrentWord(VocabularyEntry entry) {
+        void printCurrentWord(VocabularyEntry entry) {
             adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
             adapter.newLine();
             vocabularyEntryService.updateLastSeenAtById(entry.getId());
         }
 
-        private void inc() {
+        void inc() {
             index++;
+            hintsPerEntryUsed = 0;
+        }
+
+        boolean canShowHints(String input) {
+            return hintsPerEntryUsed < maxHintsPerEntry && "h".equalsIgnoreCase(input);
+        }
+
+        String hint() {
+            hintsPerEntryUsed++;
+            adapter.writeLine("Inc hints: " + hintsPerEntryUsed);
+            return getCorrectAnswers().stream()
+                    .map(s -> s.substring(0, hintsPerEntryUsed) + "_".repeat(s.length() - hintsPerEntryUsed))
+                    .collect(Collectors.joining(";"));
+        }
+
+        Set<String> getCorrectAnswers() {
+            return switch (mode) {
+                case FULL, UNRECOGNIZED -> null;
+                case ANTONYMS -> current.getAntonyms();
+                case SYNONYMS -> current.getSynonyms();
+            };
+        }
+
+        boolean hintsExhausted() {
+            adapter.writeLine("Hints used: " + hintsPerEntryUsed);
+            return hintsPerEntryUsed >= maxHintsPerEntry;
+        }
+
+        EntryTracker full() {
+            mode = TrainingSessionMode.FULL;
+            return this;
+        }
+
+        EntryTracker synonyms() {
+            mode = TrainingSessionMode.SYNONYMS;
+            return this;
+        }
+
+        EntryTracker antonyms() {
+            mode = TrainingSessionMode.ANTONYMS;
+            return this;
         }
     }
 
@@ -93,9 +141,9 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
         var tracker = new EntryTracker(entries);
         switch (mode) {
-            case FULL -> executeFullTrainingSession(tracker);
-            case SYNONYMS -> executeSynonymsTrainingSession(tracker);
-            case ANTONYMS -> executeAntonymsTrainingSession(tracker);
+            case FULL -> executeFullTrainingSession(tracker.full());
+            case SYNONYMS -> executeSynonymsTrainingSession(tracker.synonyms());
+            case ANTONYMS -> executeAntonymsTrainingSession(tracker.antonyms());
             case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
     }
@@ -148,8 +196,16 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
         while (tracker.shouldContinue(answer)) {
             tracker.inc();
-            Set<String> parsedAnswer = parseEquivalents(answer);
-            answerConsumer.accept(parsedAnswer, entry);
+            while (tracker.canShowHints(answer)) {
+                adapter.writeLine("Hint: >> " + tracker.hint());
+                answer = answerSupplier.get();
+            }
+            if (tracker.hintsExhausted()) {
+                adapter.writeLine("Max hints used. Skipping word.");
+            } else {
+                Set<String> parsedAnswer = parseEquivalents(answer);
+                answerConsumer.accept(parsedAnswer, entry);
+            }
             if (tracker.hasMoreEntries()) {
                 entry = tracker.fetchNextAndPrint();
                 answer = answerSupplier.get();
