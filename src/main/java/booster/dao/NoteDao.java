@@ -27,11 +27,15 @@ public class NoteDao {
     // todo: DaoOperations component with common dao actions
     public long add(String content) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> con.prepareStatement("""
-                        insert into note
-                        (content)
-                        values ('%s')""".formatted(content),
-                new String[]{"id"}), keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("""
+                            insert into note
+                            (content)
+                            values (?)""",
+                    new String[]{"id"});
+            ps.setString(1, content);
+            return ps;
+        }, keyHolder);
         return keyHolder.getKey().longValue();
     }
 
@@ -66,9 +70,10 @@ public class NoteDao {
 
     public void addTag(String tag, long noteId) {
         jdbcTemplate.update("""
-                insert into note__tag__jt
-                (note_id, tag)
-                values (%s, '%s')""".formatted(noteId, tag));
+                        insert into note__tag__jt
+                        (note_id, tag)
+                        values (?, ?)""",
+                noteId, tag);
     }
 
     public List<Note> findAll() {

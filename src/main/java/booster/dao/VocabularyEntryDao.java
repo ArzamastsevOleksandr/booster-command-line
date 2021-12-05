@@ -118,24 +118,30 @@ public class VocabularyEntryDao {
         };
     }
 
-    public long addWithDefaultValues(AddVocabularyEntryDaoParams params) {
+    public long addWithDefaultValues(AddVocabularyEntryDaoParams p) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> con.prepareStatement("""
-                        insert into vocabulary_entry
-                        (word_id, language_id, definition)
-                        values (%s, %s, '%s')""".formatted(params.getWordId(), params.getLanguageId(), params.getDefinition()),
-                new String[]{"id"}), keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("""
+                    insert into vocabulary_entry
+                    (word_id, language_id, definition)
+                    values (%s, %s, ?)""".formatted(p.getWordId(), p.getLanguageId()), new String[]{"id"});
+            ps.setString(1, p.getDefinition());
+            return ps;
+        }, keyHolder);
         return keyHolder.getKey().longValue();
     }
 
-    public long addWithAllValues(AddVocabularyEntryDaoParams params) {
+    public long addWithAllValues(AddVocabularyEntryDaoParams p) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> con.prepareStatement("""
-                        insert into vocabulary_entry
-                        (word_id, language_id, definition, created_at, correct_answers_count, last_seen_at)
-                        values (%s, %s, '%s', %s, %s, %s)""".formatted(params.getWordId(), params.getLanguageId(), params.getDefinition(),
-                        params.getCreatedAt(), params.getCorrectAnswersCount(), params.getLastSeenAt()),
-                new String[]{"id"}), keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("""
+                    insert into vocabulary_entry
+                    (word_id, language_id, definition, created_at, correct_answers_count, last_seen_at)
+                    values (%s, %s, ?, '%s', %s, '%s')""".formatted(p.getWordId(), p.getLanguageId(), p.getCreatedAt(),
+                    p.getCorrectAnswersCount(), p.getLastSeenAt()), new String[]{"id"});
+            ps.setString(1, p.getDefinition());
+            return ps;
+        }, keyHolder);
         return keyHolder.getKey().longValue();
     }
 
