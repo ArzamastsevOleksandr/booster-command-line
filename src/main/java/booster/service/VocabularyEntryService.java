@@ -143,11 +143,19 @@ public class VocabularyEntryService {
         };
     }
 
-    public void updateCorrectAnswersCount(VocabularyEntry ve, boolean isCorrectAnswer) {
-        int correctAnswersCountChange = isCorrectAnswer ? 1 : -1;
-        int cacUpdated = ve.getCorrectAnswersCount() + correctAnswersCountChange;
-        if (isValidCorrectAnswersCount(cacUpdated)) {
-            vocabularyEntryDao.updateCorrectAnswersCount(ve.getId(), cacUpdated);
+    public void incCorrectAnswersCount(VocabularyEntry entry) {
+        updateCorrectAnswersCount(entry, true);
+    }
+
+    public void decCorrectAnswersCount(VocabularyEntry entry) {
+        updateCorrectAnswersCount(entry, false);
+    }
+
+    private void updateCorrectAnswersCount(VocabularyEntry entry, boolean correct) {
+        int change = correct ? 1 : -1;
+        int newValue = entry.getCorrectAnswersCount() + change;
+        if (isValidCorrectAnswersCount(newValue)) {
+            vocabularyEntryDao.updateCorrectAnswersCount(entry.getId(), newValue);
         }
     }
 
