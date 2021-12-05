@@ -27,15 +27,11 @@ public class NoteDao {
     // todo: DaoOperations component with common dao actions
     public long add(String content) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("""
-                            insert into note
-                            (content)
-                            values (?)""",
-                    new String[]{"id"});
-            ps.setString(1, content);
-            return ps;
-        }, keyHolder);
+        jdbcTemplate.update(con -> con.prepareStatement("""
+                        insert into note
+                        (content)
+                        values ('%s')""".formatted(content),
+                new String[]{"id"}), keyHolder);
         return keyHolder.getKey().longValue();
     }
 
@@ -44,40 +40,35 @@ public class NoteDao {
         return jdbcTemplate.queryForObject("""
                         select count(*)
                         from note
-                        where id = ?""",
-                Integer.class,
-                id);
+                        where id = %s""".formatted(id),
+                Integer.class);
     }
 
     public void delete(Long id) {
         jdbcTemplate.update("""
-                        delete from note
-                        where id = ?""",
-                id);
+                delete from note
+                where id = %s""".formatted(id));
     }
 
     public void removeTagAssociationsById(Long id) {
         jdbcTemplate.update("""
-                        delete from note__tag__jt
-                        where note_id = ?""",
-                id);
+                delete from note__tag__jt
+                where note_id = %s""".formatted(id));
     }
 
     public Note findById(long id) {
         return jdbcTemplate.queryForObject("""
                         select *
                         from note
-                        where id = ?""",
-                RS_2_NOTE,
-                id);
+                        where id = %s""".formatted(id),
+                RS_2_NOTE);
     }
 
     public void addTag(String tag, long noteId) {
         jdbcTemplate.update("""
-                        insert into note__tag__jt
-                        (note_id, tag)
-                        values (?, ?)""",
-                noteId, tag);
+                insert into note__tag__jt
+                (note_id, tag)
+                values (%s, '%s')""".formatted(noteId, tag));
     }
 
     public List<Note> findAll() {
@@ -109,9 +100,8 @@ public class NoteDao {
         return jdbcTemplate.query("""
                         select tag
                         from note__tag__jt
-                        where note_id = ?""",
-                (rs, i) -> rs.getString("tag"),
-                id);
+                        where note_id = %s""".formatted(id),
+                (rs, i) -> rs.getString("tag"));
     }
 
     public void addTagsToNote(List<String> tags, long noteId) {

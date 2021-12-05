@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.sql.PreparedStatement;
-
 import static java.util.Optional.ofNullable;
 
 @Component
@@ -37,15 +35,11 @@ public class SettingsDao {
 
     public long add(Long languageId) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement("""
-                            insert into settings
-                            (language_id)
-                            values (?)""",
-                    new String[]{"id"});
-            ps.setObject(1, languageId);
-            return ps;
-        }, keyHolder);
+        jdbcTemplate.update(con -> con.prepareStatement("""
+                        insert into settings
+                        (language_id)
+                        values (%s)""".formatted(languageId),
+                new String[]{"id"}), keyHolder);
         return keyHolder.getKey().longValue();
     }
 
@@ -64,9 +58,8 @@ public class SettingsDao {
         return jdbcTemplate.queryForObject("""
                         select *
                         from settings
-                        where id = ?""",
-                RS_TO_SETTINGS,
-                id);
+                        where id = %s""".formatted(id),
+                RS_TO_SETTINGS);
     }
 
 }
