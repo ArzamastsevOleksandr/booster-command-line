@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: fix: load entry with empty definitions
+        // todo: fix: if exception is thrown during the import process - the process stops
         // todo: update/delete tag
         // todo: fix: during a full training session allow breaking out from antonyms answer phase
         // todo: have a pre-training session, where vocabulary entries are shown 1 by 1 with a delayed interval.

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Component
@@ -30,11 +31,14 @@ public class WordDao {
     //    todo: unique name in db
     public long createWithName(String name) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> con.prepareStatement("""
-                        insert into word
-                        (name)
-                        values ('%s')""".formatted(name),
-                new String[]{"id"}), keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("""
+                    insert into word
+                    (name)
+                    values (?)""", new String[]{"id"});
+            ps.setString(1, name);
+            return ps;
+        }, keyHolder);
         return keyHolder.getKey().longValue();
     }
 
@@ -42,16 +46,18 @@ public class WordDao {
         return jdbcTemplate.queryForObject("""
                         select *
                         from word
-                        where name = '%s'""".formatted(name),
-                rs2Word);
+                        where name = ?""",
+                rs2Word,
+                name);
     }
 
     public Integer countWithName(String name) {
         return jdbcTemplate.queryForObject("""
                         select count(*)
                         from word
-                        where name = '%s'""".formatted(name),
-                Integer.class);
+                        where name = ?""",
+                Integer.class,
+                name);
     }
 
 }

@@ -27,11 +27,15 @@ public class TagDao {
 
     public String add(String name) {
         var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> con.prepareStatement("""
-                        insert into tag
-                        (name)
-                        values ('%s')""".formatted(name),
-                new String[]{"name"}), keyHolder);
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement("""
+                            insert into tag
+                            (name)
+                            values (?)""",
+                    new String[]{"name"});
+            ps.setString(1, name);
+            return ps;
+        }, keyHolder);
         return keyHolder.getKeyAs(String.class);
     }
 
@@ -39,16 +43,18 @@ public class TagDao {
         return jdbcTemplate.queryForObject("""
                         select *
                         from tag
-                        where name = '%s'""".formatted(name),
-                RS_2_TAG);
+                        where name = ?""",
+                RS_2_TAG,
+                name);
     }
 
     public Integer countWithName(String tag) {
         return jdbcTemplate.queryForObject("""
                         select count(*)
                         from tag
-                        where name = '%s'""".formatted(tag),
-                Integer.class);
+                        where name = ?""",
+                Integer.class,
+                tag);
     }
 
     public void addAll(List<String> tagsToCreate) {
