@@ -93,9 +93,9 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
         Set<String> getCorrectAnswers() {
             return switch (mode) {
-                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
-                case ANTONYMS -> current.getAntonyms();
                 case SYNONYMS -> current.getSynonyms();
+                case ANTONYMS -> current.getAntonyms();
+                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
             };
         }
 

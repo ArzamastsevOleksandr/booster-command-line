@@ -9,6 +9,7 @@ import booster.model.Settings;
 import booster.model.VocabularyEntry;
 import booster.model.Word;
 import booster.service.*;
+import booster.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryService vocabularyEntryService;
     private final SessionTrackerService sessionTrackerService;
     private final ColorProcessor colorProcessor;
+    private final StringUtil stringUtil;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -60,7 +62,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private Set<Long> getWordIds(Set<String> words) {
         return words.stream()
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .map(wordService::findByNameOrCreateAndGet)
                 .map(Word::getId)
                 .collect(toSet());

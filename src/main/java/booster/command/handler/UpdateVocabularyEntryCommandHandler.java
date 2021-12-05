@@ -10,6 +10,7 @@ import booster.model.Word;
 import booster.service.ColorProcessor;
 import booster.service.VocabularyEntryService;
 import booster.service.WordService;
+import booster.util.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
+    private final StringUtil stringUtil;
 
     // todo: update contexts
     @Override
@@ -93,7 +95,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
     private Set<Long> getWordIds(Set<String> words) {
         return words.stream()
-                .filter(s -> !s.isBlank())
+                .filter(stringUtil::isNotBlank)
                 .map(wordService::findByNameOrCreateAndGet)
                 .map(Word::getId)
                 .collect(toSet());
