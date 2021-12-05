@@ -66,7 +66,6 @@ public class VocabularyEntryService {
         return switch (mode) {
             case SYNONYMS -> vocabularyEntryDao.countWithSynonyms() > 0;
             case ANTONYMS -> vocabularyEntryDao.countWithAntonyms() > 0;
-            case FULL -> vocabularyEntryDao.countWithAntonymsAndSynonyms() > 0;
             default -> false;
         };
     }
@@ -184,6 +183,7 @@ public class VocabularyEntryService {
                 .collect(toList());
     }
 
+    @Deprecated
     // todo: add tags?
     public List<VocabularyEntry> findAllWithAntonymsAndSynonyms(int limit) {
         List<VocabularyEntry> entries = vocabularyEntryDao.findAllWithAntonymsAndSynonyms(limit);

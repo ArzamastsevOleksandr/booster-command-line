@@ -93,7 +93,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
         Set<String> getCorrectAnswers() {
             return switch (mode) {
-                case FULL, UNRECOGNIZED -> null;
+                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
                 case ANTONYMS -> current.getAntonyms();
                 case SYNONYMS -> current.getSynonyms();
             };
@@ -103,17 +103,12 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             return hintsPerEntryUsed >= maxHintsPerEntry;
         }
 
-        EntryTracker full() {
-            mode = TrainingSessionMode.FULL;
-            return this;
-        }
-
-        EntryTracker synonyms() {
+        EntryTracker modeSynonyms() {
             mode = TrainingSessionMode.SYNONYMS;
             return this;
         }
 
-        EntryTracker antonyms() {
+        EntryTracker modeAntonyms() {
             mode = TrainingSessionMode.ANTONYMS;
             return this;
         }
@@ -129,7 +124,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
     private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
         return switch (mode) {
-            case FULL -> vocabularyEntryService.findAllWithAntonymsAndSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
             case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
             default -> throw new RuntimeException("Unrecognized training session mode: " + mode);
@@ -139,9 +133,8 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
         var tracker = new EntryTracker(entries);
         switch (mode) {
-            case FULL -> executeFullTrainingSession(tracker.full());
-            case SYNONYMS -> executeSynonymsTrainingSession(tracker.synonyms());
-            case ANTONYMS -> executeAntonymsTrainingSession(tracker.antonyms());
+            case SYNONYMS -> executeSynonymsTrainingSession(tracker.modeSynonyms());
+            case ANTONYMS -> executeAntonymsTrainingSession(tracker.modeAntonyms());
             case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
     }
@@ -157,25 +150,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private String readEquivalents(String label) {
         adapter.write(label + " >> ");
         return adapter.readLine();
-    }
-
-    private void executeFullTrainingSession(EntryTracker tracker) {
-        VocabularyEntry entry = tracker.fetchNextAndPrint();
-        String enteredSynonyms = readSynonyms();
-
-        while (tracker.shouldContinue(enteredSynonyms)) {
-            tracker.inc();
-            Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
-            handleAnswerSynonyms(synonymsAnswer, entry);
-
-            String enteredAntonyms = readAntonyms();
-            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
-            handleAnswerAntonyms(antonymsAnswer, entry);
-            if (tracker.hasMoreEntries()) {
-                entry = tracker.fetchNextAndPrint();
-                enteredSynonyms = readSynonyms();
-            }
-        }
     }
 
     private void executeSynonymsTrainingSession(EntryTracker tracker) {
