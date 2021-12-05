@@ -523,6 +523,7 @@ public class VocabularyEntryDao {
                 Integer.class);
     }
 
+    @Deprecated
     public Integer countWithAntonymsAndSynonyms() {
         return jdbcTemplate.queryForObject("""
                         select count(*) from
