@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 public class Main {
     public static void main(String[] args) {
+        // todo: update/delete tag
         // todo: fix: during a full training session allow breaking out from antonyms answer phase
         // todo: have a pre-training session, where vocabulary entries are shown 1 by 1 with a delayed interval.
         //  I can then start the training session with these words.

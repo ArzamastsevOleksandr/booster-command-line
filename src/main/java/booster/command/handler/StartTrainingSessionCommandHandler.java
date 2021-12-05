@@ -86,7 +86,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
 
         String hint() {
             hintsPerEntryUsed++;
-            adapter.writeLine("Inc hints: " + hintsPerEntryUsed);
             return getCorrectAnswers().stream()
                     .map(s -> s.substring(0, hintsPerEntryUsed) + "_".repeat(s.length() - hintsPerEntryUsed))
                     .collect(Collectors.joining(";"));
@@ -101,7 +100,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
 
         boolean hintsExhausted() {
-            adapter.writeLine("Hints used: " + hintsPerEntryUsed);
             return hintsPerEntryUsed >= maxHintsPerEntry;
         }
 
