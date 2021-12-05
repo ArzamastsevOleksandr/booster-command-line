@@ -198,21 +198,21 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
                                       String label) {
         Set<String> originalEquivalentsCopy = new HashSet<>(supplier.get());
         originalEquivalentsCopy.removeAll(partialAnswer);
-        vocabularyEntryService.updateCorrectAnswersCount(entry, true);
+        vocabularyEntryService.incCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.yellow("Correct."));
         adapter.writeLine("Other " + label + ": " + ColorCodes.yellow(String.join(", ", originalEquivalentsCopy)));
         stats.addPartialAnswer(entry);
     }
 
     private void processWrongAnswer(VocabularyEntry entry, Supplier<Set<String>> supplier) {
-        vocabularyEntryService.updateCorrectAnswersCount(entry, false);
+        vocabularyEntryService.decCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.red("Wrong."));
         adapter.writeLine("Answer is: " + ColorCodes.red(String.join(", ", supplier.get())));
         stats.addWrongAnswer(entry);
     }
 
     private void processCorrectAnswer(VocabularyEntry entry) {
-        vocabularyEntryService.updateCorrectAnswersCount(entry, true);
+        vocabularyEntryService.incCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.green("Correct!"));
         stats.addCorrectAnswer(entry);
     }
