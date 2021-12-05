@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toSet;
@@ -42,6 +43,36 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         return Command.START_TRAINING_SESSION;
     }
 
+    @RequiredArgsConstructor
+    private class EntryTracker {
+        private int index = 0;
+        private final List<VocabularyEntry> entries;
+
+        private boolean shouldContinue(String answer) {
+            return !"e".equalsIgnoreCase(answer) && hasMoreEntries();
+        }
+
+        private boolean hasMoreEntries() {
+            return index < entries.size();
+        }
+
+        private VocabularyEntry fetchNextAndPrint() {
+            VocabularyEntry entry = entries.get(index);
+            printCurrentWord(entry);
+            return entry;
+        }
+
+        private void printCurrentWord(VocabularyEntry entry) {
+            adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
+            adapter.newLine();
+            vocabularyEntryService.updateLastSeenAtById(entry.getId());
+        }
+
+        private void inc() {
+            index++;
+        }
+    }
+
     private void executeTrainingSession(TrainingSessionMode mode) {
         List<VocabularyEntry> entries = findAllForMode(mode);
         adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
@@ -60,39 +91,13 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     }
 
     private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
+        var tracker = new EntryTracker(entries);
         switch (mode) {
-            case FULL -> executeFullTrainingSession(entries);
-            case SYNONYMS -> executeSynonymsTrainingSession(entries);
-            case ANTONYMS -> executeAntonymsTrainingSession(entries);
+            case FULL -> executeFullTrainingSession(tracker);
+            case SYNONYMS -> executeSynonymsTrainingSession(tracker);
+            case ANTONYMS -> executeAntonymsTrainingSession(tracker);
             case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
-    }
-
-    // todo: DRY
-    private void executeFullTrainingSession(List<VocabularyEntry> entries) {
-        int index = 0;
-
-        VocabularyEntry entry = fetchNextAndPrint(entries, index);
-        String enteredSynonyms = readSynonyms();
-
-        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
-            Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
-            handleAnswerSynonyms(synonymsAnswer, entry);
-
-            String enteredAntonyms = readAntonyms();
-            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
-            handleAnswerAntonyms(antonymsAnswer, entry);
-            if (index < entries.size()) {
-                entry = fetchNextAndPrint(entries, index);
-                enteredSynonyms = readSynonyms();
-            }
-        }
-    }
-
-    private VocabularyEntry fetchNextAndPrint(List<VocabularyEntry> entries, int index) {
-        VocabularyEntry entry = entries.get(index);
-        printCurrentWord(entry);
-        return entry;
     }
 
     private String readSynonyms() {
@@ -108,39 +113,72 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         return adapter.readLine();
     }
 
-    private void printCurrentWord(VocabularyEntry entry) {
-        adapter.writeLine("Word: [" + ColorCodes.cyan(entry.getName()) + "]");
-        adapter.newLine();
-        vocabularyEntryService.updateLastSeenAtById(entry.getId());
-    }
-
-    private void executeSynonymsTrainingSession(List<VocabularyEntry> entries) {
-        int index = 0;
-
-        VocabularyEntry entry = fetchNextAndPrint(entries, index);
+    private void executeFullTrainingSession(EntryTracker tracker) {
+        VocabularyEntry entry = tracker.fetchNextAndPrint();
         String enteredSynonyms = readSynonyms();
 
-        while (!enteredSynonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
+        while (tracker.shouldContinue(enteredSynonyms)) {
+            tracker.inc();
             Set<String> synonymsAnswer = parseEquivalents(enteredSynonyms);
             handleAnswerSynonyms(synonymsAnswer, entry);
-            if (index < entries.size()) {
-                entry = fetchNextAndPrint(entries, index);
+
+            String enteredAntonyms = readAntonyms();
+            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
+            handleAnswerAntonyms(antonymsAnswer, entry);
+            if (tracker.hasMoreEntries()) {
+                entry = tracker.fetchNextAndPrint();
                 enteredSynonyms = readSynonyms();
             }
         }
     }
 
+    private void executeSynonymsTrainingSession(EntryTracker tracker) {
+        executeTrainingSession(tracker, this::readSynonyms, this::handleAnswerSynonyms);
+    }
+
+    private void executeAntonymsTrainingSession(EntryTracker tracker) {
+        executeTrainingSession(tracker, this::readAntonyms, this::handleAnswerAntonyms);
+    }
+
+    private void executeTrainingSession(EntryTracker tracker,
+                                        Supplier<String> answerSupplier,
+                                        BiConsumer<Set<String>, VocabularyEntry> answerConsumer) {
+        VocabularyEntry entry = tracker.fetchNextAndPrint();
+        String answer = answerSupplier.get();
+
+        while (tracker.shouldContinue(answer)) {
+            tracker.inc();
+            Set<String> parsedAnswer = parseEquivalents(answer);
+            answerConsumer.accept(parsedAnswer, entry);
+            if (tracker.hasMoreEntries()) {
+                entry = tracker.fetchNextAndPrint();
+                answer = answerSupplier.get();
+            }
+        }
+    }
+
     private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntry entry) {
-        if (synonymsAnswer.equals(entry.getSynonyms())) {
+        handleAnswer(synonymsAnswer, entry, entry::getSynonyms, this::processPartialSynonymsAnswer);
+    }
+
+    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
+        handleAnswer(antonymsAnswer, entry, entry::getAntonyms, this::processPartialAntonymsAnswer);
+    }
+
+    private void handleAnswer(Set<String> answer,
+                              VocabularyEntry entry,
+                              Supplier<Set<String>> correctAnswer,
+                              BiConsumer<Set<String>, VocabularyEntry> consumer) {
+        if (answer.equals(correctAnswer.get())) {
             processCorrectAnswer(entry);
         } else {
-            Set<String> synonymsAnswerCopy = new HashSet<>(synonymsAnswer);
-            synonymsAnswerCopy.removeAll(entry.getSynonyms());
+            Set<String> answerCopy = new HashSet<>(answer);
+            answerCopy.removeAll(correctAnswer.get());
 
-            if (synonymsAnswerCopy.isEmpty()) {
-                processPartialSynonymsAnswer(synonymsAnswer, entry);
+            if (answerCopy.isEmpty()) {
+                consumer.accept(answer, entry);
             } else {
-                processWrongAnswer(entry, entry::getSynonyms);
+                processWrongAnswer(entry, correctAnswer);
             }
         }
         adapter.newLine();
@@ -154,7 +192,10 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         processPartialAnswer(partialAnswer, entry, entry::getAntonyms, "antonyms");
     }
 
-    private void processPartialAnswer(Set<String> partialAnswer, VocabularyEntry entry, Supplier<Set<String>> supplier, String label) {
+    private void processPartialAnswer(Set<String> partialAnswer,
+                                      VocabularyEntry entry,
+                                      Supplier<Set<String>> supplier,
+                                      String label) {
         Set<String> originalEquivalentsCopy = new HashSet<>(supplier.get());
         originalEquivalentsCopy.removeAll(partialAnswer);
         vocabularyEntryService.updateCorrectAnswersCount(entry, true);
@@ -174,38 +215,6 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         vocabularyEntryService.updateCorrectAnswersCount(entry, true);
         adapter.writeLine(ColorCodes.green("Correct!"));
         stats.addCorrectAnswer(entry);
-    }
-
-    private void executeAntonymsTrainingSession(List<VocabularyEntry> entries) {
-        int index = 0;
-
-        VocabularyEntry entry = fetchNextAndPrint(entries, index);
-        String enteredAntonyms = readAntonyms();
-
-        while (!enteredAntonyms.equalsIgnoreCase("e") && index++ < entries.size()) {
-            Set<String> antonymsAnswer = parseEquivalents(enteredAntonyms);
-            handleAnswerAntonyms(antonymsAnswer, entry);
-            if (index < entries.size()) {
-                entry = fetchNextAndPrint(entries, index);
-                enteredAntonyms = readAntonyms();
-            }
-        }
-    }
-
-    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
-        if (antonymsAnswer.equals(entry.getAntonyms())) {
-            processCorrectAnswer(entry);
-        } else {
-            Set<String> antonymsAnswerCopy = new HashSet<>(antonymsAnswer);
-            antonymsAnswerCopy.removeAll(entry.getAntonyms());
-
-            if (antonymsAnswerCopy.isEmpty()) {
-                processPartialAntonymsAnswer(antonymsAnswer, entry);
-            } else {
-                processWrongAnswer(entry, entry::getAntonyms);
-            }
-        }
-        adapter.newLine();
     }
 
     private Set<String> parseEquivalents(String equivalents) {
