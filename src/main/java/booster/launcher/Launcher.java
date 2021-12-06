@@ -8,6 +8,7 @@ import booster.command.arguments.CommandWithArgs;
 import booster.command.service.CommandHandlerCollectionService;
 import booster.preprocessor.CommandWithArgsPreprocessor;
 import booster.service.SessionTrackerService;
+import booster.util.ColorCodes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -62,7 +63,7 @@ public class Launcher {
     }
 
     private void askForInput() {
-        adapter.write(">> ");
+        adapter.write(ColorCodes.purple(">> "));
     }
 
 }
