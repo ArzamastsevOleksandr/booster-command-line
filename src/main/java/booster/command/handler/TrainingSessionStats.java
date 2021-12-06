@@ -32,17 +32,20 @@ class TrainingSessionStats {
     private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
     private final Set<VocabularyEntry> partialAnswers = new HashSet<>();
+    private final Set<VocabularyEntry> skipped = new HashSet<>();
 
     void reset() {
         wrongAnswers.clear();
         correctAnswers.clear();
         partialAnswers.clear();
+        skipped.clear();
     }
 
     void displayAnswers() {
         displayCorrectAnswers();
         displayPartialAnswers();
         displayWrongAnswers();
+        displaySkipped();
     }
 
     private void displayCorrectAnswers() {
@@ -57,6 +60,10 @@ class TrainingSessionStats {
         displayAnswers(wrongAnswers, ColorCodes.red("Wrong answers " + fraction(wrongAnswers.size())));
     }
 
+    private void displaySkipped() {
+        displayAnswers(skipped, ColorCodes.blue("Skipped " + fraction(skipped.size())));
+    }
+
     private void displayAnswers(Set<VocabularyEntry> answers, String label) {
         if (!answers.isEmpty()) {
             ThreadUtil.sleepSeconds(1);
@@ -68,8 +75,10 @@ class TrainingSessionStats {
                     .map(vocabularyEntryService::findById)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .map(colorProcessor::coloredEntry)
-                    .forEach(adapter::writeLine);
+                    .forEach(entry -> {
+                        adapter.writeLine(colorProcessor.coloredEntry(entry));
+                        vocabularyEntryService.updateLastSeenAtById(entry.getId());
+                    });
             adapter.newLine();
         }
     }
@@ -92,6 +101,10 @@ class TrainingSessionStats {
 
     void addPartialAnswer(VocabularyEntry entry) {
         partialAnswers.add(entry);
+    }
+
+    public void skipped(VocabularyEntry entry) {
+        skipped.add(entry);
     }
 
 }

@@ -6,8 +6,10 @@ import booster.command.arguments.CommandArgs;
 import booster.command.arguments.StartTrainingSessionCommandArgs;
 import booster.command.arguments.TrainingSessionMode;
 import booster.model.VocabularyEntry;
+import booster.service.ColorProcessor;
 import booster.service.VocabularyEntryService;
 import booster.util.ColorCodes;
+import booster.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final TrainingSessionStats stats;
+    private final ColorProcessor colorProcessor;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -47,7 +50,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
     @RequiredArgsConstructor
     private class EntryTracker {
         // todo: configurable setting
-        final int maxHintsPerEntry = 2;
+        final int maxHintsPerEntry = 3;
 
         TrainingSessionMode mode = TrainingSessionMode.getDefaultMode();
         int index = 0;
@@ -81,7 +84,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
 
         boolean canShowHints(String input) {
-            return hintsPerEntryUsed < maxHintsPerEntry && "h".equalsIgnoreCase(input);
+            return "h".equalsIgnoreCase(input);
         }
 
         String hint() {
@@ -99,8 +102,8 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             };
         }
 
-        boolean hintsExhausted() {
-            return hintsPerEntryUsed >= maxHintsPerEntry;
+        boolean allHintsExhausted() {
+            return hintsPerEntryUsed > maxHintsPerEntry;
         }
 
         EntryTracker modeSynonyms() {
@@ -170,10 +173,16 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             tracker.inc();
             while (tracker.canShowHints(answer)) {
                 adapter.writeLine("Hint: >> " + tracker.hint());
+                if (tracker.allHintsExhausted()) {
+                    break;
+                }
                 answer = answerSupplier.get();
             }
-            if (tracker.hintsExhausted()) {
-                adapter.writeLine("Max hints used. Skipping word.");
+            if (tracker.allHintsExhausted()) {
+                adapter.writeLine(ColorCodes.red("Max hints used."));
+                stats.skipped(tracker.current);
+                adapter.writeLine(colorProcessor.coloredEntry(tracker.current));
+                ThreadUtil.sleepSeconds(1);
             } else {
                 Set<String> parsedAnswer = parseEquivalents(answer);
                 answerConsumer.accept(parsedAnswer, entry);

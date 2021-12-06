@@ -484,7 +484,7 @@ public class VocabularyEntryDao {
                         or exists(select * from vocabulary_entry__context__jt vecj where vocabulary_entry_id = ve_out.id and context like (select s from substr))
                         order by ve_out.last_seen_at
                         limit %s""".formatted(limit);
-        return jdbcTemplate.query(sql, RS_2_VOCABULARY_ENTRY, limit);
+        return jdbcTemplate.query(sql, RS_2_VOCABULARY_ENTRY);
     }
 
     public Integer countTotal() {
