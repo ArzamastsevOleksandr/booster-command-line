@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
+@Deprecated
 @Configuration
 //@PropertySource("classpath:database.properties")
 @RequiredArgsConstructor

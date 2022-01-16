@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
 
+@Deprecated
 @Component
 @RequiredArgsConstructor
 public class NoteDao {
