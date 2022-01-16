@@ -6,8 +6,10 @@ import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartTrainingSessionCommandArgs;
 import cliclient.command.arguments.TrainingSessionMode;
 import cliclient.model.VocabularyEntry;
+import cliclient.service.ColorProcessor;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
+import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
