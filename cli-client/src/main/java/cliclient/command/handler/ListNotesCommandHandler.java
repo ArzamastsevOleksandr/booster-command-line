@@ -4,17 +4,20 @@ import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.ListNotesCommandArgs;
-import cliclient.model.Note;
+import cliclient.dto.NoteCollection;
+import cliclient.dto.NoteDto;
+import cliclient.feign.NotesServiceClient;
 import cliclient.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
 public class ListNotesCommandHandler implements CommandHandler {
 
+    private final NotesServiceClient notesServiceClient;
     private final NoteService noteService;
     private final CommandLineAdapter adapter;
 
@@ -29,8 +32,9 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     private void displayAllNotes() {
-        List<Note> notes = noteService.findAll();
-
+//        List<Note> notes = noteService.findAll();
+        NoteCollection noteCollection = notesServiceClient.getAll();
+        Collection<NoteDto> notes = noteCollection.notes();
         if (notes.isEmpty()) {
             adapter.writeLine("There are no notes in the system now.");
         } else {
