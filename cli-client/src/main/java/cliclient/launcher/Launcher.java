@@ -8,6 +8,7 @@ import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
 import cliclient.preprocessor.CommandWithArgsPreprocessor;
 import cliclient.service.SessionTrackerService;
+import cliclient.util.ColorCodes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

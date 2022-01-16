@@ -11,6 +11,7 @@
 
     <modules>
         <module>cli-client</module>
+        <module>notes-service</module>
     </modules>
 
     <properties>
