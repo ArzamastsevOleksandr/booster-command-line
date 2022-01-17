@@ -8,8 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
-import java.util.UUID;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 @Slf4j
 @SpringBootApplication
@@ -27,10 +26,10 @@ class NotesServiceApplication {
     CommandLineRunner commandLineRunner() {
         return args -> {
             log.info("Create sample data: start");
-            IntStream.rangeClosed(1, 5)
+            LongStream.rangeClosed(1, 5)
                     .mapToObj(i -> {
                         var noteEntity = new NoteEntity();
-                        noteEntity.setId(UUID.randomUUID());
+                        noteEntity.setId(i);
                         noteEntity.setContent("Note " + i);
                         return noteEntity;
                     }).forEach(noteRepository::save);

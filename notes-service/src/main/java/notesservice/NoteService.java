@@ -15,7 +15,7 @@ class NoteService {
 
     private final NoteRepository noteRepository;
 
-    Collection<NoteDto> getAll() {
+    Collection<NoteDto> findAll() {
         return noteRepository.findAll()
                 .stream()
                 .map(this::toDto)
