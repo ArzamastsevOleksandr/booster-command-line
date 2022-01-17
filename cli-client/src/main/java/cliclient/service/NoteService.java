@@ -19,21 +19,25 @@ public class NoteService {
     private final TransactionTemplate transactionTemplate;
     private final SessionTrackerService sessionTrackerService;
 
+    @Deprecated
     public boolean existsWithId(Long id) {
         return noteDao.countWithId(id) == 1;
     }
 
+    @Deprecated
     public Note addTag(String tag, long noteId) {
         noteDao.addTag(tag, noteId);
         return findById(noteId);
     }
 
+    @Deprecated
     public Note findById(long noteId) {
         Note note = noteDao.findById(noteId);
         List<String> tags = noteDao.findTagsByNoteId(noteId);
         return note.toBuilder().tags(new HashSet<>(tags)).build();
     }
 
+    @Deprecated
     public Note add(AddNoteDaoParams params) {
         return transactionTemplate.execute(status -> {
             long noteId = noteDao.add(params.getContent());
@@ -43,6 +47,7 @@ public class NoteService {
         });
     }
 
+    @Deprecated
     public List<Note> findAll() {
         List<Note> notes = noteDao.findAll();
         Map<Long, Set<String>> id2Tags = noteDao.queryForNoteId2Tags();
@@ -52,6 +57,7 @@ public class NoteService {
                 .collect(toList());
     }
 
+    @Deprecated
     public void delete(Long id) {
         transactionTemplate.executeWithoutResult(status -> {
             noteDao.removeTagAssociationsById(id);

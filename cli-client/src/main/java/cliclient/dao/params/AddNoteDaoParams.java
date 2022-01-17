@@ -5,6 +5,7 @@ import lombok.Value;
 
 import java.util.Set;
 
+@Deprecated
 @Value
 @Builder
 public class AddNoteDaoParams {
