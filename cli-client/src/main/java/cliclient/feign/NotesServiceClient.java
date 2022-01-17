@@ -2,10 +2,7 @@ package cliclient.feign;
 
 import cliclient.dto.NoteCollection;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "notes-service-client", url = "http://localhost:8081/notes")
 public interface NotesServiceClient {
@@ -18,5 +15,8 @@ public interface NotesServiceClient {
 
     @PostMapping(value = "/")
     NoteResponse add(@RequestBody AddNoteInput input);
+
+    @DeleteMapping(value = "/{id}")
+    void delete(@PathVariable("id") Long id);
 
 }
