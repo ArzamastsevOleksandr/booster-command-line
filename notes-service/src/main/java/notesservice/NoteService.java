@@ -26,4 +26,10 @@ class NoteService {
         return new NoteDto(noteEntity.getId(), noteEntity.getContent());
     }
 
+    public NoteDto findById(Long id) {
+        return noteRepository.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new NoteByIdNotFoundException(id));
+    }
+
 }
