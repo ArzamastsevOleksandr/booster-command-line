@@ -11,3 +11,6 @@ Content-Type: application/json
 {
   "content": "New Note"
 }
+
+###
+DELETE http://{{host}}:{{port}}/notes/{{id}}

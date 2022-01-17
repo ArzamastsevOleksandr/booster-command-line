@@ -1,6 +1,5 @@
 package notesservice;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +9,7 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-class NoteService {
-
-    private final NoteRepository noteRepository;
+record NoteService(NoteRepository noteRepository) {
 
     Collection<NoteDto> findAll() {
         return noteRepository.findAll()
@@ -37,6 +33,10 @@ class NoteService {
         noteEntity.setContent(input.content());
         noteEntity = noteRepository.save(noteEntity);
         return toDto(noteEntity);
+    }
+
+    void deleteById(Long id) {
+        noteRepository.deleteById(id);
     }
 
 }
