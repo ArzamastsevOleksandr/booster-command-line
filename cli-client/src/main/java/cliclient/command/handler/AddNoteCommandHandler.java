@@ -4,9 +4,10 @@ import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.AddNoteCommandArgs;
 import cliclient.command.arguments.CommandArgs;
-import cliclient.dao.params.AddNoteDaoParams;
-import cliclient.model.Note;
-import cliclient.service.NoteService;
+import cliclient.dao.params.AddCause;
+import cliclient.feign.AddNoteInput;
+import cliclient.feign.NoteResponse;
+import cliclient.feign.NotesServiceClient;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,14 +17,16 @@ import org.springframework.stereotype.Component;
 public class AddNoteCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
-    private final NoteService noteService;
     private final SessionTrackerService sessionTrackerService;
+    private final NotesServiceClient notesServiceClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (AddNoteCommandArgs) commandArgs;
-        Note note = noteService.add(AddNoteDaoParams.builder().content(args.content()).tags(args.tags()).build());
-        adapter.writeLine(note);
+        var input = new AddNoteInput(args.content());
+        NoteResponse noteResponse = notesServiceClient.add(input);
+        sessionTrackerService.incNotesCount(AddCause.CREATE);
+        adapter.writeLine(noteResponse.note());
         adapter.writeLine("Notes added so far: " + sessionTrackerService.getNotesAddedCount());
     }
 
