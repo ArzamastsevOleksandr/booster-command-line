@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping(value = "/notes/")
 @RequiredArgsConstructor
@@ -13,20 +15,20 @@ class NoteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    NoteCollection getAll() {
-        return new NoteCollection(noteService.findAll());
+    Collection<NoteDto> getAll() {
+        return noteService.findAll();
     }
 
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    NoteResponse getById(@PathVariable("id") Long id) {
-        return new NoteResponse(noteService.findById(id));
+    NoteDto getById(@PathVariable("id") Long id) {
+        return noteService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    NoteResponse add(@RequestBody AddNoteInput input) {
-        return new NoteResponse(noteService.add(input));
+    NoteDto add(@RequestBody AddNoteInput input) {
+        return noteService.add(input);
     }
 
     @DeleteMapping("{id}")
