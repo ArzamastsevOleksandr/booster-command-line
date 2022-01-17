@@ -29,4 +29,10 @@ class NoteController {
         return new NoteResponse(noteService.add(input));
     }
 
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteById(@PathVariable("id") Long id) {
+        noteService.deleteById(id);
+    }
+
 }
