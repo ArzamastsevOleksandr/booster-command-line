@@ -2,4 +2,12 @@
 GET http://{{host}}:{{port}}/notes/
 
 ###
-GET http://localhost:8081/notes/{{id}}
+GET http://{{host}}:{{port}}/notes/{{id}}
+
+###
+POST http://{{host}}:{{port}}/notes/
+Content-Type: application/json
+
+{
+  "content": "New Note"
+}

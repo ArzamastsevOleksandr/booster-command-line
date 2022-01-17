@@ -23,4 +23,10 @@ class NoteController {
         return new NoteResponse(noteService.findById(id));
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    NoteResponse add(@RequestBody AddNoteInput input) {
+        return new NoteResponse(noteService.add(input));
+    }
+
 }

@@ -26,10 +26,17 @@ class NoteService {
         return new NoteDto(noteEntity.getId(), noteEntity.getContent());
     }
 
-    public NoteDto findById(Long id) {
+    NoteDto findById(Long id) {
         return noteRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new NoteByIdNotFoundException(id));
+    }
+
+    NoteDto add(AddNoteInput input) {
+        var noteEntity = new NoteEntity();
+        noteEntity.setContent(input.content());
+        noteEntity = noteRepository.save(noteEntity);
+        return toDto(noteEntity);
     }
 
 }
