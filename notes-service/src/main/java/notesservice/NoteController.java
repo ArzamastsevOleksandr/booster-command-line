@@ -16,8 +16,8 @@ class NoteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    NoteCollection all() {
-        return new NoteCollection(noteService.getAll());
+    NoteCollection getAll() {
+        return new NoteCollection(noteService.findAll());
     }
 
 }
