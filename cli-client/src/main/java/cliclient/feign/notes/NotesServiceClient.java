@@ -1,4 +1,4 @@
-package cliclient.feign;
+package cliclient.feign.notes;
 
 import api.notes.NoteDto;
 import org.springframework.cloud.openfeign.FeignClient;
