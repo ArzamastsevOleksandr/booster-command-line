@@ -131,4 +131,23 @@ class LanguageControllerTest {
                 });
     }
 
+    @Test
+    void shouldDeleteLanguageById() {
+        // given
+        var name = "ENGLISH";
+        Long id = testLanguageService.createLanguage(name);
+
+        assertThat(languageRepository.findById(id)).isNotEmpty();
+        // when
+        webTestClient.delete()
+                .uri("/languages/" + id)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody(Void.class);
+        // then
+        assertThat(languageRepository.findById(id)).isEmpty();
+    }
+
 }
