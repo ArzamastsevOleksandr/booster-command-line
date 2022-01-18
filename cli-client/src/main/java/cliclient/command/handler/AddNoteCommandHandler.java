@@ -5,8 +5,8 @@ import cliclient.command.Command;
 import cliclient.command.arguments.AddNoteCommandArgs;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.dao.params.AddCause;
+import cliclient.dto.NoteDto;
 import cliclient.feign.AddNoteInput;
-import cliclient.feign.NoteResponse;
 import cliclient.feign.NotesServiceClient;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class AddNoteCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         var args = (AddNoteCommandArgs) commandArgs;
         var input = new AddNoteInput(args.content());
-        NoteResponse noteResponse = notesServiceClient.add(input);
+        NoteDto noteDto = notesServiceClient.add(input);
         sessionTrackerService.incNotesCount(AddCause.CREATE);
-        adapter.writeLine(noteResponse.note());
+        adapter.writeLine(noteDto);
         adapter.writeLine("Notes added so far: " + sessionTrackerService.getNotesAddedCount());
     }
 

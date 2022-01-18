@@ -12,6 +12,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: fix: add note, delete the same note - the counter of notes added must be correctly updated
         // todo: fix: if exception is thrown during the import process - the process stops
         // todo: update/delete tag
         // todo: have a pre-training session, where vocabulary entries are shown 1 by 1 with a delayed interval.
