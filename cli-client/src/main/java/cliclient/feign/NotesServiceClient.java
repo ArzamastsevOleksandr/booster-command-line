@@ -1,6 +1,6 @@
 package cliclient.feign;
 
-import cliclient.dto.NoteDto;
+import api.notes.NoteDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

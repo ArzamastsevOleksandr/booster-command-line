@@ -6,12 +6,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
 
 import java.util.stream.LongStream;
 
 @Slf4j
 @SpringBootApplication
+@ComponentScan(basePackages = {"notesservice", "api"})
 @RequiredArgsConstructor
 class NotesServiceApplication {
 

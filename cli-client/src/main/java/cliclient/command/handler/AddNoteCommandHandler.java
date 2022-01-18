@@ -1,11 +1,11 @@
 package cliclient.command.handler;
 
+import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.AddNoteCommandArgs;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.dao.params.AddCause;
-import cliclient.dto.NoteDto;
 import cliclient.feign.AddNoteInput;
 import cliclient.feign.NotesServiceClient;
 import cliclient.service.SessionTrackerService;

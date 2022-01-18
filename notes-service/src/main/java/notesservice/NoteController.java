@@ -1,35 +1,34 @@
 package notesservice;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import api.notes.AddNoteInput;
+import api.notes.NoteDto;
+import api.notes.NoteServiceApi;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
 @RestController
-@RequestMapping(value = "/notes/")
-record NoteController(NoteService noteService) {
+record NoteController(NoteService noteService) implements NoteServiceApi {
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    Collection<NoteDto> getAll() {
+    @Override
+    public Collection<NoteDto> getAll() {
         return noteService.findAll();
     }
 
-    @GetMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
-    NoteDto getById(@PathVariable("id") Long id) {
+    @Override
+    public NoteDto getById(Long id) {
         return noteService.findById(id);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    NoteDto add(@RequestBody AddNoteInput input) {
+    @Override
+    public NoteDto add(@RequestBody AddNoteInput input) {
         return noteService.add(input);
     }
 
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteById(@PathVariable("id") Long id) {
+    @Override
+    public void deleteById(@PathVariable("id") Long id) {
         noteService.deleteById(id);
     }
 
