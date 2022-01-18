@@ -38,6 +38,7 @@ record NoteService(NoteRepository noteRepository) {
         return toDto(noteEntity);
     }
 
+    // todo: org.springframework.dao.EmptyResultDataAccessException: No class notesservice.NoteEntity entity with id 11 exists!
     void deleteById(Long id) {
         noteRepository.deleteById(id);
     }
