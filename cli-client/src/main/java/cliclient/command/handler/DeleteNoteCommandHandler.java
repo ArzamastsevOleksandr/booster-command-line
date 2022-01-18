@@ -3,7 +3,7 @@ package cliclient.command.handler;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.DeleteNoteCommandArgs;
-import cliclient.feign.NotesServiceClient;
+import cliclient.feign.notes.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
