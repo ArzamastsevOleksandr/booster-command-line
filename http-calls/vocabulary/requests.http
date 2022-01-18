@@ -3,3 +3,11 @@ GET http://{{host}}:{{vocabulary-port}}/{{languages-path}}/
 
 ###
 GET http://{{host}}:{{vocabulary-port}}/{{languages-path}}/{{language-id}}
+
+###
+POST http://{{host}}:{{vocabulary-port}}/{{languages-path}}/
+Content-Type: application/json
+
+{
+  "name": "English"
+}

@@ -1,6 +1,7 @@
 package vocabularyservice.language;
 
 import api.exception.NotFoundException;
+import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,13 @@ record LanguageService(LanguageRepository languageRepository) {
         return languageRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new NotFoundException("Language not found by id: " + id));
+    }
+
+    LanguageDto add(AddLanguageInput input) {
+        var languageEntity = new LanguageEntity();
+        languageEntity.setName(input.name());
+        languageEntity = languageRepository.save(languageEntity);
+        return toDto(languageEntity);
     }
 
 }

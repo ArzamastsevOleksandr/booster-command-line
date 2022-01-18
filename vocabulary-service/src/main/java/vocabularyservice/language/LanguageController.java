@@ -1,5 +1,6 @@
 package vocabularyservice.language;
 
+import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageControllerApi;
 import api.vocabulary.LanguageDto;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,11 @@ record LanguageController(LanguageService languageService) implements LanguageCo
     @Override
     public LanguageDto findById(Long id) {
         return languageService.findById(id);
+    }
+
+    @Override
+    public LanguageDto add(AddLanguageInput input) {
+        return languageService.add(input);
     }
 
 }
