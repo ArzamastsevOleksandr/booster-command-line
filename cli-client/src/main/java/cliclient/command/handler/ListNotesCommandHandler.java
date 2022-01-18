@@ -25,7 +25,7 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     private void displayNoteById(Long id) {
-        adapter.writeLine(notesServiceClient.findById(id));
+        adapter.writeLine(notesServiceClient.getById(id));
     }
 
     private void displayAllNotes() {

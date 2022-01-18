@@ -1,12 +1,12 @@
 package cliclient.command.handler;
 
+import api.notes.AddNoteInput;
 import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.AddNoteCommandArgs;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.dao.params.AddCause;
-import cliclient.feign.notes.AddNoteInput;
 import cliclient.feign.notes.NotesServiceClient;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;

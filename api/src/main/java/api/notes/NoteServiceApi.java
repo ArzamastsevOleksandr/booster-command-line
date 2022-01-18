@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
-@RequestMapping("/notes/")
 public interface NoteServiceApi {
 
     @GetMapping(value = "/")
@@ -16,7 +15,7 @@ public interface NoteServiceApi {
     @ResponseStatus(HttpStatus.OK)
     NoteDto getById(@PathVariable("id") Long id);
 
-    @PostMapping
+    @PostMapping("/")
     @ResponseStatus(HttpStatus.CREATED)
     NoteDto add(@RequestBody AddNoteInput input);
 
