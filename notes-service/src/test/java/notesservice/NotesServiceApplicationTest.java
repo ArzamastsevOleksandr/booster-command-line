@@ -5,6 +5,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -28,7 +29,21 @@ class NotesServiceApplicationTest {
 
     @Test
     void shouldReturn404WhenNoteByIdNotFound() {
-
+        System.out.println("aaa: " + HttpStatus.NOT_FOUND);
+        long id = 1000;
+        webTestClient.get()
+                .uri("/notes/" + id)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectHeader()
+                .contentType(APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.timestamp").isNotEmpty()
+                .jsonPath("$.path").isEqualTo("/notes/" + id)
+                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
+                .jsonPath("$.message").isEqualTo("Note not found by id: " + id);
     }
 
     @Test

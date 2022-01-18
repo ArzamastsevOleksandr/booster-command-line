@@ -21,7 +21,7 @@ class NoteEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    String content;
+    private String content;
 
     @Override
     public boolean equals(Object o) {

@@ -1,6 +1,5 @@
 package notesservice;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,10 +7,7 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping(value = "/notes/")
-@RequiredArgsConstructor
-class NoteController {
-
-    private final NoteService noteService;
+record NoteController(NoteService noteService) {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
