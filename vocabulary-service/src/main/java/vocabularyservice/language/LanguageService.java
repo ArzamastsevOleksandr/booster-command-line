@@ -38,4 +38,8 @@ record LanguageService(LanguageRepository languageRepository) {
         return toDto(languageEntity);
     }
 
+    void deleteById(Long id) {
+        languageRepository.deleteById(id);
+    }
+
 }

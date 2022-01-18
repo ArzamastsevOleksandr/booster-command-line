@@ -27,4 +27,9 @@ record LanguageController(LanguageService languageService) implements LanguageCo
         return languageService.add(input);
     }
 
+    @Override
+    public void deleteById(Long id) {
+        languageService.deleteById(id);
+    }
+
 }

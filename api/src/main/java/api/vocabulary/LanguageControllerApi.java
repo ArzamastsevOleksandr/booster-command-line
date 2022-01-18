@@ -4,8 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 public interface LanguageControllerApi {
 
@@ -20,5 +19,9 @@ public interface LanguageControllerApi {
     @PostMapping(value = "/")
     @ResponseStatus(CREATED)
     LanguageDto add(@RequestBody AddLanguageInput input);
+
+    @DeleteMapping(value = "/{id}")
+    @ResponseStatus(NO_CONTENT)
+    void deleteById(@PathVariable("id") Long id);
 
 }

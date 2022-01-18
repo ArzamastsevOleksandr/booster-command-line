@@ -11,3 +11,6 @@ Content-Type: application/json
 {
   "name": "English"
 }
+
+###
+DELETE http://{{host}}:{{vocabulary-port}}/{{languages-path}}/{{language-id}}
