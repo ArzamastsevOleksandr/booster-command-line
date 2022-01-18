@@ -14,4 +14,9 @@ record LanguageController(LanguageService languageService) implements LanguageCo
         return languageService.getAll();
     }
 
+    @Override
+    public LanguageDto findById(Long id) {
+        return languageService.findById(id);
+    }
+
 }

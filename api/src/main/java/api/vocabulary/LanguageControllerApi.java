@@ -1,17 +1,23 @@
 package api.vocabulary;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Collection;
 
+import static org.springframework.http.HttpStatus.OK;
+
 @RequestMapping("/languages/")
 public interface LanguageControllerApi {
 
     @GetMapping(value = "/")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     Collection<LanguageDto> getAll();
+
+    @GetMapping(value = "/{id}")
+    @ResponseStatus(OK)
+    LanguageDto findById(@PathVariable("id") Long id);
 
 }
