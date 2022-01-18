@@ -20,6 +20,7 @@
         <module>api</module>
         <module>cli-client</module>
         <module>notes-service</module>
+        <module>vocabulary-service</module>
     </modules>
 
     <properties>
