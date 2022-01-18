@@ -6,6 +6,7 @@ import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -60,6 +61,42 @@ class LanguageControllerTest {
                 .isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(0);
+    }
+
+    @Test
+    void shouldFindLanguageById() {
+        // given
+        var name = "ENGLISH";
+        // when
+        Long id = testLanguageService.createLanguage(name);
+        // then
+        webTestClient.get()
+                .uri("/languages/" + id)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(id)
+                .jsonPath("$.name").isEqualTo(name);
+    }
+
+    @Test
+    void shouldReturn404WhenLanguageByIdNotFound() {
+        long id = 1000;
+        webTestClient.get()
+                .uri("/languages/" + id)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectHeader()
+                .contentType(APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.timestamp").isNotEmpty()
+                .jsonPath("$.path").isEqualTo("/languages/" + id)
+                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
+                .jsonPath("$.message").isEqualTo("Language not found by id: " + id);
     }
 
 }
