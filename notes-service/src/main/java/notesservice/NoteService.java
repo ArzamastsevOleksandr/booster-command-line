@@ -1,5 +1,8 @@
 package notesservice;
 
+import api.exception.NotFoundException;
+import api.notes.AddNoteInput;
+import api.notes.NoteDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +28,7 @@ record NoteService(NoteRepository noteRepository) {
     NoteDto findById(Long id) {
         return noteRepository.findById(id)
                 .map(this::toDto)
-                .orElseThrow(() -> new NoteByIdNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("Note not found by id: " + id));
     }
 
     NoteDto add(AddNoteInput input) {

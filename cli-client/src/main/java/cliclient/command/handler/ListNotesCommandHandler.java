@@ -1,10 +1,10 @@
 package cliclient.command.handler;
 
+import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.ListNotesCommandArgs;
-import cliclient.dto.NoteDto;
 import cliclient.feign.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package notesservice;
+package api.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,15 +12,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @RestControllerAdvice
-class GlobalControllerExceptionHandler {
+public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(NoteByIdNotFoundException.class)
-    HttpErrorResponse handleNoteByIdNotFound(HttpServletRequest req, NoteByIdNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public HttpErrorResponse handleNoteByIdNotFound(HttpServletRequest req, NotFoundException ex) {
         return buildHttpErrorResponse(NOT_FOUND, req, ex);
     }
 
-    private HttpErrorResponse buildHttpErrorResponse(HttpStatus status, HttpServletRequest req, NoteByIdNotFoundException ex) {
+    private HttpErrorResponse buildHttpErrorResponse(HttpStatus status, HttpServletRequest req, NotFoundException ex) {
         String path = req.getServletPath();
         String message = ex.getMessage();
 
