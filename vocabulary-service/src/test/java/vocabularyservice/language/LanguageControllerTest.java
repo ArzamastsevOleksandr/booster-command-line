@@ -1,5 +1,6 @@
 package vocabularyservice.language;
 
+import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
@@ -23,6 +24,8 @@ class LanguageControllerTest {
 
     @Autowired
     TestLanguageService testLanguageService;
+    @Autowired
+    LanguageRepository languageRepository;
     @Autowired
     WebTestClient webTestClient;
 
@@ -97,6 +100,35 @@ class LanguageControllerTest {
                 .jsonPath("$.path").isEqualTo("/languages/" + id)
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
                 .jsonPath("$.message").isEqualTo("Language not found by id: " + id);
+    }
+
+    @Test
+    void shouldAddLanguage() {
+        // given
+        assertThat(languageRepository.findAll()).isEmpty();
+        // when
+        var name = "ENGLISH";
+        webTestClient.post()
+                .uri("/languages/")
+                .bodyValue(new AddLanguageInput(name))
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody(LanguageDto.class)
+                .consumeWith(response -> {
+                    LanguageDto languageDto = response.getResponseBody();
+
+                    assertThat(languageDto.id()).isNotNull();
+                    assertThat(languageDto.name()).isEqualTo(name);
+
+                    List<LanguageEntity> languageEntities = languageRepository.findAll();
+                    assertThat(languageEntities).hasSize(1);
+
+                    LanguageEntity languageEntity = languageEntities.get(0);
+                    assertThat(languageEntity.getId()).isEqualTo(languageDto.id());
+                    assertThat(languageEntity.getName()).isEqualTo(name);
+                });
     }
 
 }
