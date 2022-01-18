@@ -3,13 +3,13 @@ package notesservice;
 import api.notes.AddNoteInput;
 import api.notes.NoteDto;
 import api.notes.NoteServiceApi;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
 @RestController
+@RequestMapping("/notes/")
 record NoteController(NoteService noteService) implements NoteServiceApi {
 
     @Override
@@ -23,12 +23,12 @@ record NoteController(NoteService noteService) implements NoteServiceApi {
     }
 
     @Override
-    public NoteDto add(@RequestBody AddNoteInput input) {
+    public NoteDto add(AddNoteInput input) {
         return noteService.add(input);
     }
 
     @Override
-    public void deleteById(@PathVariable("id") Long id) {
+    public void deleteById(Long id) {
         noteService.deleteById(id);
     }
 
