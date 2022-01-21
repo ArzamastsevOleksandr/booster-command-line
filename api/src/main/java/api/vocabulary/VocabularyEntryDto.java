@@ -14,6 +14,8 @@ public class VocabularyEntryDto {
     String definition;
     int correctAnswersCount;
 
+    LanguageDto language;
+
     @Builder.Default
     Set<String> synonyms = Set.of();
 

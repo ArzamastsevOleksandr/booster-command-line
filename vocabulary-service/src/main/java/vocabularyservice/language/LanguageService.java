@@ -3,17 +3,19 @@ package vocabularyservice.language;
 import api.exception.NotFoundException;
 import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 @Slf4j
 @Service
-record LanguageService(LanguageRepository languageRepository) {
+@RequiredArgsConstructor
+public class LanguageService {
 
-    @Transactional
+    private final LanguageRepository languageRepository;
+
     Collection<LanguageDto> getAll() {
         return languageRepository.findAll()
                 .stream()
@@ -21,17 +23,22 @@ record LanguageService(LanguageRepository languageRepository) {
                 .toList();
     }
 
-    private LanguageDto toDto(LanguageEntity languageEntity) {
+    public LanguageDto toDto(LanguageEntity languageEntity) {
         return new LanguageDto(languageEntity.getId(), languageEntity.getName());
     }
 
-    LanguageDto findById(Long id) {
+    public LanguageDto findById(Long id) {
         return languageRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new NotFoundException("Language not found by id: " + id));
     }
 
-    LanguageDto add(AddLanguageInput input) {
+    public LanguageEntity findEntityById(Long id) {
+        return languageRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Language not found by id: " + id));
+    }
+
+    public LanguageDto add(AddLanguageInput input) {
         var languageEntity = new LanguageEntity();
         languageEntity.setName(input.name());
         languageEntity = languageRepository.save(languageEntity);

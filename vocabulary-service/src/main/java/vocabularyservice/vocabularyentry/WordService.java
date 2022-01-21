@@ -8,17 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional(propagation = Propagation.REQUIRES_NEW)
 @RequiredArgsConstructor
-public class TestWordService {
+class WordService {
 
     private final WordRepository wordRepository;
 
-    // todo: test
-    public Long createWord(String name) {
-        var entity = new WordEntity();
-        entity.setName(name);
-        return wordRepository.save(entity).getId();
+    @Transactional(propagation = Propagation.MANDATORY)
+    public WordEntity findByNameOrCreateAndGet(String name) {
+        return wordRepository.findByName(name).orElseGet(() -> {
+            var wordEntity = new WordEntity();
+            wordEntity.setName(name);
+            return wordRepository.save(wordEntity);
+        });
     }
 
 }

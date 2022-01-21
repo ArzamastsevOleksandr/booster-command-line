@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import vocabularyservice.language.LanguageEntity;
+import vocabularyservice.language.LanguageRepository;
 
 import java.util.Set;
 
@@ -16,16 +18,18 @@ public class TestVocabularyEntryService {
 
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordRepository wordRepository;
-    private final TestWordService testWordService;
+    private final LanguageRepository languageRepository;
 
-    public Long createVocabularyEntry(String name) {
-        Long id = testWordService.createWord(name);
-        WordEntity wordEntity = wordRepository.findById(id).get();
+    // todo: test
+    public Long createVocabularyEntry(Long wordId, Long languageId) {
+        WordEntity wordEntity = wordRepository.findById(wordId).get();
+        LanguageEntity languageEntity = languageRepository.findById(languageId).get();
 
         var entity = new VocabularyEntryEntity();
-        entity.setWordEntity(wordEntity);
+        entity.setWord(wordEntity);
         entity.setCorrectAnswersCount(0);
-        entity.setDefinition(name);
+        entity.setDefinition(wordEntity.getName());
+        entity.setLanguage(languageEntity);
         entity.setSynonyms(Set.of(wordEntity));
         return vocabularyEntryRepository.save(entity).getId();
     }
