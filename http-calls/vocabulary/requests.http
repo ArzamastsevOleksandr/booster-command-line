@@ -25,5 +25,9 @@ Content-Type: application/json
 {
   "name": "wade",
   "definition": "walk with effort",
+  "languageId": "1",
   "synonyms": ["ford", "paddle"]
 }
+
+###
+GET http://{{host}}:{{vocabulary-port}}/{{vocabulary-entries-path}}/5

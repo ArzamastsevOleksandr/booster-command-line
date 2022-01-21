@@ -38,8 +38,9 @@ class VocabularyEntryControllerTest {
     void shouldReturnAllVocabularyEntries() {
         // given
         var name = "entry";
+        var english = "English";
         Long wordId = testWordService.createWord(name);
-        Long languageId = testLanguageService.createLanguage("English");
+        Long languageId = testLanguageService.createLanguage(english);
         // when
         Long entryId = testVocabularyEntryService.createVocabularyEntry(wordId, languageId);
         // then
@@ -56,14 +57,17 @@ class VocabularyEntryControllerTest {
                 .jsonPath("$[0].correctAnswersCount").isEqualTo(0)
                 .jsonPath("$[0].definition").isEqualTo(name)
                 .jsonPath("$[0].synonyms.length()").isEqualTo(1)
-                .jsonPath("$[0].synonyms[0]").isEqualTo(name);
+                .jsonPath("$[0].synonyms[0]").isEqualTo(name)
+                .jsonPath("$[0].language.id").isEqualTo(languageId)
+                .jsonPath("$[0].language.name").isEqualTo(english);
     }
 
     @Test
     void shouldCreateVocabularyEntry() {
         // given
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
-        Long languageId = testLanguageService.createLanguage("English");
+        var english = "English";
+        Long languageId = testLanguageService.createLanguage(english);
         // when
         var name = "wade";
         var definition = "walk with effort";
@@ -89,6 +93,49 @@ class VocabularyEntryControllerTest {
                 .jsonPath("$.definition").isEqualTo(definition)
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
+                .jsonPath("$.language.id").isEqualTo(languageId)
+                .jsonPath("$.language.name").isEqualTo(english)
+                .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected a set containing all of: " + synonyms);
+                    }
+
+                    @Override
+                    public boolean matches(Object actual) {
+                        JSONArray jsonArray = (JSONArray) actual;
+                        return new HashSet<>(jsonArray).equals(synonyms);
+                    }
+                });
+    }
+
+    // todo: test add ve fails with no languageId
+
+    @Test
+    void shouldFindVocabularyEntryById() {
+        // given
+        var name = "wade";
+        var synonyms = Set.of(name);
+        var english = "English";
+
+        Long wordId = testWordService.createWord(name);
+        Long languageId = testLanguageService.createLanguage(english);
+        Long vocabularyEntryId = testVocabularyEntryService.createVocabularyEntry(wordId, languageId);
+        // when + then
+        webTestClient.get()
+                .uri("/vocabulary-entries/" + vocabularyEntryId)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(vocabularyEntryId)
+                .jsonPath("$.name").isEqualTo(name)
+                .jsonPath("$.definition").isEqualTo(name)
+                .jsonPath("$.correctAnswersCount").isEqualTo(0)
+                .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
+                .jsonPath("$.language.id").isEqualTo(languageId)
+                .jsonPath("$.language.name").isEqualTo(english)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
                     public void describeTo(Description description) {
