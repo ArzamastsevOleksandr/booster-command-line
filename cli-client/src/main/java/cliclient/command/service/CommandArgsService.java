@@ -7,14 +7,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static cliclient.command.Command.*;
-
 @Service
 class CommandArgsService {
 
     CommandArgs getCommandArgs(CommandWithArgs cmdWithArgs) {
         return switch (cmdWithArgs.getCommand()) {
-            case EXIT, HELP, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, LIST_WORDS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
+            case EXIT, HELP, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
             case ADD_LANGUAGE -> new AddLanguageCommandArgs(cmdWithArgs.getName().get());
             case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cmdWithArgs.getId().get());
             case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(cmdWithArgs.getId(), cmdWithArgs.getPagination(), cmdWithArgs.getSubstring());

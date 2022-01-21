@@ -22,8 +22,6 @@ public enum Command {
     ADD_LANGUAGE(Set.of("al")),
     DELETE_LANGUAGE(Set.of("dl")),
 
-    LIST_WORDS(Set.of("w")),
-
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),
     DELETE_VOCABULARY_ENTRY(Set.of("dve")),
     ADD_VOCABULARY_ENTRY(Set.of("ave")),
