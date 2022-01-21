@@ -2,6 +2,7 @@ package vocabularyservice.vocabularyentry;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import vocabularyservice.language.LanguageEntity;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -18,8 +19,13 @@ class VocabularyEntryEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
+    // todo: do we need an entity, perhaps ID is enough?
+    //  Chances are ID is better if we want to minimize the dependencies between packages (we communicate only via services etc).
     @ManyToOne
-    private WordEntity wordEntity;
+    private WordEntity word;
+
+    @ManyToOne
+    private LanguageEntity language;
 
     private String definition;
     private int correctAnswersCount;

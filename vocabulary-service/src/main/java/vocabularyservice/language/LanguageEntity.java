@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-class LanguageEntity {
+public class LanguageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

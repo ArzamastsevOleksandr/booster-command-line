@@ -1,4 +1,4 @@
-###
+### LANGUAGE
 GET http://{{host}}:{{vocabulary-port}}/{{languages-path}}/
 
 ###
@@ -14,3 +14,16 @@ Content-Type: application/json
 
 ###
 DELETE http://{{host}}:{{vocabulary-port}}/{{languages-path}}/{{language-id}}
+
+### VOCABULARY ENTRY
+GET http://{{host}}:{{vocabulary-port}}/{{vocabulary-entries-path}}/
+
+###
+POST http://{{host}}:{{vocabulary-port}}/{{vocabulary-entries-path}}/
+Content-Type: application/json
+
+{
+  "name": "wade",
+  "definition": "walk with effort",
+  "synonyms": ["ford", "paddle"]
+}
