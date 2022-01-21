@@ -1,5 +1,6 @@
 package vocabularyservice.vocabularyentry;
 
+import api.exception.NotFoundException;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class VocabularyEntryService {
+public class VocabularyEntryService {
 
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;
@@ -61,6 +62,13 @@ class VocabularyEntryService {
         entity.setSynonyms(synonyms);
 
         return toDto(vocabularyEntryRepository.save(entity));
+    }
+
+    @Transactional(readOnly = true)
+    public VocabularyEntryDto findById(Long id) {
+        return vocabularyEntryRepository.findById(id)
+                .map(this::toDto)
+                .orElseThrow(() -> new NotFoundException("Vocabulary entry not found by id: " + id));
     }
 
 }

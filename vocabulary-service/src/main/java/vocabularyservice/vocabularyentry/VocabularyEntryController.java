@@ -26,4 +26,9 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
         return vocabularyEntryService.add(input);
     }
 
+    @Override
+    public VocabularyEntryDto findById(Long id) {
+        return vocabularyEntryService.findById(id);
+    }
+
 }
