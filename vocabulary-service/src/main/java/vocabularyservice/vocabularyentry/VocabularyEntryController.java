@@ -38,7 +38,7 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     }
 
     @Override
-    public VocabularyEntryDto patch(PatchVocabularyEntryInput input) {
+    public VocabularyEntryDto patchEntry(PatchVocabularyEntryInput input) {
         return vocabularyEntryService.patch(input);
     }
 

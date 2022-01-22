@@ -28,6 +28,6 @@ public interface VocabularyEntryControllerApi {
 
     @PatchMapping(value = "/")
     @ResponseStatus(OK)
-    VocabularyEntryDto patch(@RequestBody PatchVocabularyEntryInput input);
+    VocabularyEntryDto patchEntry(@RequestBody PatchVocabularyEntryInput input);
 
 }
