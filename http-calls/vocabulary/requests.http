@@ -31,3 +31,6 @@ Content-Type: application/json
 
 ###
 GET http://{{host}}:{{vocabulary-port}}/{{vocabulary-entries-path}}/5
+
+###
+DELETE http://{{host}}:{{vocabulary-port}}/{{vocabulary-entries-path}}/5

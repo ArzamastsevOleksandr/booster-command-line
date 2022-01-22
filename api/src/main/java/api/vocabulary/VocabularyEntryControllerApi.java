@@ -1,5 +1,6 @@
 package api.vocabulary;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -20,5 +21,9 @@ public interface VocabularyEntryControllerApi {
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
     VocabularyEntryDto findById(@PathVariable("id") Long id);
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteById(@PathVariable("id") Long id);
 
 }
