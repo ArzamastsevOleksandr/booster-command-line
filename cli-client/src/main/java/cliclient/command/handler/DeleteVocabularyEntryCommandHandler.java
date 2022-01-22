@@ -3,7 +3,7 @@ package cliclient.command.handler;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.DeleteVocabularyEntryCommandArgs;
-import cliclient.service.VocabularyEntryService;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryService vocabularyEntryService;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (DeleteVocabularyEntryCommandArgs) commandArgs;
-        vocabularyEntryService.delete(args.id());
+        vocabularyEntryControllerApiClient.deleteById(args.id());
     }
 
     @Override
