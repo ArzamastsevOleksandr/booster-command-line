@@ -19,13 +19,13 @@ public class ImportArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        Optional<String> filename = commandWithArgs.getFilename();
-        if (filename.isPresent()) {
-            checkCustomFileExists(filename.get());
-            return commandWithArgs;
-        } else {
-            checkDefaultImportFileExists();
-        }
+//        Optional<String> filename = commandWithArgs.getFilename();
+//        if (filename.isPresent()) {
+//            checkCustomFileExists(filename.get());
+//            return commandWithArgs;
+//        } else {
+//            checkDefaultImportFileExists();
+//        }
         return commandWithArgs.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
     }
 

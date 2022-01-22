@@ -16,8 +16,8 @@ public class MarkVocabularyEntryDifficultArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId()
-                .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+//        commandWithArgs.getId()
+//                .ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
 
         return commandWithArgs;
     }

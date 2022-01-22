@@ -1,9 +1,9 @@
 package cliclient.command.handler;
 
+import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.MarkVocabularyEntryDifficultCommandArgs;
-import cliclient.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MarkVocabularyEntryDifficultCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryService vocabularyEntryService;
+    private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (MarkVocabularyEntryDifficultCommandArgs) commandArgs;
-        vocabularyEntryService.markDifficult(args.id(), true);
+        adapter.writeLine("NOT IMPLEMENTED");
     }
 
     @Override

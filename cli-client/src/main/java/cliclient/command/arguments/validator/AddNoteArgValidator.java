@@ -16,10 +16,10 @@ public class AddNoteArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.getContent().isEmpty()) {
-            throw new ArgsValidationException("Content is missing");
-        }
-        commandWithArgs.getTag().ifPresent(this::checkIfTagExists);
+//        if (commandWithArgs.getContent().isEmpty()) {
+//            throw new ArgsValidationException("Content is missing");
+//        }
+//        commandWithArgs.getTag().ifPresent(this::checkIfTagExists);
         return commandWithArgs;
     }
 

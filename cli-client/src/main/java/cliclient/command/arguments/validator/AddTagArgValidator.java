@@ -16,7 +16,7 @@ public class AddTagArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getName().ifPresentOrElse(this::checkIfTagAlreadyExists, NAME_IS_MISSING);
+//        commandWithArgs.getName().ifPresentOrElse(this::checkIfTagAlreadyExists, NAME_IS_MISSING);
         return commandWithArgs;
     }
 

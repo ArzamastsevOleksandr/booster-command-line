@@ -17,9 +17,9 @@ public class ExportArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.getFilename().isEmpty()) {
-            return commandWithArgs.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
-        }
+//        if (commandWithArgs.getFilename().isEmpty()) {
+//            return commandWithArgs.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
+//        }
         return commandWithArgs;
     }
 
