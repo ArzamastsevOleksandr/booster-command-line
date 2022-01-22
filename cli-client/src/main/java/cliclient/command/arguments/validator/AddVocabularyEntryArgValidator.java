@@ -21,22 +21,22 @@ public class AddVocabularyEntryArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.getName().isEmpty()) {
-            NAME_IS_MISSING.run();
-        }
-        commandWithArgs.getLanguageId().ifPresentOrElse(languageId -> {
-            checkIfLanguageExistsWithId(languageId);
-            long wordId = getWordIdByWordName(commandWithArgs.getName().get());
-            checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
-        }, () -> settingsService.findOne()
-                .flatMap(Settings::getLanguageId)
-                .ifPresentOrElse(langId -> {
-                    checkIfLanguageExistsWithId(langId);
-                    long wordId = getWordIdByWordName(commandWithArgs.getName().get());
-                    checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
-                }, this::languageIdAndSettingsAreMissing));
-
-        commandWithArgs.getTag().ifPresent(this::checkIfTagExists);
+//        if (commandWithArgs.getName().isEmpty()) {
+//            NAME_IS_MISSING.run();
+//        }
+//        commandWithArgs.getLanguageId().ifPresentOrElse(languageId -> {
+//            checkIfLanguageExistsWithId(languageId);
+//            long wordId = getWordIdByWordName(commandWithArgs.getName().get());
+//            checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, languageId);
+//        }, () -> settingsService.findOne()
+//                .flatMap(Settings::getLanguageId)
+//                .ifPresentOrElse(langId -> {
+//                    checkIfLanguageExistsWithId(langId);
+//                    long wordId = getWordIdByWordName(commandWithArgs.getName().get());
+//                    checkIfVocabularyEntryAlreadyExistsWithWordIdForLanguageId(wordId, langId);
+//                }, this::languageIdAndSettingsAreMissing));
+//
+//        commandWithArgs.getTag().ifPresent(this::checkIfTagExists);
         return commandWithArgs;
     }
 
