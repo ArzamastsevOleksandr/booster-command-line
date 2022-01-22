@@ -31,4 +31,9 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
         return vocabularyEntryService.findById(id);
     }
 
+    @Override
+    public void deleteById(Long id) {
+        vocabularyEntryService.deleteById(id);
+    }
+
 }

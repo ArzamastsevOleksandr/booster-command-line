@@ -1,6 +1,10 @@
 package vocabularyservice.vocabularyentry;
 
+import api.exception.NotFoundException;
+import api.vocabulary.AddLanguageInput;
 import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.LanguageDto;
+import api.vocabulary.VocabularyEntryDto;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import net.minidev.json.JSONArray;
 import org.hamcrest.BaseMatcher;
@@ -10,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import vocabularyservice.language.LanguageService;
 import vocabularyservice.language.TestLanguageService;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -31,6 +37,10 @@ class VocabularyEntryControllerTest {
     TestLanguageService testLanguageService;
     @Autowired
     TestWordService testWordService;
+    @Autowired
+    VocabularyEntryService vocabularyEntryService;
+    @Autowired
+    LanguageService languageService;
     @Autowired
     WebTestClient webTestClient;
 
@@ -149,5 +159,31 @@ class VocabularyEntryControllerTest {
                     }
                 });
     }
+
+    // todo: use real services for test data setup in every test. Use default access levels whenever possible.
+    @Test
+    void shouldDeleteVocabularyEntryById() {
+        // given
+        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                        .name("wade")
+                        .languageId(languageDto.id())
+                        .definition("walk with effort")
+                        .synonyms(Set.of("ford", "paddle"))
+                .build());
+        // when
+        webTestClient.delete()
+                .uri("/vocabulary-entries/" + vocabularyEntryDto.getId())
+                .exchange()
+                .expectStatus()
+                .isNoContent()
+                .expectBody(Void.class);
+        // then
+        assertThatThrownBy(() -> vocabularyEntryService.findById(vocabularyEntryDto.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Vocabulary entry not found by id: " + vocabularyEntryDto.getId());
+    }
+
+    // todo: test delete of the entry that does not exist
 
 }

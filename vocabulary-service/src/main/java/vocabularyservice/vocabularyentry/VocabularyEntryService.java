@@ -71,4 +71,8 @@ public class VocabularyEntryService {
                 .orElseThrow(() -> new NotFoundException("Vocabulary entry not found by id: " + id));
     }
 
+    public void deleteById(Long id) {
+        vocabularyEntryRepository.deleteById(id);
+    }
+
 }
