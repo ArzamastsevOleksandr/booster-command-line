@@ -17,11 +17,11 @@ public class StartTrainingSessionArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.getMode().isEmpty()) {
-            checkIfEntriesExistForMode(TrainingSessionMode.getDefaultMode());
-            return commandWithArgs.toBuilder().mode(TrainingSessionMode.getDefaultMode()).build();
-        }
-        checkIfEntriesExistForMode(commandWithArgs.getMode().get());
+//        if (commandWithArgs.getMode().isEmpty()) {
+//            checkIfEntriesExistForMode(TrainingSessionMode.getDefaultMode());
+//            return commandWithArgs.toBuilder().mode(TrainingSessionMode.getDefaultMode()).build();
+//        }
+//        checkIfEntriesExistForMode(commandWithArgs.getMode().get());
         return commandWithArgs;
     }
 
