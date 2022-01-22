@@ -16,13 +16,13 @@ public class ListVocabularyEntriesArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresentOrElse(id -> {
-            checkIfVocabularyEntryExistsWithId(id);
-            checkIfSubstringFlagIsUsed(commandWithArgs);
-        }, () -> {
-            commandWithArgs.getSubstring()
-                    .ifPresentOrElse(this::checkIfEntriesExistWithSubstring, this::checkIfAnyEntriesExist);
-        });
+//        commandWithArgs.getId().ifPresentOrElse(id -> {
+//            checkIfVocabularyEntryExistsWithId(id);
+//            checkIfSubstringFlagIsUsed(commandWithArgs);
+//        }, () -> {
+//            commandWithArgs.getSubstring()
+//                    .ifPresentOrElse(this::checkIfEntriesExistWithSubstring, this::checkIfAnyEntriesExist);
+//        });
         return commandWithArgs;
     }
 
