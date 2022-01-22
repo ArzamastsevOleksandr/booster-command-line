@@ -1,15 +1,19 @@
 package cliclient.command.handler;
 
+import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.ListVocabularyEntriesCommandArgs;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.model.VocabularyEntry;
 import cliclient.service.ColorProcessor;
 import cliclient.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -20,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private final VocabularyEntryService vocabularyEntryService;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
 
@@ -36,26 +41,32 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntryById(Long id) {
-        vocabularyEntryService.findById(id).ifPresent(entry -> {
-            adapter.writeLine(colorProcessor.coloredEntry(entry));
-            vocabularyEntryService.updateLastSeenAtById(entry.getId());
-        });
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApiClient.findById(id);
+        adapter.writeLine(vocabularyEntryDto);
+        // todo: color + lastSeenAt
     }
 
     private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
-        args.pagination().ifPresentOrElse(pagination -> {
-            args.substring().ifPresentOrElse(substring -> {
-                var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
-                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, p.limit()));
-            }, () -> {
-                var p = new Paginator(pagination, vocabularyEntryService.countTotal());
-                display(p, () -> vocabularyEntryService.findAllLimit(p.limit()));
-            });
-        }, () -> {
-            args.substring().ifPresentOrElse(
-                    substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
-                    () -> displayAllAtOnce(vocabularyEntryService.findAll()));
-        });
+        // todo: color + lastSeenAt + pagination
+        Collection<VocabularyEntryDto> vocabularyEntryDtos = vocabularyEntryControllerApiClient.getAll();
+        if (CollectionUtils.isEmpty(vocabularyEntryDtos)) {
+            adapter.writeLine("There are no vocabulary entries yet.");
+        } else {
+            vocabularyEntryDtos.forEach(adapter::writeLine);
+        }
+//        args.pagination().ifPresentOrElse(pagination -> {
+//            args.substring().ifPresentOrElse(substring -> {
+//                var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
+//                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, p.limit()));
+//            }, () -> {
+//                var p = new Paginator(pagination, vocabularyEntryService.countTotal());
+//                display(p, () -> vocabularyEntryService.findAllLimit(p.limit()));
+//            });
+//        }, () -> {
+//            args.substring().ifPresentOrElse(
+//                    substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
+//                    () -> displayAllAtOnce(vocabularyEntryService.findAll()));
+//        });
     }
 
     private void displayAllAtOnce(List<VocabularyEntry> entries) {
