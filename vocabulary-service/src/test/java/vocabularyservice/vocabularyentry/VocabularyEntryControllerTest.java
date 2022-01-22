@@ -1,10 +1,7 @@
 package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
-import api.vocabulary.AddLanguageInput;
-import api.vocabulary.AddVocabularyEntryInput;
-import api.vocabulary.LanguageDto;
-import api.vocabulary.VocabularyEntryDto;
+import api.vocabulary.*;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import net.minidev.json.JSONArray;
 import org.hamcrest.BaseMatcher;
@@ -22,6 +19,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ActiveProfiles("test")
@@ -166,10 +164,10 @@ class VocabularyEntryControllerTest {
         // given
         LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
-                        .name("wade")
-                        .languageId(languageDto.id())
-                        .definition("walk with effort")
-                        .synonyms(Set.of("ford", "paddle"))
+                .name("wade")
+                .languageId(languageDto.id())
+                .definition("walk with effort")
+                .synonyms(Set.of("ford", "paddle"))
                 .build());
         // when
         webTestClient.delete()
@@ -185,5 +183,61 @@ class VocabularyEntryControllerTest {
     }
 
     // todo: test delete of the entry that does not exist
+
+
+    @Test
+    void shouldPatchById() {
+        // given
+        var name = "wade";
+        var definition = "walk with effort";
+        var synonyms = Set.of("ford", "paddle");
+        int correctAnswersCount = 10;
+
+        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name("wad")
+                .languageId(languageDto.id())
+                .definition("wal wit effor")
+                .synonyms(synonyms)
+                .build());
+        // when
+        webTestClient.patch()
+                .uri("/vocabulary-entries/")
+                .bodyValue(PatchVocabularyEntryInput.builder()
+                        .id(vocabularyEntryDto.getId())
+                        .name(name)
+                        .definition(definition)
+                        .correctAnswersCount(correctAnswersCount)
+                        .build())
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(vocabularyEntryDto.getId())
+                .jsonPath("$.name").isEqualTo(name)
+                .jsonPath("$.definition").isEqualTo(definition)
+                .jsonPath("$.correctAnswersCount").isEqualTo(correctAnswersCount)
+                .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
+                .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected a set containing all of: " + synonyms);
+                    }
+
+                    @Override
+                    public boolean matches(Object actual) {
+                        JSONArray jsonArray = (JSONArray) actual;
+                        return new HashSet<>(jsonArray).equals(synonyms);
+                    }
+                });
+        // then
+        VocabularyEntryDto patchedEntry = vocabularyEntryService.findById(vocabularyEntryDto.getId());
+        assertAll(
+                () -> assertThat(patchedEntry.getName()).isEqualTo(name),
+                () -> assertThat(patchedEntry.getDefinition()).isEqualTo(definition),
+                () -> assertThat(patchedEntry.getCorrectAnswersCount()).isEqualTo(correctAnswersCount)
+        );
+    }
 
 }

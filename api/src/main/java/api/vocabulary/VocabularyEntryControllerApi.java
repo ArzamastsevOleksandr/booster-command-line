@@ -26,4 +26,8 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteById(@PathVariable("id") Long id);
 
+    @PatchMapping(value = "/")
+    @ResponseStatus(OK)
+    VocabularyEntryDto patch(@RequestBody PatchVocabularyEntryInput input);
+
 }

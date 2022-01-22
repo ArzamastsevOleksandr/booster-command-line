@@ -2,6 +2,7 @@ package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
 import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import vocabularyservice.language.LanguageService;
 import java.util.Collection;
 import java.util.Set;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -73,6 +75,21 @@ public class VocabularyEntryService {
 
     public void deleteById(Long id) {
         vocabularyEntryRepository.deleteById(id);
+    }
+
+    @Transactional
+    public VocabularyEntryDto patch(PatchVocabularyEntryInput input) {
+        VocabularyEntryEntity vocabularyEntryEntity = vocabularyEntryRepository.findById(input.getId())
+                .orElseThrow(() -> new NotFoundException("Vocabulary entry not found by id: " + input.getId()));
+
+        ofNullable(input.getCorrectAnswersCount()).ifPresent(vocabularyEntryEntity::setCorrectAnswersCount);
+        ofNullable(input.getName()).ifPresent(newName -> {
+            WordEntity wordEntity = wordService.findByNameOrCreateAndGet(newName);
+            vocabularyEntryEntity.setWord(wordEntity);
+        });
+        ofNullable(input.getDefinition()).ifPresent(vocabularyEntryEntity::setDefinition);
+
+        return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
 
 }

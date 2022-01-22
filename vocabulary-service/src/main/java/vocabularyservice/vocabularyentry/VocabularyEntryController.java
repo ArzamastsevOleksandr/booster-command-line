@@ -1,6 +1,7 @@
 package vocabularyservice.vocabularyentry;
 
 import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryControllerApi;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,11 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     @Override
     public void deleteById(Long id) {
         vocabularyEntryService.deleteById(id);
+    }
+
+    @Override
+    public VocabularyEntryDto patch(PatchVocabularyEntryInput input) {
+        return vocabularyEntryService.patch(input);
     }
 
 }
