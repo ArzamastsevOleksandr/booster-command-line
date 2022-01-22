@@ -18,10 +18,10 @@ public class UpdateVocabularyEntryArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-        commandWithArgs.getId().ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
-
-        checkAntonymParameters(commandWithArgs);
-        checkSynonymParameters(commandWithArgs);
+//        commandWithArgs.getId().ifPresentOrElse(this::checkIfVocabularyEntryExistsWithId, ID_IS_MISSING);
+//
+//        checkAntonymParameters(commandWithArgs);
+//        checkSynonymParameters(commandWithArgs);
 
         return commandWithArgs;
     }

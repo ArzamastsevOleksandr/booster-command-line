@@ -1,10 +1,13 @@
 package cliclient.command.handler;
 
+import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.UpdateVocabularyEntryCommandArgs;
 import cliclient.dao.params.UpdateVocabularyEntryDaoParams;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.model.VocabularyEntry;
 import cliclient.model.Word;
 import cliclient.service.ColorProcessor;
@@ -25,6 +28,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
     private final WordService wordService;
     private final VocabularyEntryService vocabularyEntryService;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
     private final StringUtil stringUtil;
@@ -33,27 +37,17 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (UpdateVocabularyEntryCommandArgs) commandArgs;
-        VocabularyEntry entry = vocabularyEntryService.findById(args.getId()).get();
 
-        var params = new UpdateVocabularyEntryDaoParams();
-        params.setId(entry.getId());
+        var input = new PatchVocabularyEntryInput();
 
-        args.getName().ifPresentOrElse(name -> {
-            Word updatedWord = wordService.findByNameOrCreateAndGet(name);
-            params.setWordId(updatedWord.getId());
-        }, () -> params.setWordId(entry.getWordId()));
+        input.setId(args.getId());
+        args.getName().ifPresent(input::setName);
+        args.getDefinition().ifPresent(input::setDefinition);
+        args.getCorrectAnswersCount().ifPresent(input::setCorrectAnswersCount);
 
-        args.getDefinition()
-                .ifPresentOrElse(params::setDefinition, () -> entry.getDefinition().ifPresent(params::setDefinition));
-
-        args.getCorrectAnswersCount()
-                .ifPresentOrElse(params::setCorrectAnswersCount, () -> params.setCorrectAnswersCount(entry.getCorrectAnswersCount()));
-
-        processSynonyms(args, entry, params);
-        processAntonyms(args, entry, params);
-
-        VocabularyEntry updatedEntry = vocabularyEntryService.update(params);
-        adapter.writeLine(colorProcessor.coloredEntry(updatedEntry));
+        // todo: support updating synonyms
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApiClient.patchEntry(input);
+        adapter.writeLine(vocabularyEntryDto);
     }
 
     private void processSynonyms(UpdateVocabularyEntryCommandArgs args, VocabularyEntry ve, UpdateVocabularyEntryDaoParams params) {
