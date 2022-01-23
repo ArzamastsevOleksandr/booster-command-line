@@ -3,14 +3,18 @@ package vocabularyservice.language;
 import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageControllerApi;
 import api.vocabulary.LanguageDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/languages/")
-record LanguageController(LanguageService languageService) implements LanguageControllerApi {
+class LanguageController implements LanguageControllerApi {
+
+    final LanguageService languageService;
 
     @Override
     public Collection<LanguageDto> getAll() {
@@ -20,6 +24,11 @@ record LanguageController(LanguageService languageService) implements LanguageCo
     @Override
     public LanguageDto findById(Long id) {
         return languageService.findById(id);
+    }
+
+    @Override
+    public LanguageDto findByName(String name) {
+        return languageService.findByName(name);
     }
 
     @Override
