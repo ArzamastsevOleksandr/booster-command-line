@@ -1,24 +1,29 @@
 package cliclient.load;
 
+import api.upload.UploadResponse;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.dao.params.AddCause;
 import cliclient.dao.params.AddNoteDaoParams;
 import cliclient.dao.params.AddVocabularyEntryDaoParams;
+import cliclient.feign.upload.UploadServiceClient;
 import cliclient.model.Language;
 import cliclient.model.Word;
 import cliclient.service.*;
 import cliclient.util.StringUtil;
 import cliclient.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +34,7 @@ import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
-public class XlsxImportComponent {
+public class ExcelUploadComponent {
 
     private final CommandLineAdapter adapter;
 
@@ -41,23 +46,33 @@ public class XlsxImportComponent {
     private final ImportProgressTracker importProgressTracker;
     private final TimeUtil timeUtil;
     private final StringUtil stringUtil;
+    private final UploadServiceClient uploadServiceClient;
 
     public void load(String filename) {
-        try (var inputStream = new FileInputStream(filename);
-             var workbook = new XSSFWorkbook(inputStream);
-        ) {
-            int numberOfSheets = workbook.getNumberOfSheets();
-            for (int i = 0; i < numberOfSheets; ++i) {
-                XSSFSheet sheet = workbook.getSheetAt(i);
-                if (sheet.getSheetName().strip().equalsIgnoreCase("NOTES")) {
-                    importNotes(sheet);
-                } else {
-                    importLanguages(sheet);
-                }
-            }
+        try {
+            MultipartFile multipartFile = createMultipartFile(filename);
+            UploadResponse uploadResponse = uploadServiceClient.upload(multipartFile);
+
+            adapter.writeLine("Notes uploaded: " + uploadResponse.notesUploaded());
+            adapter.writeLine("Vocabulary entries uploaded: " + uploadResponse.vocabularyEntriesUploaded());
         } catch (IOException e) {
-            adapter.writeLine("Error during export process: " + e.getMessage());
+            adapter.writeLine("Error during upload process: " + e.getMessage());
         }
+    }
+
+    private MultipartFile createMultipartFile(String filename) throws IOException {
+        var file = new File(filename);
+        FileItem fileItem = new DiskFileItemFactory()
+                .createItem("file", Files.probeContentType(file.toPath()), false, file.getName());
+
+        try (InputStream in = new FileInputStream(file);
+             OutputStream out = fileItem.getOutputStream()) {
+
+            in.transferTo(out);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid file: " + e, e);
+        }
+        return new CommonsMultipartFile(fileItem);
     }
 
     private void importNotes(XSSFSheet sheet) {

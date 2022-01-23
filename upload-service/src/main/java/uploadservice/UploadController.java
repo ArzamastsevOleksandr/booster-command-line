@@ -31,6 +31,8 @@ class UploadController implements UploadControllerApi {
 
     private final NotesServiceClient notesServiceClient;
 
+    // todo: validation
+    // todo: reliable way to get number of rows in xlsx
     @Override
     public UploadResponse upload(MultipartFile file) {
         try (var inputStream = file.getInputStream();
@@ -38,7 +40,7 @@ class UploadController implements UploadControllerApi {
 
             int numberOfSheets = workbook.getNumberOfSheets();
 
-            var tracker = importProgressTracker();
+            var tracker = uploadProgressTracker();
             for (int i = 0; i < numberOfSheets; ++i) {
                 XSSFSheet sheet = workbook.getSheetAt(i);
                 String sheetName = sheet.getSheetName().strip().toLowerCase();
@@ -49,23 +51,23 @@ class UploadController implements UploadControllerApi {
                     default -> log.error("Unrecognized upload page ignored: {}", sheetName);
                 }
             }
-            return new UploadResponse(tracker.vocabularyEntriesImportCount, tracker.notesImportCount);
+            return new UploadResponse(tracker.vocabularyEntriesUploadCount, tracker.notesUploadCount);
         } catch (IOException e) {
-            log.error("Error during import process", e);
+            log.error("Error during upload process", e);
         }
         return new UploadResponse(0, 0);
     }
 
     @Lookup
-    public ImportProgressTracker importProgressTracker() {
+    public UploadProgressTracker uploadProgressTracker() {
         return null;
     }
 
-    private void importLanguages(XSSFSheet sheet, ImportProgressTracker importProgressTracker) {
+    private void importLanguages(XSSFSheet sheet, UploadProgressTracker uploadProgressTracker) {
         log.info("language NOT IMPL");
     }
 
-    private void importNotes(XSSFSheet sheet, ImportProgressTracker importProgressTracker) {
+    private void importNotes(XSSFSheet sheet, UploadProgressTracker uploadProgressTracker) {
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
@@ -78,10 +80,10 @@ class UploadController implements UploadControllerApi {
 //                        Set<String> tags = getStringValues(row.getCell(1), ";");
 //                        tagService.createIfNotExist(tags);
                         notesServiceClient.add(new AddNoteInput(content));
-                        importProgressTracker.incNotesImportCount();
+                        uploadProgressTracker.incNotesUploadCount();
                     });
         }
-        importProgressTracker.notesImportFinished();
+        uploadProgressTracker.notesUploadFinished();
     }
 
     private boolean isNotBlank(String s) {
