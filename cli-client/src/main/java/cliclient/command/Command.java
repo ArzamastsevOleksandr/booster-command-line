@@ -27,8 +27,7 @@ public enum Command {
     ADD_VOCABULARY_ENTRY(Set.of("ave")),
     UPDATE_VOCABULARY_ENTRY(Set.of("uve")),
 
-    // todo: rename (there will be a calc session too)
-    START_TRAINING_SESSION(Set.of("st")),
+    START_VOCABULARY_TRAINING_SESSION(Set.of("stv")),
 
     EXPORT(Set.of("exp")),
     IMPORT(Set.of("imp")),

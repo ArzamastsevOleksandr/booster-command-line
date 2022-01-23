@@ -1,10 +1,13 @@
 package cliclient.service;
 
-import cliclient.command.arguments.TrainingSessionMode;
+import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.VocabularyEntryDto;
+import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.dao.VocabularyEntryDao;
 import cliclient.dao.params.AddTagToVocabularyEntryDaoParams;
 import cliclient.dao.params.AddVocabularyEntryDaoParams;
 import cliclient.dao.params.UpdateVocabularyEntryDaoParams;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.model.VocabularyEntry;
 import cliclient.util.TimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ public class VocabularyEntryService {
     private final TransactionTemplate transactionTemplate;
     private final SessionTrackerService sessionTrackerService;
     private final TimeUtil timeUtil;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
     public Optional<VocabularyEntry> findById(long id) {
         if (existsWithId(id)) {
@@ -62,7 +66,7 @@ public class VocabularyEntryService {
         return vocabularyEntryDao.countAny() > 0;
     }
 
-    public boolean existAnyForTrainingMode(TrainingSessionMode mode) {
+    public boolean existAnyForTrainingMode(VocabularyTrainingSessionMode mode) {
         return switch (mode) {
             case SYNONYMS -> vocabularyEntryDao.countWithSynonyms() > 0;
             case ANTONYMS -> vocabularyEntryDao.countWithAntonyms() > 0;
@@ -142,19 +146,22 @@ public class VocabularyEntryService {
         };
     }
 
-    public void incCorrectAnswersCount(VocabularyEntry entry) {
+    public void incCorrectAnswersCount(VocabularyEntryDto entry) {
         updateCorrectAnswersCount(entry, true);
     }
 
-    public void decCorrectAnswersCount(VocabularyEntry entry) {
+    public void decCorrectAnswersCount(VocabularyEntryDto entry) {
         updateCorrectAnswersCount(entry, false);
     }
 
-    private void updateCorrectAnswersCount(VocabularyEntry entry, boolean correct) {
+    private void updateCorrectAnswersCount(VocabularyEntryDto entry, boolean correct) {
         int change = correct ? 1 : -1;
         int newValue = entry.getCorrectAnswersCount() + change;
         if (isValidCorrectAnswersCount(newValue)) {
-            vocabularyEntryDao.updateCorrectAnswersCount(entry.getId(), newValue);
+            vocabularyEntryControllerApiClient.patchEntry(PatchVocabularyEntryInput.builder()
+                    .id(entry.getId())
+                    .correctAnswersCount(newValue)
+                    .build());
         }
     }
 

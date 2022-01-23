@@ -23,7 +23,7 @@ public enum FlagType {
     SYNONYMS("s"),
     ANTONYMS("a"),
     DESCRIPTION("d"),
-    MODE("m"),
+    MODE_VOCABULARY("m"),
     FILE("f"),
     CONTENT("c"),
     CORRECT_ANSWERS_COUNT("cac"),

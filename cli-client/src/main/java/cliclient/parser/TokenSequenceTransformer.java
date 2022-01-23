@@ -3,7 +3,7 @@ package cliclient.parser;
 import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.CommandWithArgs;
-import cliclient.command.arguments.TrainingSessionMode;
+import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.util.ObjectUtil;
 import cliclient.util.StringUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ class TokenSequenceTransformer {
                 case TAG -> argumentsBuilder.tag(flagValue);
                 case DESCRIPTION -> argumentsBuilder.definition(flagValue);
                 case FILE -> argumentsBuilder.filename(flagValue);
-                case MODE -> argumentsBuilder.mode(TrainingSessionMode.fromString(flagValue));
+                case MODE_VOCABULARY -> argumentsBuilder.mode(VocabularyTrainingSessionMode.fromString(flagValue));
                 case SYNONYMS -> argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
                 case ANTONYMS -> argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
                 case CONTENT -> argumentsBuilder.content(flagValue);

@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.*;
 
 @RequiredArgsConstructor
-public enum TrainingSessionMode {
+public enum VocabularyTrainingSessionMode {
 
     ANTONYMS("a"),
     SYNONYMS("s"),
@@ -38,7 +38,7 @@ public enum TrainingSessionMode {
     @Getter
     private final String mode;
 
-    public static TrainingSessionMode fromString(String mode) {
+    public static VocabularyTrainingSessionMode fromString(String mode) {
         return Arrays.stream(values())
                 .filter(trainingSessionMode -> trainingSessionMode.mode.equals(mode))
                 .findFirst()
@@ -52,11 +52,11 @@ public enum TrainingSessionMode {
     public static String modesToString() {
         return Arrays.stream(values())
                 .filter(m -> m != UNRECOGNIZED)
-                .map(TrainingSessionMode::getMode)
+                .map(VocabularyTrainingSessionMode::getMode)
                 .collect(joining(","));
     }
 
-    public static TrainingSessionMode getDefaultMode() {
+    public static VocabularyTrainingSessionMode getDefaultMode() {
         return SYNONYMS;
     }
 

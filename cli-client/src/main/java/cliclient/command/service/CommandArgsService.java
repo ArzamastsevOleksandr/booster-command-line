@@ -38,7 +38,7 @@ class CommandArgsService {
                     .addSynonyms(cmdWithArgs.getAddSynonyms())
                     .removeSynonyms(cmdWithArgs.getRemoveSynonyms())
                     .build();
-            case START_TRAINING_SESSION -> new StartTrainingSessionCommandArgs(cmdWithArgs.getMode().get());
+            case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cmdWithArgs.getMode().get());
             case EXPORT -> new ExportCommandArgs(cmdWithArgs.getFilename().get());
             case IMPORT -> new ImportCommandArgs(cmdWithArgs.getFilename().get());
             case ADD_SETTINGS -> new AddSettingsCommandArgs(getOrNull(cmdWithArgs::getLanguageId));
