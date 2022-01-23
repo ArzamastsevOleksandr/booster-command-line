@@ -43,16 +43,20 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     private void displayVocabularyEntryById(Long id) {
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApiClient.findById(id);
         adapter.writeLine(vocabularyEntryDto);
-        // todo: color + lastSeenAt
+        vocabularyEntryService.updateLastSeenAt(vocabularyEntryDto);
+        // todo: color
     }
 
     private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
-        // todo: color + lastSeenAt + pagination
+        // todo: color + pagination
         Collection<VocabularyEntryDto> vocabularyEntryDtos = vocabularyEntryControllerApiClient.getAll();
         if (CollectionUtils.isEmpty(vocabularyEntryDtos)) {
             adapter.writeLine("There are no vocabulary entries yet.");
         } else {
-            vocabularyEntryDtos.forEach(adapter::writeLine);
+            vocabularyEntryDtos.forEach(entry -> {
+                adapter.writeLine(entry);
+                vocabularyEntryService.updateLastSeenAt(entry);
+            });
         }
 //        args.pagination().ifPresentOrElse(pagination -> {
 //            args.substring().ifPresentOrElse(substring -> {

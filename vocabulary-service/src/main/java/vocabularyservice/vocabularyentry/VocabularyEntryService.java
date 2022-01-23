@@ -40,6 +40,7 @@ public class VocabularyEntryService {
                 .name(entity.getWord().getName())
                 .correctAnswersCount(entity.getCorrectAnswersCount())
                 .definition(entity.getDefinition())
+                .lastSeenAt(entity.getLastSeenAt())
                 .language(languageService.toDto(entity.getLanguage()))
                 .synonyms(entity.getSynonyms().stream().map(WordEntity::getName).collect(toSet()))
                 .build();
@@ -88,6 +89,7 @@ public class VocabularyEntryService {
             vocabularyEntryEntity.setWord(wordEntity);
         });
         ofNullable(input.getDefinition()).ifPresent(vocabularyEntryEntity::setDefinition);
+        ofNullable(input.getLastSeenAt()).ifPresent(vocabularyEntryEntity::setLastSeenAt);
 
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,5 +17,6 @@ public class PatchVocabularyEntryInput {
     private String name;
     private String definition;
     private Integer correctAnswersCount;
+    private Timestamp lastSeenAt;
 
 }
