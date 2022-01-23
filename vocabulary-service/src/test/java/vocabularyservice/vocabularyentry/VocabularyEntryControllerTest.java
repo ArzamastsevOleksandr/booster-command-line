@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import vocabularyservice.language.LanguageService;
-import vocabularyservice.language.TestLanguageService;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -32,8 +31,6 @@ class VocabularyEntryControllerTest {
     VocabularyEntryRepository vocabularyEntryRepository;
     @Autowired
     TestVocabularyEntryService testVocabularyEntryService;
-    @Autowired
-    TestLanguageService testLanguageService;
     @Autowired
     TestWordService testWordService;
     @Autowired

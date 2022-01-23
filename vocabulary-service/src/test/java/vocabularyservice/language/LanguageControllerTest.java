@@ -1,5 +1,6 @@
 package vocabularyservice.language;
 
+import api.exception.NotFoundException;
 import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,9 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -23,20 +26,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class LanguageControllerTest {
 
     @Autowired
-    TestLanguageService testLanguageService;
-    @Autowired
-    LanguageRepository languageRepository;
+    LanguageService languageService;
     @Autowired
     WebTestClient webTestClient;
 
     @Test
     void shouldReturnAllLanguages() {
         // given
-        var name1 = "ENGLISH";
-        var name2 = "GERMAN";
+        var name1 = "English";
+        var name2 = "German";
         // when
-        Long id1 = testLanguageService.createLanguage(name1);
-        Long id2 = testLanguageService.createLanguage(name2);
+        LanguageDto languageDto1 = languageService.add(new AddLanguageInput(name1));
+        LanguageDto languageDto2 = languageService.add(new AddLanguageInput(name2));
         // then
         webTestClient.get()
                 .uri("/languages/")
@@ -50,7 +51,10 @@ class LanguageControllerTest {
                             .map(obj -> new ObjectMapper().convertValue(obj, LanguageDto.class))
                             .toList();
 
-                    assertThat(languageDtos).containsExactlyInAnyOrder(new LanguageDto(id1, name1), new LanguageDto(id2, name2));
+                    assertThat(languageDtos).containsExactlyInAnyOrder(
+                            new LanguageDto(languageDto1.id(), languageDto1.name()),
+                            new LanguageDto(languageDto2.id(), languageDto2.name())
+                    );
                 });
     }
 
@@ -69,19 +73,37 @@ class LanguageControllerTest {
     @Test
     void shouldFindLanguageById() {
         // given
-        var name = "ENGLISH";
+        var name = "English";
         // when
-        Long id = testLanguageService.createLanguage(name);
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(name));
         // then
         webTestClient.get()
-                .uri("/languages/" + id)
+                .uri("/languages/" + languageDto.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(id)
+                .jsonPath("$.id").isEqualTo(languageDto.id())
                 .jsonPath("$.name").isEqualTo(name);
+    }
+
+    @Test
+    void shouldFindLanguageByName() {
+        // given
+        var name = "English";
+        // when
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(name));
+        // then
+        webTestClient.get()
+                .uri("/languages/name/" + languageDto.name())
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(languageDto.id())
+                .jsonPath("$.name").isEqualTo(languageDto.name());
     }
 
     @Test
@@ -103,11 +125,29 @@ class LanguageControllerTest {
     }
 
     @Test
+    void shouldReturn404WhenLanguageByNameNotFound() {
+        var name = "English";
+        webTestClient.get()
+                .uri("/languages/name/" + name)
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectHeader()
+                .contentType(APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.timestamp").isNotEmpty()
+                .jsonPath("$.path").isEqualTo("/languages/name/" + name)
+                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
+                .jsonPath("$.message").isEqualTo("Language not found by name: " + name);
+    }
+
+    @Test
     void shouldAddLanguage() {
         // given
-        assertThat(languageRepository.findAll()).isEmpty();
+        assertThat(languageService.getAll()).isEmpty();
         // when
-        var name = "ENGLISH";
+        var name = "English";
         webTestClient.post()
                 .uri("/languages/")
                 .bodyValue(new AddLanguageInput(name))
@@ -117,37 +157,38 @@ class LanguageControllerTest {
                 .isCreated()
                 .expectBody(LanguageDto.class)
                 .consumeWith(response -> {
-                    LanguageDto languageDto = response.getResponseBody();
+                    LanguageDto responseDto = response.getResponseBody();
 
-                    assertThat(languageDto.id()).isNotNull();
+                    assertThat(responseDto.id()).isNotNull();
+                    assertThat(responseDto.name()).isEqualTo(name);
+
+                    List<LanguageDto> languageDtos = new ArrayList<>(languageService.getAll());
+                    assertThat(languageDtos).hasSize(1);
+
+                    LanguageDto languageDto = languageDtos.get(0);
+
+                    assertThat(languageDto.id()).isEqualTo(responseDto.id());
                     assertThat(languageDto.name()).isEqualTo(name);
-
-                    List<LanguageEntity> languageEntities = languageRepository.findAll();
-                    assertThat(languageEntities).hasSize(1);
-
-                    LanguageEntity languageEntity = languageEntities.get(0);
-                    assertThat(languageEntity.getId()).isEqualTo(languageDto.id());
-                    assertThat(languageEntity.getName()).isEqualTo(name);
                 });
     }
 
     @Test
     void shouldDeleteLanguageById() {
         // given
-        var name = "ENGLISH";
-        Long id = testLanguageService.createLanguage(name);
-
-        assertThat(languageRepository.findById(id)).isNotEmpty();
+        var name = "English";
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(name));
         // when
         webTestClient.delete()
-                .uri("/languages/" + id)
+                .uri("/languages/" + languageDto.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
                 .expectBody(Void.class);
         // then
-        assertThat(languageRepository.findById(id)).isEmpty();
+        assertThatThrownBy(() -> languageService.findById(languageDto.id()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Language not found by id: " + languageDto.id());
     }
 
 }
