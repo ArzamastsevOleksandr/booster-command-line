@@ -8,32 +8,32 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.Optional;
 
-import static cliclient.command.Command.IMPORT;
+import static cliclient.command.Command.UPLOAD;
 
 @Component
 @RequiredArgsConstructor
-public class ImportArgValidator implements ArgValidator {
+public class UploadArgValidator implements ArgValidator {
 
     private static final String XLSX = ".xlsx";
-    private static final String DEFAULT_IMPORT_FILE = "import" + XLSX;
+    private static final String DEFAULT_UPLOAD_FILE = "upload" + XLSX;
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-//        Optional<String> filename = commandWithArgs.getFilename();
-//        if (filename.isPresent()) {
-//            checkCustomFileExists(filename.get());
-//            return commandWithArgs;
-//        } else {
-//            checkDefaultImportFileExists();
-//        }
-        return commandWithArgs.toBuilder().filename(DEFAULT_IMPORT_FILE).build();
+        Optional<String> filename = commandWithArgs.getFilename();
+        if (filename.isPresent()) {
+            checkCustomFileExists(filename.get());
+            return commandWithArgs.toBuilder().filename(filename.get()).build();
+        } else {
+            checkDefaultImportFileExists();
+            return commandWithArgs.toBuilder().filename(DEFAULT_UPLOAD_FILE).build();
+        }
     }
 
     private void checkDefaultImportFileExists() {
-        File file = new File(DEFAULT_IMPORT_FILE);
+        File file = new File(DEFAULT_UPLOAD_FILE);
         if (!file.exists() || file.isDirectory()) {
             throw new ArgsValidationException(
-                    "Default import file not found: " + DEFAULT_IMPORT_FILE,
+                    "Default import file not found: " + DEFAULT_UPLOAD_FILE,
                     "Try specifying custom filename"
             );
         }
@@ -43,13 +43,13 @@ public class ImportArgValidator implements ArgValidator {
         File file = new File(filename);
         // todo: fix error
         if (!file.exists() || file.isDirectory()) {
-            throw new ArgsValidationException("Custom import file not found: " + DEFAULT_IMPORT_FILE);
+            throw new ArgsValidationException("Custom import file not found: " + DEFAULT_UPLOAD_FILE);
         }
     }
 
     @Override
     public Command command() {
-        return IMPORT;
+        return UPLOAD;
     }
 
 }

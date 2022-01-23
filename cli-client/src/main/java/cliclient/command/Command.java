@@ -30,7 +30,7 @@ public enum Command {
     START_VOCABULARY_TRAINING_SESSION(Set.of("stv")),
 
     EXPORT(Set.of("exp")),
-    IMPORT(Set.of("imp")),
+    UPLOAD(Set.of("upl")),
 
     SHOW_SETTINGS(Set.of("ss")),
     ADD_SETTINGS(Set.of("as")),

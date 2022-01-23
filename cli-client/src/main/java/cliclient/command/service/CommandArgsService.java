@@ -40,7 +40,7 @@ class CommandArgsService {
                     .build();
             case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cmdWithArgs.getMode().get());
             case EXPORT -> new ExportCommandArgs(cmdWithArgs.getFilename().get());
-            case IMPORT -> new ImportCommandArgs(cmdWithArgs.getFilename().get());
+            case UPLOAD -> new UploadCommandArgs(cmdWithArgs.getFilename().get());
             case ADD_SETTINGS -> new AddSettingsCommandArgs(getOrNull(cmdWithArgs::getLanguageId));
             case LIST_NOTES -> new ListNotesCommandArgs(cmdWithArgs.getId());
             case ADD_NOTE -> new AddNoteCommandArgs(cmdWithArgs.getContent().get(), cmdWithArgs.getTag().map(Set::of).orElse(Set.of()));

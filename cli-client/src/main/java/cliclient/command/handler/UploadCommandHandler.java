@@ -2,26 +2,26 @@ package cliclient.command.handler;
 
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.ImportCommandArgs;
-import cliclient.load.XlsxImportComponent;
+import cliclient.command.arguments.UploadCommandArgs;
+import cliclient.load.ExcelUploadComponent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ImportCommandHandler implements CommandHandler {
+public class UploadCommandHandler implements CommandHandler {
 
-    private final XlsxImportComponent importComponent;
+    private final ExcelUploadComponent uploadComponent;
 
     @Override
     public void handle(CommandArgs commandArgs) {
-        var args = (ImportCommandArgs) commandArgs;
-        importComponent.load(args.filename());
+        var args = (UploadCommandArgs) commandArgs;
+        uploadComponent.load(args.filename());
     }
 
     @Override
     public Command getCommand() {
-        return Command.IMPORT;
+        return Command.UPLOAD;
     }
 
 }
