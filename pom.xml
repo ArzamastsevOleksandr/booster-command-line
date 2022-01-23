@@ -21,6 +21,7 @@
         <module>cli-client</module>
         <module>notes-service</module>
         <module>vocabulary-service</module>
+        <module>upload-service</module>
     </modules>
 
     <properties>
