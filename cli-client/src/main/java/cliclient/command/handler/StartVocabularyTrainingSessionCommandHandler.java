@@ -1,11 +1,12 @@
 package cliclient.command.handler;
 
+import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.StartTrainingSessionCommandArgs;
-import cliclient.command.arguments.TrainingSessionMode;
-import cliclient.model.VocabularyEntry;
+import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
+import cliclient.command.arguments.VocabularyTrainingSessionMode;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.service.ColorProcessor;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
@@ -13,10 +14,7 @@ import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -25,26 +23,24 @@ import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
-public class StartTrainingSessionCommandHandler implements CommandHandler {
+public class StartVocabularyTrainingSessionCommandHandler implements CommandHandler {
 
-    // todo: configurable setting
-    private static final int ENTRIES_PER_TRAINING_SESSION = 5;
-
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
-    private final TrainingSessionStats stats;
+    private final VocabularyTrainingSessionStats stats;
     private final ColorProcessor colorProcessor;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         stats.reset();
-        var args = (StartTrainingSessionCommandArgs) commandArgs;
+        var args = (StartVocabularyTrainingSessionCommandArgs) commandArgs;
         executeTrainingSession(args.mode());
     }
 
     @Override
     public Command getCommand() {
-        return Command.START_TRAINING_SESSION;
+        return Command.START_VOCABULARY_TRAINING_SESSION;
     }
 
     @RequiredArgsConstructor
@@ -52,11 +48,11 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         // todo: configurable setting
         final int maxHintsPerEntry = 3;
 
-        TrainingSessionMode mode = TrainingSessionMode.getDefaultMode();
+        VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
         int index = 0;
         int hintsPerEntryUsed = 0;
-        VocabularyEntry current;
-        final List<VocabularyEntry> entries;
+        VocabularyEntryDto current;
+        final List<VocabularyEntryDto> entries;
 
         boolean shouldContinue(String answer) {
             return !"e".equalsIgnoreCase(answer) && hasMoreEntries();
@@ -66,16 +62,16 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             return index < entries.size();
         }
 
-        VocabularyEntry fetchNextAndPrint() {
+        VocabularyEntryDto fetchNextAndPrint() {
             current = entries.get(index);
             printCurrentWord(current);
             return current;
         }
 
-        void printCurrentWord(VocabularyEntry entry) {
+        void printCurrentWord(VocabularyEntryDto entry) {
             adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
             adapter.newLine();
-            vocabularyEntryService.updateLastSeenAtById(entry.getId());
+//            vocabularyEntryService.updateLastSeenAtById(entry.getId());
         }
 
         void inc() {
@@ -95,11 +91,12 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
 
         Set<String> getCorrectAnswers() {
-            return switch (mode) {
-                case SYNONYMS -> current.getSynonyms();
-                case ANTONYMS -> current.getAntonyms();
-                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
-            };
+            return current.getSynonyms();
+//            return switch (mode) {
+//                case SYNONYMS -> current.getSynonyms();
+//                case ANTONYMS -> current.getAntonyms();
+//                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
+//            };
         }
 
         boolean allHintsExhausted() {
@@ -107,37 +104,38 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
 
         EntryTracker modeSynonyms() {
-            mode = TrainingSessionMode.SYNONYMS;
+            mode = VocabularyTrainingSessionMode.SYNONYMS;
             return this;
         }
 
         EntryTracker modeAntonyms() {
-            mode = TrainingSessionMode.ANTONYMS;
+            mode = VocabularyTrainingSessionMode.ANTONYMS;
             return this;
         }
     }
 
-    private void executeTrainingSession(TrainingSessionMode mode) {
-        List<VocabularyEntry> entries = findAllForMode(mode);
+    private void executeTrainingSession(VocabularyTrainingSessionMode mode) {
+        List<VocabularyEntryDto> entries = findAllForMode(mode);
         adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
         stats.displayAnswers();
         adapter.writeLine(ColorCodes.yellow("Training session finished!"));
     }
 
-    private List<VocabularyEntry> findAllForMode(TrainingSessionMode mode) {
-        return switch (mode) {
-            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
-            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
-            default -> throw new RuntimeException("Unrecognized training session mode: " + mode);
-        };
+    private List<VocabularyEntryDto> findAllForMode(VocabularyTrainingSessionMode mode) {
+        return new ArrayList<>(vocabularyEntryControllerApiClient.getAll());
+//        return switch (mode) {
+//            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
+//            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
+//            default -> throw new RuntimeException("Unrecognized training session mode: " + mode);
+//        };
     }
 
-    private void executeTrainingSessionBasedOnMode(TrainingSessionMode mode, List<VocabularyEntry> entries) {
+    private void executeTrainingSessionBasedOnMode(VocabularyTrainingSessionMode mode, List<VocabularyEntryDto> entries) {
         var tracker = new EntryTracker(entries);
         switch (mode) {
             case SYNONYMS -> executeSynonymsTrainingSession(tracker.modeSynonyms());
-            case ANTONYMS -> executeAntonymsTrainingSession(tracker.modeAntonyms());
+//            case ANTONYMS -> executeAntonymsTrainingSession(tracker.modeAntonyms());
             case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
     }
@@ -159,14 +157,14 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         executeTrainingSession(tracker, this::readSynonyms, this::handleAnswerSynonyms);
     }
 
-    private void executeAntonymsTrainingSession(EntryTracker tracker) {
-        executeTrainingSession(tracker, this::readAntonyms, this::handleAnswerAntonyms);
-    }
+//    private void executeAntonymsTrainingSession(EntryTracker tracker) {
+//        executeTrainingSession(tracker, this::readAntonyms, this::handleAnswerAntonyms);
+//    }
 
     private void executeTrainingSession(EntryTracker tracker,
                                         Supplier<String> answerSupplier,
-                                        BiConsumer<Set<String>, VocabularyEntry> answerConsumer) {
-        VocabularyEntry entry = tracker.fetchNextAndPrint();
+                                        BiConsumer<Set<String>, VocabularyEntryDto> answerConsumer) {
+        VocabularyEntryDto entry = tracker.fetchNextAndPrint();
         String answer = answerSupplier.get();
 
         while (tracker.shouldContinue(answer)) {
@@ -181,7 +179,7 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
             if (tracker.allHintsExhausted()) {
                 adapter.writeLine(ColorCodes.red("Max hints used."));
                 stats.skipped(tracker.current);
-                adapter.writeLine(colorProcessor.coloredEntry(tracker.current));
+                adapter.writeLine(tracker.current);
                 ThreadUtil.sleepSeconds(1);
             } else {
                 Set<String> parsedAnswer = parseEquivalents(answer);
@@ -194,18 +192,18 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         }
     }
 
-    private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntry entry) {
+    private void handleAnswerSynonyms(Set<String> synonymsAnswer, VocabularyEntryDto entry) {
         handleAnswer(synonymsAnswer, entry, entry::getSynonyms, this::processPartialSynonymsAnswer);
     }
 
-    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
-        handleAnswer(antonymsAnswer, entry, entry::getAntonyms, this::processPartialAntonymsAnswer);
-    }
+//    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
+//        handleAnswer(antonymsAnswer, entry, entry::getAntonyms, this::processPartialAntonymsAnswer);
+//    }
 
     private void handleAnswer(Set<String> answer,
-                              VocabularyEntry entry,
+                              VocabularyEntryDto entry,
                               Supplier<Set<String>> correctAnswer,
-                              BiConsumer<Set<String>, VocabularyEntry> consumer) {
+                              BiConsumer<Set<String>, VocabularyEntryDto> consumer) {
         if (answer.equals(correctAnswer.get())) {
             processCorrectAnswer(entry);
         } else {
@@ -221,16 +219,16 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         adapter.newLine();
     }
 
-    private void processPartialSynonymsAnswer(Set<String> partialAnswer, VocabularyEntry entry) {
+    private void processPartialSynonymsAnswer(Set<String> partialAnswer, VocabularyEntryDto entry) {
         processPartialAnswer(partialAnswer, entry, entry::getSynonyms, "synonyms");
     }
 
-    private void processPartialAntonymsAnswer(Set<String> partialAnswer, VocabularyEntry entry) {
-        processPartialAnswer(partialAnswer, entry, entry::getAntonyms, "antonyms");
-    }
+//    private void processPartialAntonymsAnswer(Set<String> partialAnswer, VocabularyEntryDto entry) {
+//        processPartialAnswer(partialAnswer, entry, entry::getAntonyms, "antonyms");
+//    }
 
     private void processPartialAnswer(Set<String> partialAnswer,
-                                      VocabularyEntry entry,
+                                      VocabularyEntryDto entry,
                                       Supplier<Set<String>> supplier,
                                       String label) {
         Set<String> originalEquivalentsCopy = new HashSet<>(supplier.get());
@@ -241,14 +239,14 @@ public class StartTrainingSessionCommandHandler implements CommandHandler {
         stats.addPartialAnswer(entry);
     }
 
-    private void processWrongAnswer(VocabularyEntry entry, Supplier<Set<String>> supplier) {
+    private void processWrongAnswer(VocabularyEntryDto entry, Supplier<Set<String>> supplier) {
         vocabularyEntryService.decCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.red("Wrong."));
         adapter.writeLine("Answer is: " + ColorCodes.red(String.join(", ", supplier.get())));
         stats.addWrongAnswer(entry);
     }
 
-    private void processCorrectAnswer(VocabularyEntry entry) {
+    private void processCorrectAnswer(VocabularyEntryDto entry) {
         vocabularyEntryService.incCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.green("Correct!"));
         stats.addCorrectAnswer(entry);

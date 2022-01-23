@@ -1,9 +1,9 @@
 package cliclient.command.handler;
 
+import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.model.VocabularyEntry;
+import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.service.ColorProcessor;
-import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.AccessLevel;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -20,19 +19,19 @@ import java.util.Set;
  */
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-class TrainingSessionStats {
+class VocabularyTrainingSessionStats {
 
     private static final String SEPARATOR = "*************************************************";
     private static final int ENTRIES_PER_TRAINING_SESSION = 5;
 
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
-    private final VocabularyEntryService vocabularyEntryService;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
-    private final Set<VocabularyEntry> wrongAnswers = new HashSet<>();
-    private final Set<VocabularyEntry> correctAnswers = new HashSet<>();
-    private final Set<VocabularyEntry> partialAnswers = new HashSet<>();
-    private final Set<VocabularyEntry> skipped = new HashSet<>();
+    private final Set<VocabularyEntryDto> wrongAnswers = new HashSet<>();
+    private final Set<VocabularyEntryDto> correctAnswers = new HashSet<>();
+    private final Set<VocabularyEntryDto> partialAnswers = new HashSet<>();
+    private final Set<VocabularyEntryDto> skipped = new HashSet<>();
 
     void reset() {
         wrongAnswers.clear();
@@ -64,20 +63,18 @@ class TrainingSessionStats {
         displayAnswers(skipped, ColorCodes.blue("Skipped " + fraction(skipped.size())));
     }
 
-    private void displayAnswers(Set<VocabularyEntry> answers, String label) {
+    private void displayAnswers(Set<VocabularyEntryDto> answers, String label) {
         if (!answers.isEmpty()) {
             ThreadUtil.sleepSeconds(1);
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(label);
             adapter.newLine();
             answers.stream()
-                    .map(VocabularyEntry::getId)
-                    .map(vocabularyEntryService::findById)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
+                    .map(VocabularyEntryDto::getId)
+                    .map(vocabularyEntryControllerApiClient::findById)
                     .forEach(entry -> {
-                        adapter.writeLine(colorProcessor.coloredEntry(entry));
-                        vocabularyEntryService.updateLastSeenAtById(entry.getId());
+                        adapter.writeLine(entry);
+//                        vocabularyEntryService.updateLastSeenAtById(entry.getId());
                     });
             adapter.newLine();
         }
@@ -91,19 +88,19 @@ class TrainingSessionStats {
         return "(" + numerator + "/" + ENTRIES_PER_TRAINING_SESSION + "):";
     }
 
-    void addCorrectAnswer(VocabularyEntry entry) {
+    void addCorrectAnswer(VocabularyEntryDto entry) {
         correctAnswers.add(entry);
     }
 
-    void addWrongAnswer(VocabularyEntry entry) {
+    void addWrongAnswer(VocabularyEntryDto entry) {
         wrongAnswers.add(entry);
     }
 
-    void addPartialAnswer(VocabularyEntry entry) {
+    void addPartialAnswer(VocabularyEntryDto entry) {
         partialAnswers.add(entry);
     }
 
-    public void skipped(VocabularyEntry entry) {
+    public void skipped(VocabularyEntryDto entry) {
         skipped.add(entry);
     }
 

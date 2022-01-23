@@ -1,7 +1,7 @@
 package cliclient.parser;
 
 import cliclient.command.FlagType;
-import cliclient.command.arguments.TrainingSessionMode;
+import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.util.NumberUtil;
 import cliclient.util.ObjectUtil;
 import lombok.AccessLevel;
@@ -106,15 +106,15 @@ class TokenSequenceValidator {
             case VOCABULARY_ENTRY_ID -> checkIfIdIsPositiveLongNumber("Vocabulary entry id", expectedValue.getValue());
             case CORRECT_ANSWERS_COUNT -> checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
             case PAGINATION -> checkIfValueIsPositiveIntegerNumber("Pagination", expectedValue.getValue());
-            case MODE -> checkIfTrainingSessionModeIsCorrect(expectedValue.getValue());
+            case MODE_VOCABULARY -> checkIfVocabularyTrainingSessionModeIsCorrect(expectedValue.getValue());
         }
     }
 
-    private void checkIfTrainingSessionModeIsCorrect(String value) {
-        if (TrainingSessionMode.isUnrecognized(value)) {
+    private void checkIfVocabularyTrainingSessionModeIsCorrect(String value) {
+        if (VocabularyTrainingSessionMode.isUnrecognized(value)) {
             throw new TokenValidationException(
                     "Unrecognized training session mode: " + value,
-                    "Available modes are: " + TrainingSessionMode.modesToString()
+                    "Available modes are: " + VocabularyTrainingSessionMode.modesToString()
             );
         }
     }
