@@ -14,6 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import vocabularyservice.language.LanguageService;
 import vocabularyservice.language.TestLanguageService;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,11 +47,17 @@ class VocabularyEntryControllerTest {
     void shouldReturnAllVocabularyEntries() {
         // given
         var name = "entry";
+        var definition = "walk with effort";
+        var synonyms = Set.of("ford", "paddle");
         var english = "English";
-        Long wordId = testWordService.createWord(name);
-        Long languageId = testLanguageService.createLanguage(english);
-        // when
-        Long entryId = testVocabularyEntryService.createVocabularyEntry(wordId, languageId);
+
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name)
+                .languageId(languageDto.id())
+                .definition(definition)
+                .synonyms(synonyms)
+                .build());
         // then
         webTestClient.get()
                 .uri("/vocabulary-entries/")
@@ -60,13 +67,24 @@ class VocabularyEntryControllerTest {
                 .isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(1)
-                .jsonPath("$[0].id").isEqualTo(entryId)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntryDto.getId())
                 .jsonPath("$[0].name").isEqualTo(name)
                 .jsonPath("$[0].correctAnswersCount").isEqualTo(0)
-                .jsonPath("$[0].definition").isEqualTo(name)
-                .jsonPath("$[0].synonyms.length()").isEqualTo(1)
-                .jsonPath("$[0].synonyms[0]").isEqualTo(name)
-                .jsonPath("$[0].language.id").isEqualTo(languageId)
+                .jsonPath("$[0].definition").isEqualTo(definition)
+                .jsonPath("$[0].lastSeenAt").isEqualTo(vocabularyEntryDto.getLastSeenAt().getTime())
+                .jsonPath("$[0].synonyms").value(new BaseMatcher<HashSet<String>>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected a set containing all of: " + synonyms);
+                    }
+
+                    @Override
+                    public boolean matches(Object actual) {
+                        JSONArray jsonArray = (JSONArray) actual;
+                        return new HashSet<>(jsonArray).equals(synonyms);
+                    }
+                })
+                .jsonPath("$[0].language.id").isEqualTo(languageDto.id())
                 .jsonPath("$[0].language.name").isEqualTo(english);
     }
 
@@ -75,23 +93,21 @@ class VocabularyEntryControllerTest {
         // given
         assertThat(vocabularyEntryRepository.findAll()).isEmpty();
         var english = "English";
-        Long languageId = testLanguageService.createLanguage(english);
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         // when
         var name = "wade";
         var definition = "walk with effort";
         var synonyms = Set.of("ford", "paddle");
 
-        var input = AddVocabularyEntryInput.builder()
-                .name(name)
-                .languageId(languageId)
-                .definition(definition)
-                .synonyms(synonyms)
-                .build();
-
         webTestClient.post()
                 .uri("/vocabulary-entries/")
                 .accept(APPLICATION_JSON)
-                .bodyValue(input)
+                .bodyValue(AddVocabularyEntryInput.builder()
+                        .name(name)
+                        .languageId(languageDto.id())
+                        .definition(definition)
+                        .synonyms(synonyms)
+                        .build())
                 .exchange()
                 .expectStatus()
                 .isCreated()
@@ -100,8 +116,9 @@ class VocabularyEntryControllerTest {
                 .jsonPath("$.name").isEqualTo(name)
                 .jsonPath("$.definition").isEqualTo(definition)
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
+                .jsonPath("$.lastSeenAt").isNotEmpty()
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
-                .jsonPath("$.language.id").isEqualTo(languageId)
+                .jsonPath("$.language.id").isEqualTo(languageDto.id())
                 .jsonPath("$.language.name").isEqualTo(english)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
@@ -123,26 +140,32 @@ class VocabularyEntryControllerTest {
     void shouldFindVocabularyEntryById() {
         // given
         var name = "wade";
+        var definition = "walk with effort";
         var synonyms = Set.of(name);
         var english = "English";
 
-        Long wordId = testWordService.createWord(name);
-        Long languageId = testLanguageService.createLanguage(english);
-        Long vocabularyEntryId = testVocabularyEntryService.createVocabularyEntry(wordId, languageId);
+        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name)
+                .languageId(languageDto.id())
+                .definition(definition)
+                .synonyms(synonyms)
+                .build());
         // when + then
         webTestClient.get()
-                .uri("/vocabulary-entries/" + vocabularyEntryId)
+                .uri("/vocabulary-entries/" + vocabularyEntryDto.getId())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(vocabularyEntryId)
+                .jsonPath("$.id").isEqualTo(vocabularyEntryDto.getId())
                 .jsonPath("$.name").isEqualTo(name)
-                .jsonPath("$.definition").isEqualTo(name)
+                .jsonPath("$.definition").isEqualTo(definition)
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
+                .jsonPath("$.lastSeenAt").isEqualTo(vocabularyEntryDto.getLastSeenAt().getTime())
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
-                .jsonPath("$.language.id").isEqualTo(languageId)
+                .jsonPath("$.language.id").isEqualTo(languageDto.id())
                 .jsonPath("$.language.name").isEqualTo(english)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
@@ -201,6 +224,7 @@ class VocabularyEntryControllerTest {
                 .synonyms(synonyms)
                 .build());
         // when
+        var lastSeenAt = new Timestamp(System.currentTimeMillis());
         webTestClient.patch()
                 .uri("/vocabulary-entries/")
                 .bodyValue(PatchVocabularyEntryInput.builder()
@@ -208,6 +232,7 @@ class VocabularyEntryControllerTest {
                         .name(name)
                         .definition(definition)
                         .correctAnswersCount(correctAnswersCount)
+                        .lastSeenAt(lastSeenAt)
                         .build())
                 .accept(APPLICATION_JSON)
                 .exchange()
@@ -219,6 +244,7 @@ class VocabularyEntryControllerTest {
                 .jsonPath("$.definition").isEqualTo(definition)
                 .jsonPath("$.correctAnswersCount").isEqualTo(correctAnswersCount)
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
+                .jsonPath("$.lastSeenAt").isEqualTo(lastSeenAt.getTime())
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
                     public void describeTo(Description description) {
@@ -236,7 +262,8 @@ class VocabularyEntryControllerTest {
         assertAll(
                 () -> assertThat(patchedEntry.getName()).isEqualTo(name),
                 () -> assertThat(patchedEntry.getDefinition()).isEqualTo(definition),
-                () -> assertThat(patchedEntry.getCorrectAnswersCount()).isEqualTo(correctAnswersCount)
+                () -> assertThat(patchedEntry.getCorrectAnswersCount()).isEqualTo(correctAnswersCount),
+                () -> assertThat(patchedEntry.getLastSeenAt()).isEqualTo(lastSeenAt)
         );
     }
 

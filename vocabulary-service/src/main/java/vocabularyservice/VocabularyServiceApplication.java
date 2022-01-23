@@ -4,6 +4,8 @@ import api.vocabulary.AddLanguageInput;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.LanguageDto;
 import api.vocabulary.VocabularyEntryDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -28,6 +30,13 @@ public class VocabularyServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(VocabularyServiceApplication.class, args);
+    }
+
+    @Bean
+    ObjectMapper objectMapper() {
+        var objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
     }
 
     @Bean

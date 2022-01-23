@@ -285,12 +285,11 @@ public class VocabularyEntryService {
         return vocabularyEntryDao.countWithSubstring(substring);
     }
 
-    public void updateLastSeenAtById(long id) {
-        updateLastSeenAtById(id, timeUtil.timestampNow());
-    }
-
-    private void updateLastSeenAtById(long id, Timestamp lastSeenAt) {
-        vocabularyEntryDao.updateLastSeenAtById(id, lastSeenAt);
+    public void updateLastSeenAt(VocabularyEntryDto entry) {
+        vocabularyEntryControllerApiClient.patchEntry(PatchVocabularyEntryInput.builder()
+                .id(entry.getId())
+                .lastSeenAt(new Timestamp(System.currentTimeMillis()))
+                .build());
     }
 
     public void updateLastSeenAtByIds(List<Long> ids) {
