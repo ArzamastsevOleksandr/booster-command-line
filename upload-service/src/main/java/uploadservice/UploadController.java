@@ -3,6 +3,8 @@ package uploadservice;
 import api.notes.AddNoteInput;
 import api.upload.UploadControllerApi;
 import api.upload.UploadResponse;
+import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.LanguageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,9 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uploadservice.feign.notes.NotesServiceClient;
+import uploadservice.feign.vocabulary.LanguageControllerApiClient;
+import uploadservice.feign.vocabulary.VocabularyEntryControllerApiClient;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,6 +36,8 @@ import static java.util.stream.Collectors.toSet;
 class UploadController implements UploadControllerApi {
 
     private final NotesServiceClient notesServiceClient;
+    private final LanguageControllerApiClient languageControllerApiClient;
+    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
     // todo: validation
     // todo: reliable way to get number of rows in xlsx
@@ -47,7 +55,8 @@ class UploadController implements UploadControllerApi {
 
                 switch (sheetName) {
                     case "notes" -> importNotes(sheet, tracker);
-                    case "language" -> importLanguages(sheet, tracker);
+                    // todo: language recognition pattern (no hardcoding)
+                    case "english" -> importLanguages(sheet, tracker);
                     default -> log.error("Unrecognized upload page ignored: {}", sheetName);
                 }
             }
@@ -63,11 +72,58 @@ class UploadController implements UploadControllerApi {
         return null;
     }
 
-    private void importLanguages(XSSFSheet sheet, UploadProgressTracker uploadProgressTracker) {
-        log.info("language NOT IMPL");
+    private void importLanguages(XSSFSheet sheet, UploadProgressTracker tracker) {
+        String sheetName = sheet.getSheetName();
+
+        LanguageDto languageDto = languageControllerApiClient.findByName(sheetName);
+        importLanguage(sheet, languageDto.id(), tracker);
+        // if lang does not exist: create one
     }
 
-    private void importNotes(XSSFSheet sheet, UploadProgressTracker uploadProgressTracker) {
+    private void importLanguage(XSSFSheet sheet, Long id, UploadProgressTracker tracker) {
+        for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
+            XSSFRow row = sheet.getRow(rowNumber);
+
+            Optional.ofNullable(row)
+                    .map(r -> r.getCell(0))
+                    .map(Cell::getStringCellValue)
+                    .map(String::strip)
+                    .filter(this::isNotBlank)
+                    .ifPresent(vocabularyEntryName -> {
+                        String definition = readDefinition(row.getCell(1));
+
+                        Set<String> synonyms = getEquivalents(row.getCell(2));
+
+                        int correctAnswersCount = (int) row.getCell(4).getNumericCellValue();
+                        var createdAt = Timestamp.valueOf(row.getCell(5).getStringCellValue());
+
+//                        Set<String> tags = getStringValues(row.getCell(6), ";");
+//                        Set<String> contexts = getStringValues(row.getCell(7), "/");
+
+                        // todo: column index is not a magic number
+                        Timestamp lastSeenAt = Optional.ofNullable(row.getCell(8))
+                                .map(XSSFCell::getStringCellValue)
+                                .map(String::strip)
+                                .filter(this::isNotBlank)
+                                .map(Timestamp::valueOf)
+                                .orElse(new Timestamp(System.currentTimeMillis()));
+
+//                        tagService.createIfNotExist(tags);
+
+                        vocabularyEntryControllerApiClient.add(AddVocabularyEntryInput.builder()
+                                .name(vocabularyEntryName)
+                                .correctAnswersCount(correctAnswersCount)
+                                .definition(definition)
+                                .languageId(id)
+                                .synonyms(synonyms)
+                                .build());
+                        tracker.incVocabularyEntriesUploadCount();
+                    });
+        }
+        tracker.vocabularyEntriesUploadFinished();
+    }
+
+    private void importNotes(XSSFSheet sheet, UploadProgressTracker tracker) {
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
@@ -80,10 +136,10 @@ class UploadController implements UploadControllerApi {
 //                        Set<String> tags = getStringValues(row.getCell(1), ";");
 //                        tagService.createIfNotExist(tags);
                         notesServiceClient.add(new AddNoteInput(content));
-                        uploadProgressTracker.incNotesUploadCount();
+                        tracker.incNotesUploadCount();
                     });
         }
-        uploadProgressTracker.notesUploadFinished();
+        tracker.notesUploadFinished();
     }
 
     private boolean isNotBlank(String s) {
@@ -98,6 +154,26 @@ class UploadController implements UploadControllerApi {
                 .map(s -> Arrays.stream(s.split(separator)))
                 .map(s -> s.map(String::strip).filter(this::isNotBlank).collect(toSet()))
                 .orElse(Set.of());
+    }
+
+    private String readDefinition(XSSFCell cell) {
+        return Optional.ofNullable(cell)
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .orElse(null);
+    }
+
+    private Set<String> getEquivalents(XSSFCell cell) {
+        return Optional.ofNullable(cell)
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .map(s -> Arrays.stream(s.split(";")))
+                .map(s -> s.map(String::strip)
+                        .filter(this::isNotBlank)
+                        .collect(toSet())
+                ).orElse(Collections.emptySet());
     }
 
 }
