@@ -22,6 +22,7 @@
         <module>notes-service</module>
         <module>vocabulary-service</module>
         <module>upload-service</module>
+        <module>settings-service</module>
     </modules>
 
     <properties>
