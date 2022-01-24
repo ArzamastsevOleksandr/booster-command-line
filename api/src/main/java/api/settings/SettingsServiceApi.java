@@ -1,12 +1,8 @@
 package api.settings;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 public interface SettingsServiceApi {
 
@@ -17,5 +13,9 @@ public interface SettingsServiceApi {
     @PostMapping(value = "/")
     @ResponseStatus(CREATED)
     SettingsDto create(@RequestBody CreateSettingsInput input);
+
+    @DeleteMapping(value = "/")
+    @ResponseStatus(NO_CONTENT)
+    void delete();
 
 }
