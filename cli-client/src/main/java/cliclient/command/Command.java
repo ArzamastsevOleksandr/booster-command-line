@@ -29,7 +29,7 @@ public enum Command {
 
     START_VOCABULARY_TRAINING_SESSION(Set.of("stv")),
 
-    EXPORT(Set.of("exp")),
+    DOWNLOAD(Set.of("dwn")),
     UPLOAD(Set.of("upl")),
 
     SHOW_SETTINGS(Set.of("ss")),
