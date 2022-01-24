@@ -96,4 +96,11 @@ public class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
 
+    @Transactional(readOnly = true)
+    public Collection<VocabularyEntryDto> findAllByLanguageId(Long id) {
+        return vocabularyEntryRepository.findAllByLanguageId(id)
+                .map(this::toDto)
+                .toList();
+    }
+
 }
