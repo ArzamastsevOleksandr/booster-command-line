@@ -28,12 +28,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 class VocabularyEntryControllerTest {
 
     @Autowired
-    VocabularyEntryRepository vocabularyEntryRepository;
-    @Autowired
-    TestVocabularyEntryService testVocabularyEntryService;
-    @Autowired
-    TestWordService testWordService;
-    @Autowired
     VocabularyEntryService vocabularyEntryService;
     @Autowired
     LanguageService languageService;
@@ -88,7 +82,7 @@ class VocabularyEntryControllerTest {
     @Test
     void shouldCreateVocabularyEntry() {
         // given
-        assertThat(vocabularyEntryRepository.findAll()).isEmpty();
+        assertThat(vocabularyEntryService.findAll()).isEmpty();
         var english = "English";
         LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         // when
@@ -204,7 +198,6 @@ class VocabularyEntryControllerTest {
 
     // todo: test delete of the entry that does not exist
 
-
     @Test
     void shouldPatchById() {
         // given
@@ -222,6 +215,8 @@ class VocabularyEntryControllerTest {
                 .build());
         // when
         var lastSeenAt = new Timestamp(System.currentTimeMillis());
+        var isDifficult = true;
+
         webTestClient.patch()
                 .uri("/vocabulary-entries/")
                 .bodyValue(PatchVocabularyEntryInput.builder()
@@ -230,6 +225,7 @@ class VocabularyEntryControllerTest {
                         .definition(definition)
                         .correctAnswersCount(correctAnswersCount)
                         .lastSeenAt(lastSeenAt)
+                        .isDifficult(isDifficult)
                         .build())
                 .accept(APPLICATION_JSON)
                 .exchange()
@@ -242,6 +238,7 @@ class VocabularyEntryControllerTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(correctAnswersCount)
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
                 .jsonPath("$.lastSeenAt").isEqualTo(lastSeenAt.getTime())
+                .jsonPath("$.isDifficult").isEqualTo(isDifficult)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
                     public void describeTo(Description description) {
@@ -260,7 +257,8 @@ class VocabularyEntryControllerTest {
                 () -> assertThat(patchedEntry.getName()).isEqualTo(name),
                 () -> assertThat(patchedEntry.getDefinition()).isEqualTo(definition),
                 () -> assertThat(patchedEntry.getCorrectAnswersCount()).isEqualTo(correctAnswersCount),
-                () -> assertThat(patchedEntry.getLastSeenAt()).isEqualTo(lastSeenAt)
+                () -> assertThat(patchedEntry.getLastSeenAt()).isEqualTo(lastSeenAt),
+                () -> assertThat(patchedEntry.getIsDifficult()).isTrue()
         );
     }
 
