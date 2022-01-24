@@ -80,6 +80,93 @@ class VocabularyEntryControllerTest {
     }
 
     @Test
+    void shouldFindAllVocabularyEntriesByLanguageId() {
+        // given
+        var name1 = "entry1";
+        var name2 = "entry2";
+        var definition1 = "walk with effort1";
+        var definition2 = "walk with effort2";
+        var synonyms1 = Set.of("ford1", "paddle1");
+        var synonyms2 = Set.of("ford2", "paddle2");
+
+        var english = "English";
+        var german = "German";
+
+        LanguageDto languageDto1 = languageService.add(new AddLanguageInput(english));
+        LanguageDto languageDto2 = languageService.add(new AddLanguageInput(german));
+
+        VocabularyEntryDto vocabularyEntryDto1 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name1)
+                .languageId(languageDto1.id())
+                .definition(definition1)
+                .synonyms(synonyms1)
+                .build());
+        VocabularyEntryDto vocabularyEntryDto2 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name2)
+                .languageId(languageDto2.id())
+                .definition(definition2)
+                .synonyms(synonyms2)
+                .build());
+
+        // then
+        webTestClient.get()
+                .uri("/vocabulary-entries/languageId/" + languageDto1.id())
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntryDto1.getId())
+                .jsonPath("$[0].name").isEqualTo(vocabularyEntryDto1.getName())
+                .jsonPath("$[0].correctAnswersCount").isEqualTo(vocabularyEntryDto1.getCorrectAnswersCount())
+                .jsonPath("$[0].definition").isEqualTo(vocabularyEntryDto1.getDefinition())
+                .jsonPath("$[0].lastSeenAt").isEqualTo(vocabularyEntryDto1.getLastSeenAt().getTime())
+                .jsonPath("$[0].synonyms").value(new BaseMatcher<HashSet<String>>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected a set containing all of: " + synonyms1);
+                    }
+
+                    @Override
+                    public boolean matches(Object actual) {
+                        JSONArray jsonArray = (JSONArray) actual;
+                        return new HashSet<>(jsonArray).equals(synonyms1);
+                    }
+                })
+                .jsonPath("$[0].language.id").isEqualTo(languageDto1.id())
+                .jsonPath("$[0].language.name").isEqualTo(languageDto1.name());
+
+        webTestClient.get()
+                .uri("/vocabulary-entries/languageId/" + languageDto2.id())
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntryDto2.getId())
+                .jsonPath("$[0].name").isEqualTo(vocabularyEntryDto2.getName())
+                .jsonPath("$[0].correctAnswersCount").isEqualTo(vocabularyEntryDto2.getCorrectAnswersCount())
+                .jsonPath("$[0].definition").isEqualTo(vocabularyEntryDto2.getDefinition())
+                .jsonPath("$[0].lastSeenAt").isEqualTo(vocabularyEntryDto2.getLastSeenAt().getTime())
+                .jsonPath("$[0].synonyms").value(new BaseMatcher<HashSet<String>>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Expected a set containing all of: " + synonyms2);
+                    }
+
+                    @Override
+                    public boolean matches(Object actual) {
+                        JSONArray jsonArray = (JSONArray) actual;
+                        return new HashSet<>(jsonArray).equals(synonyms2);
+                    }
+                })
+                .jsonPath("$[0].language.id").isEqualTo(languageDto2.id())
+                .jsonPath("$[0].language.name").isEqualTo(languageDto2.name());
+    }
+
+    @Test
     void shouldCreateVocabularyEntry() {
         // given
         assertThat(vocabularyEntryService.findAll()).isEmpty();

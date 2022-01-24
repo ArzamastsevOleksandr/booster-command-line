@@ -14,6 +14,10 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(OK)
     Collection<VocabularyEntryDto> getAll();
 
+    @GetMapping(value = "/languageId/{id}")
+    @ResponseStatus(OK)
+    Collection<VocabularyEntryDto> findAllByLanguageId(@PathVariable("id") Long id);
+
     @PostMapping(value = "/")
     @ResponseStatus(CREATED)
     VocabularyEntryDto add(@RequestBody AddVocabularyEntryInput input);
