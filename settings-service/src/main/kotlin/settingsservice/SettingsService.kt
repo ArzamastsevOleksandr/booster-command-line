@@ -16,7 +16,7 @@ class SettingsService {
     @Autowired
     lateinit var settingsRepository: SettingsRepository
 
-    fun findOne(): SettingsDto? {
+    fun findOne(): SettingsDto {
         return settingsRepository.findFirstBy()?.let { toDto(it) }
             ?: throw NotFoundException("Settings not found")
     }
@@ -35,6 +35,12 @@ class SettingsService {
         settingsEntity.defaultLanguageId = input.defaultLanguageId
         settingsEntity.entriesPerVocabularyTrainingSession = input.entriesPerVocabularyTrainingSession
         return toDto(settingsRepository.save(settingsEntity))
+    }
+
+    @Transactional
+    fun delete() {
+        val settingsDto = findOne()
+        settingsRepository.deleteById(settingsDto.id)
     }
 
 }

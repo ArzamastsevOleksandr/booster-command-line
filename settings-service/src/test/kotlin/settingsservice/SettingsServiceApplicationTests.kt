@@ -3,6 +3,7 @@ package settingsservice
 import api.settings.CreateSettingsInput
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -79,6 +80,42 @@ class SettingsServiceApplicationTests {
         val settingsDto = settingsService.findOne()
         assertThat(settingsDto?.defaultLanguageId).isEqualTo(1)
         assertThat(settingsDto?.entriesPerVocabularyTrainingSession).isEqualTo(5)
+    }
+
+    @Test
+    fun returns404WhenDeletingSettingsThatDoNotExist() {
+        webTestClient.delete()
+            .uri("/settings/")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+            .expectBody()
+            .jsonPath("$.timestamp").isNotEmpty
+            .jsonPath("$.path").isEqualTo("/settings/")
+            .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name)
+            .jsonPath("$.message").isEqualTo("Settings not found")
+    }
+
+    @Test
+    fun shouldDeleteSettings() {
+        // given
+        val settingsDto = settingsService.create(
+            CreateSettingsInput.builder()
+                .defaultLanguageId(1)
+                .entriesPerVocabularyTrainingSession(5)
+                .build()
+        )
+        // when
+        webTestClient.delete()
+            .uri("/settings/")
+            .exchange()
+            .expectStatus()
+            .isNoContent
+            .expectBody()
+            .isEmpty
+        // then
+        assertThatThrownBy { settingsService.findOne() }
+            .hasMessage("Settings not found")
     }
 
 }

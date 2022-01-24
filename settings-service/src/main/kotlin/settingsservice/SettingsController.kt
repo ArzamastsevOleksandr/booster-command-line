@@ -22,4 +22,8 @@ class SettingsController : SettingsServiceApi {
         return settingsService.create(input)
     }
 
+    override fun delete() {
+        settingsService.delete()
+    }
+
 }
