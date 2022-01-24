@@ -5,27 +5,27 @@ import cliclient.command.arguments.CommandWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static cliclient.command.Command.EXPORT;
+import static cliclient.command.Command.DOWNLOAD;
 
 @Component
 @RequiredArgsConstructor
 // todo: validator validates (SRP, separation of concerns, use preprocessor)
-public class ExportArgValidator implements ArgValidator {
+public class DownloadArgValidator implements ArgValidator {
 
     private static final String XLSX = ".xlsx";
-    private static final String DEFAULT_EXPORT_FILE = "export" + XLSX;
+    private static final String DEFAULT_DOWNLOAD_FILE = "download" + XLSX;
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-//        if (commandWithArgs.getFilename().isEmpty()) {
-//            return commandWithArgs.toBuilder().filename(formatFilename(DEFAULT_EXPORT_FILE)).build();
-//        }
+        if (commandWithArgs.getFilename().isEmpty()) {
+            return commandWithArgs.toBuilder().filename(formatFilename(DEFAULT_DOWNLOAD_FILE)).build();
+        }
         return commandWithArgs;
     }
 
     @Override
     public Command command() {
-        return EXPORT;
+        return DOWNLOAD;
     }
 
     private String formatFilename(String filename) {
