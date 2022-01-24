@@ -1,6 +1,7 @@
 package settingsservice
 
 import api.settings.CreateSettingsInput
+import api.settings.PatchSettingsInput
 import api.settings.SettingsDto
 import api.settings.SettingsServiceApi
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,7 @@ class SettingsController : SettingsServiceApi {
     @Autowired
     lateinit var settingsService: SettingsService
 
-    override fun findOne(): SettingsDto? {
+    override fun findOne(): SettingsDto {
         return settingsService.findOne()
     }
 
@@ -24,6 +25,10 @@ class SettingsController : SettingsServiceApi {
 
     override fun delete() {
         settingsService.delete()
+    }
+
+    override fun patch(input: PatchSettingsInput): SettingsDto {
+        return settingsService.patch(input);
     }
 
 }

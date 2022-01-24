@@ -18,4 +18,8 @@ public interface SettingsServiceApi {
     @ResponseStatus(NO_CONTENT)
     void delete();
 
+    @PatchMapping(value = "/")
+    @ResponseStatus(OK)
+    SettingsDto patch(@RequestBody PatchSettingsInput input);
+
 }
