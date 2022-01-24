@@ -12,6 +12,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: add a new flag -ex (extended output). When writing to the output - present intel that is necessary. To present everything - use the extended flag.
         // todo: fix: add note, delete the same note - the counter of notes added must be correctly updated
         // todo: fix: if exception is thrown during the import process - the process stops
         // todo: update/delete tag
