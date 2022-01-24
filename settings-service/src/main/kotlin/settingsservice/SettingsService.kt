@@ -1,6 +1,7 @@
 package settingsservice
 
 import api.exception.NotFoundException
+import api.settings.CreateSettingsInput
 import api.settings.SettingsDto
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +27,14 @@ class SettingsService {
             settingsEntity.defaultLanguageId,
             settingsEntity.entriesPerVocabularyTrainingSession
         )
+    }
+
+    @Transactional
+    fun create(input: CreateSettingsInput): SettingsDto {
+        val settingsEntity = SettingsEntity()
+        settingsEntity.defaultLanguageId = input.defaultLanguageId
+        settingsEntity.entriesPerVocabularyTrainingSession = input.entriesPerVocabularyTrainingSession
+        return toDto(settingsRepository.save(settingsEntity))
     }
 
 }

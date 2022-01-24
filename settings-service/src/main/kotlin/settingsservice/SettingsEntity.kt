@@ -1,19 +1,17 @@
 package settingsservice
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
-class SettingsEntity(
+@Table(name = "settings")
+open class SettingsEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    val id: Long,
+    open var id: Long? = null,
 
-    val defaultLanguageId: Long,
+    open var defaultLanguageId: Long? = null,
 
-    val entriesPerVocabularyTrainingSession: Int = 5
+    open var entriesPerVocabularyTrainingSession: Int? = 5
 
 )
