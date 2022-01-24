@@ -31,9 +31,10 @@ class VocabularyEntryEntity {
     private LanguageEntity language;
 
     private String definition;
-    private int correctAnswersCount;
+    private Integer correctAnswersCount = 0;
+    private Boolean isDifficult = false;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     private Set<WordEntity> synonyms = new HashSet<>();
 
 }

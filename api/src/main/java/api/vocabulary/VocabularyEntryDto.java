@@ -13,7 +13,8 @@ public class VocabularyEntryDto {
     Long id;
     String name;
     String definition;
-    int correctAnswersCount;
+    Integer correctAnswersCount;
+    Boolean isDifficult;
     Timestamp lastSeenAt;
 
     LanguageDto language;

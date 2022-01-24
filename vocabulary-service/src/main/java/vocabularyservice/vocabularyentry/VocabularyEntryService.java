@@ -42,6 +42,7 @@ public class VocabularyEntryService {
                 .definition(entity.getDefinition())
                 .lastSeenAt(entity.getLastSeenAt())
                 .language(languageService.toDto(entity.getLanguage()))
+                .isDifficult(entity.getIsDifficult())
                 .synonyms(entity.getSynonyms().stream().map(WordEntity::getName).collect(toSet()))
                 .build();
     }
@@ -90,6 +91,7 @@ public class VocabularyEntryService {
         });
         ofNullable(input.getDefinition()).ifPresent(vocabularyEntryEntity::setDefinition);
         ofNullable(input.getLastSeenAt()).ifPresent(vocabularyEntryEntity::setLastSeenAt);
+        ofNullable(input.getIsDifficult()).ifPresent(vocabularyEntryEntity::setIsDifficult);
 
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
