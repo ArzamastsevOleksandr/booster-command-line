@@ -23,6 +23,7 @@
         <module>vocabulary-service</module>
         <module>upload-service</module>
         <module>settings-service</module>
+        <module>tag-service</module>
     </modules>
 
     <properties>
