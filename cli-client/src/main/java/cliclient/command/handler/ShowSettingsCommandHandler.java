@@ -1,8 +1,10 @@
 package cliclient.command.handler;
 
+import api.settings.SettingsDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
+import cliclient.feign.settings.SettingsServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +13,12 @@ import org.springframework.stereotype.Component;
 public class ShowSettingsCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
+    private final SettingsServiceClient settingsServiceClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {
-        adapter.writeLine("NOT IMPLEMENTED");
+        SettingsDto settingsDto = settingsServiceClient.findOne();
+        adapter.writeLine(settingsDto);
     }
 
     @Override
