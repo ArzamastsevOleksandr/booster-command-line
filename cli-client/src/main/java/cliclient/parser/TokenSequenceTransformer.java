@@ -64,6 +64,7 @@ class TokenSequenceTransformer {
                 case PAGINATION -> argumentsBuilder.pagination(Integer.parseInt(flagValue));
                 case SUBSTRING -> argumentsBuilder.substring(flagValue);
                 case CONTEXTS -> argumentsBuilder.contexts(getContexts(flagValue));
+                case VOCABULARY_TRAINING_SESSION_SIZE -> argumentsBuilder.vocabularyTrainingSessionSize(Integer.parseInt(flagValue));
                 default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
             };
         }

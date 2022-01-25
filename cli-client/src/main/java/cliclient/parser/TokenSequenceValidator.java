@@ -106,6 +106,7 @@ class TokenSequenceValidator {
             case VOCABULARY_ENTRY_ID -> checkIfIdIsPositiveLongNumber("Vocabulary entry id", expectedValue.getValue());
             case CORRECT_ANSWERS_COUNT -> checkIfValueIsPositiveIntegerNumber("Correct answers count", expectedValue.getValue());
             case PAGINATION -> checkIfValueIsPositiveIntegerNumber("Pagination", expectedValue.getValue());
+            case VOCABULARY_TRAINING_SESSION_SIZE -> checkIfValueIsPositiveIntegerNumber("Vocabulary training session size", expectedValue.getValue());
             case MODE_VOCABULARY -> checkIfVocabularyTrainingSessionModeIsCorrect(expectedValue.getValue());
         }
     }

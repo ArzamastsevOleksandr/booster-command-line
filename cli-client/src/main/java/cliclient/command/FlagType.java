@@ -34,6 +34,7 @@ public enum FlagType {
     PAGINATION("p"),
     SUBSTRING("ss"),
     CONTEXTS("ctx"),
+    VOCABULARY_TRAINING_SESSION_SIZE("vtss"),
     UNKNOWN("UNKNOWN");
 
     // if any of the flag types have shared values - crash the program early
