@@ -3,6 +3,7 @@ package cliclient.command.handler;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
+import cliclient.feign.settings.SettingsServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Component;
 public class DeleteSettingsCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
+    private final SettingsServiceClient settingsServiceClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {
-        adapter.writeLine("NOT IMPLEMENTED");
+        settingsServiceClient.delete();
+        adapter.writeLine("Done");
     }
 
     @Override
