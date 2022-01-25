@@ -28,6 +28,7 @@ public class CommandWithArgs {
     Integer pagination;
     String substring;
     String tag;
+    Integer vocabularyTrainingSessionSize;
 
     @Builder.Default
     Set<String> addAntonyms = Set.of();
@@ -47,6 +48,7 @@ public class CommandWithArgs {
     @Builder.Default
     List<String> errors = List.of();
 
+    // todo: are these Optionals necessary?
     public Optional<Long> getId() {
         return Optional.ofNullable(id);
     }
@@ -57,10 +59,6 @@ public class CommandWithArgs {
 
     public Optional<Long> getVocabularyEntryId() {
         return Optional.ofNullable(vocabularyEntryId);
-    }
-
-    public Optional<Long> getLanguageId() {
-        return Optional.ofNullable(languageId);
     }
 
     public Optional<String> getName() {

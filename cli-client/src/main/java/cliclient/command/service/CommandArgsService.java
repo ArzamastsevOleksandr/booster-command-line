@@ -19,7 +19,7 @@ class CommandArgsService {
             case DELETE_VOCABULARY_ENTRY -> new DeleteVocabularyEntryCommandArgs(cmdWithArgs.getId().get());
             case ADD_VOCABULARY_ENTRY -> AddVocabularyEntryCommandArgs.builder()
                     .name(cmdWithArgs.getName().get())
-                    .languageId(getOrNull(cmdWithArgs::getLanguageId))
+                    .languageId(cmdWithArgs.getLanguageId())
                     .definition(getOrNull(cmdWithArgs::getDefinition))
                     .tag(getOrNull(cmdWithArgs::getTag))
                     .antonyms(cmdWithArgs.getAntonyms())
@@ -41,7 +41,7 @@ class CommandArgsService {
             case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cmdWithArgs.getMode().get());
             case DOWNLOAD -> new DownloadCommandArgs(cmdWithArgs.getFilename().get());
             case UPLOAD -> new UploadCommandArgs(cmdWithArgs.getFilename().get());
-            case ADD_SETTINGS -> new AddSettingsCommandArgs(getOrNull(cmdWithArgs::getLanguageId));
+            case ADD_SETTINGS -> new AddSettingsCommandArgs(cmdWithArgs.getLanguageId(), cmdWithArgs.getVocabularyTrainingSessionSize());
             case LIST_NOTES -> new ListNotesCommandArgs(cmdWithArgs.getId());
             case ADD_NOTE -> new AddNoteCommandArgs(cmdWithArgs.getContent().get(), cmdWithArgs.getTag().map(Set::of).orElse(Set.of()));
             case DELETE_NOTE -> new DeleteNoteCommandArgs(cmdWithArgs.getId().get());
