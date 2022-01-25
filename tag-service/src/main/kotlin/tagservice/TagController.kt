@@ -19,4 +19,8 @@ class TagController : TagServiceApi {
         return tagService.findAll()
     }
 
+    override fun findById(id: Long): TagDto {
+        return tagService.findById(id)
+    }
+
 }

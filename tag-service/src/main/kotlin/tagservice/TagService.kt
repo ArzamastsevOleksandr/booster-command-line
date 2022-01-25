@@ -1,5 +1,6 @@
 package tagservice
 
+import api.exception.NotFoundException
 import api.tags.TagDto
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +26,12 @@ class TagService {
             .id(tagEntity.id)
             .name(tagEntity.name)
             .build()
+    }
+
+    fun findById(id: Long): TagDto {
+        return tagRepository.findById(id)
+            .map { toDto(it) }
+            .orElseThrow { NotFoundException("Tag not found by id: $id") }
     }
 
 }
