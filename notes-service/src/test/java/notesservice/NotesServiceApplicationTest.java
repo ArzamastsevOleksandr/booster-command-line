@@ -5,7 +5,6 @@ import api.notes.AddNoteInput;
 import api.notes.AddTagsToNoteInput;
 import api.notes.NoteDto;
 import api.tags.TagDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import notesservice.feign.TagServiceClient;
 import org.junit.jupiter.api.Test;
@@ -20,32 +19,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-// todo: should this test directly depend on the api module? Should the api be mocked?
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureEmbeddedDatabase(refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD)
 class NotesServiceApplicationTest {
 
+    static final String CONTENT_1 = "Slowly is the fastest way";
+    static final String CONTENT_2 = "Less but better";
+    static final String TAG_NAME_1 = "education";
+    static final String TAG_NAME_2 = "passion";
+
     @MockBean
     TagServiceClient tagServiceClient;
+
     @Autowired
     TagIdRepository tagIdRepository;
     @Autowired
     NoteService noteService;
     @Autowired
     WebTestClient webTestClient;
-    @Autowired
-    TestNoteService testNoteService;
-    @Autowired
-    NoteRepository noteRepository;
 
     @Test
     void shouldReturn404WhenNoteByIdNotFound() {
-        System.out.println("aaa: " + HttpStatus.NOT_FOUND);
         long id = 1000;
         webTestClient.get()
                 .uri("/notes/" + id)
@@ -67,10 +67,10 @@ class NotesServiceApplicationTest {
         // given
         var content = "Test Note";
         // when
-        Long id = testNoteService.createNote(content);
+        NoteDto noteDto = noteService.add(new AddNoteInput(content));
         // then
         webTestClient.get()
-                .uri("/notes/" + id)
+                .uri("/notes/" + noteDto.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -78,19 +78,16 @@ class NotesServiceApplicationTest {
                 .expectHeader()
                 .contentType(APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(id)
+                .jsonPath("$.id").isEqualTo(noteDto.id())
                 .jsonPath("$.content").isEqualTo(content);
     }
 
     @Test
     void shouldCreateNote() {
-        // given
-        var content = "Test Note";
-        var input = new AddNoteInput(content);
         // when
-        webTestClient.post()
+        NoteDto note = webTestClient.post()
                 .uri("/notes/")
-                .bodyValue(input)
+                .bodyValue(new AddNoteInput(CONTENT_1))
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -98,26 +95,20 @@ class NotesServiceApplicationTest {
                 .expectHeader()
                 .contentType(APPLICATION_JSON)
                 .expectBody(NoteDto.class)
-                .consumeWith(response -> {
-                    NoteDto noteDto = response.getResponseBody();
-                    // then
-                    assertThat(noteDto.id()).isNotNull();
-                    assertThat(noteDto.content()).isEqualTo(content);
-
-                    assertThat(noteRepository.findById(noteDto.id())).isNotEmpty();
-                });
+                .returnResult()
+                .getResponseBody();
+        // then
+        assertThat(note.content()).isEqualTo(CONTENT_1);
+        assertThat(noteService.findById(note.id())).isEqualTo(note);
     }
 
     @Test
     void shouldReturnAllNotes() {
         // given
-        var content1 = "Test Note 1";
-        var content2 = "Test Note 2";
+        NoteDto noteDto1 = noteService.add(new AddNoteInput(CONTENT_1));
+        NoteDto noteDto2 = noteService.add(new AddNoteInput(CONTENT_2));
         // when
-        Long id1 = testNoteService.createNote(content1);
-        Long id2 = testNoteService.createNote(content2);
-        // then
-        webTestClient.get()
+        NoteDto[] notes = webTestClient.get()
                 .uri("/notes/")
                 .accept(APPLICATION_JSON)
                 .exchange()
@@ -125,13 +116,17 @@ class NotesServiceApplicationTest {
                 .isOk()
                 .expectHeader()
                 .contentType(APPLICATION_JSON)
-                .expectBody(Object[].class)
-                .consumeWith(response -> {
-                    Object[] items = response.getResponseBody();
-                    var objectMapper = new ObjectMapper();
-                    List<NoteDto> noteDtos = Arrays.stream(items).map(item -> objectMapper.convertValue(item, NoteDto.class)).toList();
-                    assertThat(noteDtos).containsExactlyInAnyOrder(new NoteDto(id1, content1), new NoteDto(id2, content2));
-                });
+                .expectBody(NoteDto[].class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(List.of(noteDto1, noteDto2)).containsExactlyInAnyOrder(notes);
+        // then
+        List<NoteDto> notesFromDb = Arrays.stream(notes)
+                .map(NoteDto::id)
+                .map(noteService::findById)
+                .toList();
+        assertThat(notesFromDb).containsExactlyInAnyOrder(noteDto1, noteDto2);
     }
 
     @Test
@@ -151,44 +146,39 @@ class NotesServiceApplicationTest {
     @Test
     void shouldDeleteNoteById() {
         // given
-        var content = "Test Note";
-        Long id = testNoteService.createNote(content);
-
-        assertThat(noteRepository.findById(id)).isNotEmpty();
+        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
         // when
         webTestClient.delete()
-                .uri("/notes/" + id)
+                .uri("/notes/" + noteDto.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
                 .expectBody(Void.class);
         // then
-        assertThat(noteRepository.findById(id)).isEmpty();
+        assertThatThrownBy(() -> noteService.findById(noteDto.id()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Note not found by id: " + noteDto.id());
     }
 
     @Test
     void shouldAddTagsToNote() {
         // given
-        var content = "slowly is the fastest way";
-        var education = "education";
-        var passion = "passion";
-
         long tagId1 = 1L;
         long tagId2 = 2L;
 
-        NoteDto noteDto = noteService.add(new AddNoteInput(content));
+        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
 
-        when(tagServiceClient.findByName(education))
-                .thenReturn(TagDto.builder().id(tagId1).name(education).build());
-        when(tagServiceClient.findByName(passion))
-                .thenReturn(TagDto.builder().id(tagId2).name(passion).build());
+        when(tagServiceClient.findByName(TAG_NAME_1))
+                .thenReturn(TagDto.builder().id(tagId1).name(TAG_NAME_1).build());
+        when(tagServiceClient.findByName(TAG_NAME_2))
+                .thenReturn(TagDto.builder().id(tagId2).name(TAG_NAME_2).build());
         // when
         webTestClient.post()
                 .uri("/notes/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
                         .noteId(noteDto.id())
-                        .tagNames(Set.of(education, passion))
+                        .tagNames(Set.of(TAG_NAME_1, TAG_NAME_2))
                         .build())
                 .exchange()
                 .expectStatus()
@@ -219,19 +209,16 @@ class NotesServiceApplicationTest {
     @Test
     void shouldThrowExceptionIfTagsNotFound() {
         // given
-        var content = "slowly is the fastest way";
-        var education = "education";
+        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
 
-        NoteDto noteDto = noteService.add(new AddNoteInput(content));
-
-        when(tagServiceClient.findByName(education))
-                .thenThrow(new NotFoundException("Tag not found by name: " + education));
+        when(tagServiceClient.findByName(TAG_NAME_1))
+                .thenThrow(new NotFoundException("Tag not found by name: " + TAG_NAME_1));
         // when
         webTestClient.post()
                 .uri("/notes/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
                         .noteId(noteDto.id())
-                        .tagNames(Set.of(education))
+                        .tagNames(Set.of(TAG_NAME_1))
                         .build())
                 .exchange()
                 // then
@@ -241,7 +228,7 @@ class NotesServiceApplicationTest {
                 .jsonPath("$.timestamp").isNotEmpty()
                 .jsonPath("$.path").isEqualTo("/notes/add-tags/")
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
-                .jsonPath("$.message").isEqualTo("Tag not found by name: " + education);
+                .jsonPath("$.message").isEqualTo("Tag not found by name: " + TAG_NAME_1);
     }
 
 }
