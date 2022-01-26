@@ -87,6 +87,36 @@ class TagServiceApplicationTests {
     }
 
     @Test
+    fun returns404WhenTagNotFoundByName() {
+        val name = "education"
+        webTestClient.get()
+            .uri("/tags/name/$name")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+            .expectBody()
+            .jsonPath("$.timestamp").isNotEmpty
+            .jsonPath("$.path").isEqualTo("/tags/name/$name")
+            .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name)
+            .jsonPath("$.message").isEqualTo("Tag not found by name: $name")
+    }
+
+    @Test
+    fun findsTagByName() {
+        val name = "education"
+        val tagDto = tagService.create(CreateTagInput(name))
+
+        webTestClient.get()
+            .uri("/tags/name/${tagDto.name}")
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(tagDto.id)
+            .jsonPath("$.name").isEqualTo(tagDto.name)
+    }
+
+    @Test
     fun shouldCreateTag() {
         val name = "education"
         // when

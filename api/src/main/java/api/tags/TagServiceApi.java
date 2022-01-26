@@ -17,6 +17,10 @@ public interface TagServiceApi {
     @ResponseStatus(OK)
     TagDto findById(@PathVariable("id") Long id);
 
+    @GetMapping(value = "/name/{name}")
+    @ResponseStatus(OK)
+    TagDto findByName(@PathVariable("name") String name);
+
     @PostMapping(value = "/")
     @ResponseStatus(CREATED)
     TagDto create(@RequestBody CreateTagInput input);

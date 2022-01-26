@@ -42,4 +42,9 @@ class TagService {
         return toDto(tagRepository.save(tagEntity))
     }
 
+    fun findByName(name: String): TagDto {
+        val tagEntity = tagRepository.findByName(name) ?: throw NotFoundException("Tag not found by name: $name")
+        return toDto(tagEntity)
+    }
+
 }
