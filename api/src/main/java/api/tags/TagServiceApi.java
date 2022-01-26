@@ -1,11 +1,10 @@
 package api.tags;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 public interface TagServiceApi {
@@ -17,5 +16,9 @@ public interface TagServiceApi {
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
     TagDto findById(@PathVariable("id") Long id);
+
+    @PostMapping(value = "/")
+    @ResponseStatus(CREATED)
+    TagDto create(@RequestBody CreateTagInput input);
 
 }
