@@ -5,14 +5,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
+import static org.springframework.http.HttpStatus.OK;
+
 public interface NoteServiceApi {
 
     @GetMapping(value = "/")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     Collection<NoteDto> getAll();
 
     @GetMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(OK)
     NoteDto getById(@PathVariable("id") Long id);
 
     @PostMapping("/")
@@ -22,5 +24,9 @@ public interface NoteServiceApi {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteById(@PathVariable("id") Long id);
+
+    @PostMapping("/add-tags/")
+    @ResponseStatus(OK)
+    NoteDto addTags(@RequestBody AddTagsToNoteInput input);
 
 }

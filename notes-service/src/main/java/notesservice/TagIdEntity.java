@@ -5,33 +5,26 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
-import javax.persistence.*;
-import java.util.HashSet;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
-@Table(name = "notes")
+@Table(name = "tag_ids")
 @Getter
 @Setter
 @ToString
-class NoteEntity {
+class TagIdEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
-    private String content;
-
-    @ManyToMany
-    @ToString.Exclude
-    private Set<TagIdEntity> tagIds = new HashSet<>();
+    Long id;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        NoteEntity that = (NoteEntity) o;
+        TagIdEntity that = (TagIdEntity) o;
         return id != null && Objects.equals(id, that.id);
     }
 
