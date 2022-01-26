@@ -20,6 +20,10 @@ class TagController : TagServiceApi {
         return tagService.findAll()
     }
 
+    override fun findByName(name: String): TagDto {
+        return tagService.findByName(name)
+    }
+
     override fun findById(id: Long): TagDto {
         return tagService.findById(id)
     }
