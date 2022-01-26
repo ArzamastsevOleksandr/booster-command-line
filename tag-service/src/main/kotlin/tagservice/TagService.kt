@@ -1,6 +1,7 @@
 package tagservice
 
 import api.exception.NotFoundException
+import api.tags.CreateTagInput
 import api.tags.TagDto
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 class TagService {
 
     @Autowired
@@ -32,6 +33,13 @@ class TagService {
         return tagRepository.findById(id)
             .map { toDto(it) }
             .orElseThrow { NotFoundException("Tag not found by id: $id") }
+    }
+
+    @Transactional
+    fun create(input: CreateTagInput): TagDto {
+        val tagEntity = TagEntity()
+        tagEntity.name = input.name
+        return toDto(tagRepository.save(tagEntity))
     }
 
 }

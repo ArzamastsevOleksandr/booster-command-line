@@ -1,5 +1,6 @@
 package tagservice
 
+import api.tags.CreateTagInput
 import api.tags.TagDto
 import api.tags.TagServiceApi
 import lombok.extern.slf4j.Slf4j
@@ -21,6 +22,10 @@ class TagController : TagServiceApi {
 
     override fun findById(id: Long): TagDto {
         return tagService.findById(id)
+    }
+
+    override fun create(input: CreateTagInput): TagDto {
+        return tagService.create(input)
     }
 
 }
