@@ -51,7 +51,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         // todo: color + pagination
         Collection<VocabularyEntryDto> vocabularyEntryDtos = vocabularyEntryControllerApiClient.getAll();
         if (CollectionUtils.isEmpty(vocabularyEntryDtos)) {
-            adapter.writeLine("There are no vocabulary entries yet.");
+            adapter.writeLine("There are no vocabulary entries yet");
         } else {
             vocabularyEntryDtos.forEach(entry -> {
                 adapter.writeLine(entry);
