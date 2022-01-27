@@ -25,12 +25,10 @@ public class UseTagArgValidator implements ArgValidator {
 
     @Override
     public CommandWithArgs validateAndReturn(CommandWithArgs commandWithArgs) {
-//        commandWithArgs.getTag().ifPresentOrElse(this::checkIfTagIsPresent, () -> {
-//            throw new ArgsValidationException("Tag is missing");
-//        });
-//        checkThatAnyTargetIsPresent(commandWithArgs);
-//        commandWithArgs.getNoteId().ifPresent(this::checkIfNoteExistsWithId);
-//        commandWithArgs.getVocabularyEntryId().ifPresent(this::checkIfVocabularyEntryExistsWithId);
+        if (commandWithArgs.getTag().isEmpty()) {
+            throw new ArgsValidationException("Tag is missing");
+        }
+        checkThatAnyTargetIsPresent(commandWithArgs);
         return commandWithArgs;
     }
 
