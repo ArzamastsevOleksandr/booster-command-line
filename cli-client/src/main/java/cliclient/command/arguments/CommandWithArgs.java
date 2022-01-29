@@ -21,8 +21,12 @@ public class CommandWithArgs {
     Long vocabularyEntryId;
     String name;
     String definition;
-    String filename;
-    VocabularyTrainingSessionMode mode;
+    @Builder.Default
+    String downloadFilename = "download.xlsx";
+    @Builder.Default
+    String uploadFilename = "upload.xlsx";
+    @Builder.Default
+    VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
     String content;
     Integer correctAnswersCount;
     Integer pagination;
@@ -67,10 +71,6 @@ public class CommandWithArgs {
 
     public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);
-    }
-
-    public Optional<String> getFilename() {
-        return Optional.ofNullable(filename);
     }
 
     public Optional<String> getTag() {

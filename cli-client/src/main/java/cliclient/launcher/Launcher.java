@@ -3,9 +3,9 @@ package cliclient.launcher;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.adapter.CommonOperations;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgumentsValidator;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
+import cliclient.parser.CommandLineInputTransformer;
 import cliclient.preprocessor.CommandWithArgsPreprocessor;
 import cliclient.service.SessionTrackerService;
 import cliclient.util.ColorCodes;
@@ -17,18 +17,17 @@ import org.springframework.stereotype.Component;
 public class Launcher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
-    private final CommandArgumentsValidator commandArgumentsValidator;
     private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
     private final CommandWithArgsPreprocessor preprocessor;
     private final SessionTrackerService sessionTrackerService;
+    private final CommandLineInputTransformer transformer;
 
     public void launch() {
         adapter.writeLine("Welcome to the Booster!");
         commonOperations.help();
         askForInput();
 
-        // todo: nextCommandWithArguments only returns, move real logic here (separation of concerns)
         CommandWithArgs commandWithArgs = nextCommandWithArguments();
         commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
         Command command = commandWithArgs.getCommand();
@@ -56,10 +55,9 @@ public class Launcher {
         }
     }
 
-    // todo: SRP + naming
     private CommandWithArgs nextCommandWithArguments() {
         String line = adapter.readLine();
-        return commandArgumentsValidator.validate(line);
+        return transformer.fromString(line);
     }
 
     private void askForInput() {

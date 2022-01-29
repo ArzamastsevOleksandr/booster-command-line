@@ -18,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import static java.util.Optional.ofNullable;
+
 @Component
 @RequiredArgsConstructor
 public class UploadCommandHandler implements CommandHandler {
@@ -28,8 +30,20 @@ public class UploadCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (UploadCommandArgs) commandArgs;
+        boolean fileExists = ofNullable(args.filename())
+                .map(this::fileExists)
+                .orElse(false);
+
+        if (fileExists) {
+            doUpload(args.filename());
+        } else {
+            adapter.writeLine("File " + args.filename() + " or default upload file do not exist");
+        }
+    }
+
+    private void doUpload(String filename) {
         try {
-            MultipartFile multipartFile = createMultipartFile(args.filename());
+            MultipartFile multipartFile = createMultipartFile(filename);
             UploadResponse uploadResponse = uploadServiceClient.upload(multipartFile);
 
             adapter.writeLine("Notes uploaded: " + uploadResponse.notesUploaded());
@@ -37,6 +51,11 @@ public class UploadCommandHandler implements CommandHandler {
         } catch (IOException e) {
             adapter.writeLine("Error during upload process: " + e.getMessage());
         }
+    }
+
+    private boolean fileExists(String filename) {
+        var file = new File(filename);
+        return file.exists() && !file.isDirectory();
     }
 
     private MultipartFile createMultipartFile(String filename) throws IOException {
