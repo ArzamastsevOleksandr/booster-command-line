@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
-
 @Component
 @RequiredArgsConstructor
 public class ListVocabularyEntriesCommandHandler implements CommandHandler {
@@ -75,7 +73,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private void displayAllAtOnce(List<VocabularyEntry> entries) {
         entries.stream().map(colorProcessor::coloredEntry).forEach(adapter::writeLine);
-        vocabularyEntryService.updateLastSeenAtByIds(entries.stream().map(VocabularyEntry::getId).collect(toList()));
+//        vocabularyEntryService.updateLastSeenAtByIds(entries.stream().map(VocabularyEntry::getId).collect(toList()));
     }
 
     private static class Paginator {
