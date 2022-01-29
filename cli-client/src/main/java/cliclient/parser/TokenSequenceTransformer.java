@@ -51,7 +51,7 @@ class TokenSequenceTransformer {
                 case NAME -> argumentsBuilder.name(flagValue);
                 case TAG -> argumentsBuilder.tag(flagValue);
                 case DESCRIPTION -> argumentsBuilder.definition(flagValue);
-                case FILE -> argumentsBuilder.filename(flagValue);
+                case FILE -> argumentsBuilder.downloadFilename(flagValue);
                 case MODE_VOCABULARY -> argumentsBuilder.mode(VocabularyTrainingSessionMode.fromString(flagValue));
                 case SYNONYMS -> argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
                 case ANTONYMS -> argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));
