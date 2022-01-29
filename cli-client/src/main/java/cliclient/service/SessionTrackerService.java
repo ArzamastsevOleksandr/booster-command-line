@@ -1,6 +1,5 @@
 package cliclient.service;
 
-import cliclient.dao.params.AddCause;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +14,15 @@ public class SessionTrackerService {
 
     private long initStartTime;
     // todo: exact entries, notes, tags, training session details etc
-    private int vocabularyEntriesAddedCount;
-    private int notesAddedCount;
+    public int vocabularyEntriesAddedCount;
+    public int notesAddedCount;
 
-    private int vocabularyEntriesImportedCount;
-    private int notesImportedCount;
+    public int vocabularyEntriesImportedCount;
+    public int notesImportedCount;
 
     @PostConstruct
     void postConstruct() {
         initStartTime = System.currentTimeMillis();
-    }
-
-    public void incVocabularyEntriesCount(AddCause addCause) {
-        if (addCause == AddCause.IMPORT) {
-            vocabularyEntriesImportedCount++;
-        } else {
-            vocabularyEntriesAddedCount++;
-        }
-    }
-
-    public void incNotesCount(AddCause addCause) {
-        if (addCause == AddCause.IMPORT) {
-            notesImportedCount++;
-        } else {
-            notesAddedCount++;
-        }
     }
 
     public Optional<String> getStatistics() {
