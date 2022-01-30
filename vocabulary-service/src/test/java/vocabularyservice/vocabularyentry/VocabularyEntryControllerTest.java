@@ -2,16 +2,12 @@ package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
 import api.vocabulary.*;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import net.minidev.json.JSONArray;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import vocabularyservice.language.LanguageService;
+import vocabularyservice.BaseIntegrationTest;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
@@ -22,17 +18,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureEmbeddedDatabase(refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD)
-class VocabularyEntryControllerTest {
+class VocabularyEntryControllerTest extends BaseIntegrationTest {
 
     @Autowired
     VocabularyEntryService vocabularyEntryService;
-    @Autowired
-    LanguageService languageService;
-    @Autowired
-    WebTestClient webTestClient;
 
     @Test
     void shouldReturnAllVocabularyEntries() {
