@@ -1,5 +1,6 @@
 package cliclient.command.handler;
 
+import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
@@ -7,7 +8,6 @@ import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
-import cliclient.service.ColorProcessor;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
@@ -25,11 +25,12 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class StartVocabularyTrainingSessionCommandHandler implements CommandHandler {
 
+    private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
+
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
-    private final ColorProcessor colorProcessor;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -233,21 +234,21 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
                                       String label) {
         Set<String> originalEquivalentsCopy = new HashSet<>(supplier.get());
         originalEquivalentsCopy.removeAll(partialAnswer);
-        vocabularyEntryService.incCorrectAnswersCount(entry);
+        incCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.yellow("Correct."));
         adapter.writeLine("Other " + label + ": " + ColorCodes.yellow(String.join(", ", originalEquivalentsCopy)));
         stats.addPartialAnswer(entry);
     }
 
     private void processWrongAnswer(VocabularyEntryDto entry, Supplier<Set<String>> supplier) {
-        vocabularyEntryService.decCorrectAnswersCount(entry);
+        decCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.red("Wrong."));
         adapter.writeLine("Answer is: " + ColorCodes.red(String.join(", ", supplier.get())));
         stats.addWrongAnswer(entry);
     }
 
     private void processCorrectAnswer(VocabularyEntryDto entry) {
-        vocabularyEntryService.incCorrectAnswersCount(entry);
+        incCorrectAnswersCount(entry);
         adapter.writeLine(ColorCodes.green("Correct!"));
         stats.addCorrectAnswer(entry);
     }
@@ -256,6 +257,29 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         return Arrays.stream(equivalents.split(";"))
                 .map(String::strip)
                 .collect(toSet());
+    }
+
+    private void incCorrectAnswersCount(VocabularyEntryDto entry) {
+        updateCorrectAnswersCount(entry, true);
+    }
+
+    private void decCorrectAnswersCount(VocabularyEntryDto entry) {
+        updateCorrectAnswersCount(entry, false);
+    }
+
+    private void updateCorrectAnswersCount(VocabularyEntryDto entry, boolean correct) {
+        int change = correct ? 1 : -1;
+        int newValue = entry.getCorrectAnswersCount() + change;
+        if (isValidCorrectAnswersCount(newValue)) {
+            vocabularyEntryControllerApiClient.patchEntry(PatchVocabularyEntryInput.builder()
+                    .id(entry.getId())
+                    .correctAnswersCount(newValue)
+                    .build());
+        }
+    }
+
+    private boolean isValidCorrectAnswersCount(int cacUpdated) {
+        return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated;
     }
 
 }
