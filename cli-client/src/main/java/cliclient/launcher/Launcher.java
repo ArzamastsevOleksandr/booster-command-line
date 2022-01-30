@@ -1,5 +1,6 @@
 package cliclient.launcher;
 
+import api.exception.HttpErrorResponse;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.adapter.CommonOperations;
 import cliclient.command.Command;
@@ -9,8 +10,12 @@ import cliclient.parser.CommandLineInputTransformer;
 import cliclient.preprocessor.CommandWithArgsPreprocessor;
 import cliclient.service.SessionTrackerService;
 import cliclient.util.ColorCodes;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +27,7 @@ public class Launcher {
     private final CommandWithArgsPreprocessor preprocessor;
     private final SessionTrackerService sessionTrackerService;
     private final CommandLineInputTransformer transformer;
+    private final ObjectMapper objectMapper;
 
     public void launch() {
         adapter.writeLine("Welcome to the Booster!");
@@ -51,7 +57,18 @@ public class Launcher {
         try {
             commandHandlerCollectionService.handle(commandWithArgs);
         } catch (Throwable t) {
-            adapter.writeLine("Error: " + t.getMessage());
+            if (t instanceof FeignException.FeignClientException) {
+                try {
+                    var e = (FeignException.FeignClientException) t;
+                    HttpErrorResponse httpErrorResponse = objectMapper.readValue(e.contentUTF8().getBytes(), HttpErrorResponse.class);
+                    adapter.error(httpErrorResponse.getMessage());
+                } catch (IOException ioe) {
+                    adapter.error(t.getMessage());
+                    adapter.error(ioe.getMessage());
+                }
+            } else {
+                adapter.error(t.getMessage());
+            }
         }
     }
 
