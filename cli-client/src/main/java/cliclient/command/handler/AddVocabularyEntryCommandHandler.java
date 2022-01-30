@@ -7,7 +7,6 @@ import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.AddVocabularyEntryCommandArgs;
 import cliclient.command.arguments.CommandArgs;
-import cliclient.service.ColorProcessor;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,6 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
     private final SessionTrackerService sessionTrackerService;
-    private final ColorProcessor colorProcessor;
     private final VocabularyEntryControllerApi vocabularyEntryControllerApi;
 
     @Override

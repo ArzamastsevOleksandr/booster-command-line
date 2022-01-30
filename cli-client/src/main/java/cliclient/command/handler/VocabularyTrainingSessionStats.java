@@ -3,7 +3,7 @@ package cliclient.command.handler;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
-import cliclient.service.ColorProcessor;
+import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.AccessLevel;
@@ -25,7 +25,7 @@ class VocabularyTrainingSessionStats {
     private static final int ENTRIES_PER_TRAINING_SESSION = 5;
 
     private final CommandLineAdapter adapter;
-    private final ColorProcessor colorProcessor;
+    private final VocabularyEntryService vocabularyEntryService;
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
     private final Set<VocabularyEntryDto> wrongAnswers = new HashSet<>();
@@ -74,7 +74,7 @@ class VocabularyTrainingSessionStats {
                     .map(vocabularyEntryControllerApiClient::findById)
                     .forEach(entry -> {
                         adapter.writeLine(entry);
-//                        vocabularyEntryService.updateLastSeenAtById(entry.getId());
+                        vocabularyEntryService.updateLastSeenAt(entry);
                     });
             adapter.newLine();
         }

@@ -7,7 +7,6 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.UpdateVocabularyEntryCommandArgs;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
-import cliclient.service.ColorProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,6 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
     private final CommandLineAdapter adapter;
-    private final ColorProcessor colorProcessor;
 
     // todo: update contexts
     @Override
