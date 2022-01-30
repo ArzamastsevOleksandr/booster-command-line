@@ -1,5 +1,7 @@
 package cliclient.adapter;
 
+import cliclient.util.ColorCodes;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,13 +21,17 @@ public class CommandLineAdapter {
         try {
             return bufferedReader.readLine().strip();
         } catch (IOException e) {
-            e.printStackTrace();
+            error(e.getMessage());
             return "AN ERROR OCCURRED";
         }
     }
 
     public void writeLine(Object obj) {
         System.out.println(obj);
+    }
+
+    public void error(Object obj) {
+        writeLine(ColorCodes.red(obj));
     }
 
     public void write(Object obj) {
