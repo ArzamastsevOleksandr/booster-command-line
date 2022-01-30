@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VocabularyEntryService {
+class VocabularyEntryService {
 
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;

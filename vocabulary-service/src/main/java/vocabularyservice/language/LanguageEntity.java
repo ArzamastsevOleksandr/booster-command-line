@@ -1,18 +1,17 @@
 package vocabularyservice.language;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "languages")
 @Getter
 @Setter
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
+@RequiredArgsConstructor
 public class LanguageEntity {
 
     @Id
@@ -21,5 +20,18 @@ public class LanguageEntity {
     private Long id;
 
     private String name;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        var that = (LanguageEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
 }
