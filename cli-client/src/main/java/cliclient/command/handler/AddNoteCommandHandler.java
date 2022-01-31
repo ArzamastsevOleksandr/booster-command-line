@@ -22,11 +22,10 @@ public class AddNoteCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (AddNoteCommandArgs) commandArgs;
-        var input = new AddNoteInput(args.content());
-        NoteDto noteDto = notesServiceClient.add(input);
+        NoteDto noteDto = notesServiceClient.add(new AddNoteInput(args.content()));
         sessionTrackerService.notesAddedCount++;
         adapter.writeLine(noteDto);
-        adapter.writeLine("Notes added so far: " + sessionTrackerService.getNotesAddedCount());
+        adapter.writeLine("Notes added so far: " + sessionTrackerService.notesAddedCount);
     }
 
     @Override

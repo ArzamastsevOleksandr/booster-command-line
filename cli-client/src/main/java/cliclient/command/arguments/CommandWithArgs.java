@@ -1,12 +1,10 @@
 package cliclient.command.arguments;
 
 import cliclient.command.Command;
-import cliclient.util.ObjectUtil;
 import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Value
@@ -51,69 +49,6 @@ public class CommandWithArgs {
 
     @Builder.Default
     List<String> errors = List.of();
-
-    // todo: are these Optionals necessary?
-    public Optional<Long> getId() {
-        return Optional.ofNullable(id);
-    }
-
-    public Optional<Long> getNoteId() {
-        return Optional.ofNullable(noteId);
-    }
-
-    public Optional<Long> getVocabularyEntryId() {
-        return Optional.ofNullable(vocabularyEntryId);
-    }
-
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
-    }
-
-    public Optional<String> getDefinition() {
-        return Optional.ofNullable(definition);
-    }
-
-    public Optional<String> getTag() {
-        return Optional.ofNullable(tag);
-    }
-
-    public Optional<VocabularyTrainingSessionMode> getMode() {
-        return Optional.ofNullable(mode);
-    }
-
-    public Optional<String> getContent() {
-        return Optional.ofNullable(content);
-    }
-
-    public Optional<Integer> getCorrectAnswersCount() {
-        return Optional.ofNullable(correctAnswersCount);
-    }
-
-    public Optional<Integer> getPagination() {
-        return Optional.ofNullable(pagination);
-    }
-
-    public Optional<String> getSubstring() {
-        return Optional.ofNullable(substring);
-    }
-
-    public Set<String> getSynonyms() {
-        return synonyms == null ? Set.of() : synonyms;
-    }
-
-    public Set<String> getAntonyms() {
-        return antonyms == null ? Set.of() : antonyms;
-    }
-
-    public static CommandWithArgs withErrors(List<String> errors) {
-        return CommandWithArgs.builder()
-                .errors(ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"))
-                .build();
-    }
-
-    public static CommandWithArgs singleCommand(Command command) {
-        return CommandWithArgs.builder().command(command).build();
-    }
 
     public boolean hasNoErrors() {
         return errors == null || errors.isEmpty();

@@ -7,7 +7,7 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
 import cliclient.parser.CommandLineInputTransformer;
-import cliclient.preprocessor.CommandWithArgsPreprocessor;
+import cliclient.postprocessor.CommandWithArgsPostProcessor;
 import cliclient.service.SessionTrackerService;
 import cliclient.util.ColorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +24,7 @@ public class Launcher {
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandLineAdapter adapter;
     private final CommonOperations commonOperations;
-    private final CommandWithArgsPreprocessor preprocessor;
+    private final CommandWithArgsPostProcessor postProcessor;
     private final SessionTrackerService sessionTrackerService;
     private final CommandLineInputTransformer transformer;
     private final ObjectMapper objectMapper;
@@ -32,35 +32,28 @@ public class Launcher {
     public void launch() {
         adapter.writeLine("Welcome to the Booster!");
         commonOperations.help();
-        askForInput();
-
-        CommandWithArgs commandWithArgs = nextCommandWithArguments();
-        commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
-        Command command = commandWithArgs.getCommand();
-        while (Command.isNotExit(command)) {
-            handleCommandWithArguments(commandWithArgs);
-
-            askForInput();
-            commandWithArgs = nextCommandWithArguments();
-            commandWithArgs = commandWithArgs.hasNoErrors() ? preprocessor.preprocess(commandWithArgs) : commandWithArgs;
-            command = commandWithArgs.getCommand();
-        }
-        sessionTrackerService.getStatistics().ifPresentOrElse(
-                adapter::writeLine,
-                () -> adapter.writeLine("No significant activity observed")
-        );
+        userInteractions();
+        adapter.writeLine(sessionTrackerService.getStatistics());
         adapter.newLine();
         adapter.writeLine("See you next time!");
     }
 
-    private void handleCommandWithArguments(CommandWithArgs commandWithArgs) {
+    private void userInteractions() {
+        CommandWithArgs commandWithArgs = readInputAndParseToCommandWithArgs();
+        while (commandWithArgs.getCommand() != Command.EXIT) {
+            handleCommandWithArgs(commandWithArgs);
+            commandWithArgs = readInputAndParseToCommandWithArgs();
+        }
+    }
+
+    private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
         try {
             commandHandlerCollectionService.handle(commandWithArgs);
         } catch (Throwable t) {
             if (t instanceof FeignException.FeignClientException) {
                 try {
                     var e = (FeignException.FeignClientException) t;
-                    HttpErrorResponse httpErrorResponse = objectMapper.readValue(e.contentUTF8().getBytes(), HttpErrorResponse.class);
+                    var httpErrorResponse = objectMapper.readValue(e.contentUTF8().getBytes(), HttpErrorResponse.class);
                     adapter.error(httpErrorResponse.getMessage());
                 } catch (IOException ioe) {
                     adapter.error(t.getMessage());
@@ -72,13 +65,11 @@ public class Launcher {
         }
     }
 
-    private CommandWithArgs nextCommandWithArguments() {
-        String line = adapter.readLine();
-        return transformer.fromString(line);
-    }
-
-    private void askForInput() {
+    private CommandWithArgs readInputAndParseToCommandWithArgs() {
         adapter.write(ColorCodes.purple(">> "));
+        String line = adapter.readLine();
+        CommandWithArgs commandWithArgs = transformer.fromString(line);
+        return commandWithArgs.hasNoErrors() ? postProcessor.process(commandWithArgs) : commandWithArgs;
     }
 
 }

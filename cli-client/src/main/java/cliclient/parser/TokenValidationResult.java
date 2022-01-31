@@ -1,6 +1,5 @@
 package cliclient.parser;
 
-import cliclient.util.ObjectUtil;
 import lombok.Value;
 
 import java.util.List;
@@ -23,11 +22,11 @@ class TokenValidationResult {
     // todo: Supplier for string concatenation?
     // todo: var arg
     static TokenValidationResult withErrors(List<String> errors) {
-        return new TokenValidationResult(List.of(), ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"));
+        return new TokenValidationResult(List.of(), errors);
     }
 
     static TokenValidationResult success(List<Token> tokens) {
-        return new TokenValidationResult(ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null"), List.of());
+        return new TokenValidationResult(tokens, List.of());
     }
 
 }

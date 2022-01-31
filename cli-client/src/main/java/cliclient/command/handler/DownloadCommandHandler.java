@@ -20,6 +20,7 @@ public class DownloadCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         var args = (DownloadCommandArgs) commandArgs;
         byte[] bytes = downloadServiceClient.download();
+        // todo: settings + properties
         try (var out = new FileOutputStream("download.xlsx")) {
             out.write(bytes);
         } catch (IOException e) {

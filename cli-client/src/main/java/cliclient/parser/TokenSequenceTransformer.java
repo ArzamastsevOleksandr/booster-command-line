@@ -4,9 +4,6 @@ import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
-import cliclient.util.ObjectUtil;
-import cliclient.util.StringUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -15,21 +12,15 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 
-// todo: analyzer util: smartToString. Get all fields via reflection, group them by null, not null.
-//  Use that for analysis.
 @Component
-@RequiredArgsConstructor
 class TokenSequenceTransformer {
 
-    private final StringUtil stringUtil;
-
     CommandWithArgs transform(List<Token> tokens) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
 
         Token token = tokens.get(0);
         Command command = Command.fromString(token.getValue());
         if (tokens.size() == 1) {
-            return CommandWithArgs.singleCommand(command);
+            return CommandWithArgs.builder().command(command).build();
         }
 
         var argumentsBuilder = CommandWithArgs.builder()
@@ -74,15 +65,19 @@ class TokenSequenceTransformer {
     private Set<String> getContexts(String value) {
         return Arrays.stream(value.split(Token.CONTEXT_DELIMITER))
                 .map(String::strip)
-                .filter(stringUtil::isNotBlank)
+                .filter(this::isNotBlank)
                 .collect(toSet());
     }
 
     private Set<String> getWordEquivalentNames(String value) {
         return Arrays.stream(value.split(Token.WORD_EQUIVALENT_DELIMITER))
                 .map(String::strip)
-                .filter(stringUtil::isNotBlank)
+                .filter(this::isNotBlank)
                 .collect(toSet());
+    }
+
+    private boolean isNotBlank(String s) {
+        return s != null && !s.isBlank();
     }
 
 }

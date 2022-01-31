@@ -4,66 +4,66 @@ import cliclient.command.FlagType;
 import cliclient.command.arguments.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 
 @Service
 class CommandArgsService {
 
-    CommandArgs getCommandArgs(CommandWithArgs cmdWithArgs) {
-        return switch (cmdWithArgs.getCommand()) {
+    CommandArgs getCommandArgs(CommandWithArgs cwa) {
+        return switch (cwa.getCommand()) {
             case EXIT, HELP, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
-            case ADD_LANGUAGE -> new AddLanguageCommandArgs(cmdWithArgs.getName().get());
-            case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cmdWithArgs.getId().get());
-            case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(cmdWithArgs.getId(), cmdWithArgs.getPagination(), cmdWithArgs.getSubstring());
-            case DELETE_VOCABULARY_ENTRY -> new DeleteVocabularyEntryCommandArgs(cmdWithArgs.getId().get());
+            case ADD_LANGUAGE -> new AddLanguageCommandArgs(cwa.getName());
+            case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cwa.getId());
+            case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring()));
+            case DELETE_VOCABULARY_ENTRY -> new DeleteVocabularyEntryCommandArgs(cwa.getId());
             case ADD_VOCABULARY_ENTRY -> AddVocabularyEntryCommandArgs.builder()
-                    .name(cmdWithArgs.getName().get())
-                    .languageId(cmdWithArgs.getLanguageId())
-                    .definition(getOrNull(cmdWithArgs::getDefinition))
-                    .tag(getOrNull(cmdWithArgs::getTag))
-                    .antonyms(cmdWithArgs.getAntonyms())
-                    .synonyms(cmdWithArgs.getSynonyms())
-                    .contexts(cmdWithArgs.getContexts())
+                    .name(cwa.getName())
+                    .languageId(cwa.getLanguageId())
+                    .definition(cwa.getDefinition())
+                    .tag(cwa.getTag())
+                    .antonyms(cwa.getAntonyms())
+                    .synonyms(cwa.getSynonyms())
+                    .contexts(cwa.getContexts())
                     .build();
             case UPDATE_VOCABULARY_ENTRY -> UpdateVocabularyEntryCommandArgs.builder()
-                    .id(cmdWithArgs.getId().get())
-                    .name(getOrNull(cmdWithArgs::getName))
-                    .definition(getOrNull(cmdWithArgs::getDefinition))
-                    .correctAnswersCount(getOrNull(cmdWithArgs::getCorrectAnswersCount))
-                    .antonyms(cmdWithArgs.getAntonyms())
-                    .synonyms(cmdWithArgs.getSynonyms())
-                    .addAntonyms(cmdWithArgs.getAddAntonyms())
-                    .removeAntonyms(cmdWithArgs.getRemoveAntonyms())
-                    .addSynonyms(cmdWithArgs.getAddSynonyms())
-                    .removeSynonyms(cmdWithArgs.getRemoveSynonyms())
+                    .id(cwa.getId())
+                    .name(cwa.getName())
+                    .definition(cwa.getDefinition())
+                    .correctAnswersCount(cwa.getCorrectAnswersCount())
+                    .antonyms(cwa.getAntonyms())
+                    .synonyms(cwa.getSynonyms())
+                    .addAntonyms(cwa.getAddAntonyms())
+                    .removeAntonyms(cwa.getRemoveAntonyms())
+                    .addSynonyms(cwa.getAddSynonyms())
+                    .removeSynonyms(cwa.getRemoveSynonyms())
                     .build();
-            case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cmdWithArgs.getMode().get());
-            case DOWNLOAD -> new DownloadCommandArgs(cmdWithArgs.getDownloadFilename());
-            case UPLOAD -> new UploadCommandArgs(cmdWithArgs.getUploadFilename());
-            case ADD_SETTINGS -> new AddSettingsCommandArgs(cmdWithArgs.getLanguageId(), cmdWithArgs.getVocabularyTrainingSessionSize());
-            case LIST_NOTES -> new ListNotesCommandArgs(cmdWithArgs.getId());
-            case ADD_NOTE -> new AddNoteCommandArgs(cmdWithArgs.getContent().get(), cmdWithArgs.getTag().map(Set::of).orElse(Set.of()));
-            case DELETE_NOTE -> new DeleteNoteCommandArgs(cmdWithArgs.getId().get());
-            case ADD_TAG -> new AddTagCommandArgs(cmdWithArgs.getName().get());
-            case USE_TAG -> useTag(cmdWithArgs);
-            case MARK_VOCABULARY_ENTRY_DIFFICULT, MARK_VOCABULARY_ENTRY_NOT_DIFFICULT -> new MarkVocabularyEntryDifficultCommandArgs(cmdWithArgs.getId().get());
+            case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cwa.getMode());
+            case DOWNLOAD -> new DownloadCommandArgs(cwa.getDownloadFilename());
+            case UPLOAD -> new UploadCommandArgs(cwa.getUploadFilename());
+            case ADD_SETTINGS -> new AddSettingsCommandArgs(cwa.getLanguageId(), cwa.getVocabularyTrainingSessionSize());
+            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()));
+            case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));
+            case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());
+            case ADD_TAG -> new AddTagCommandArgs(cwa.getName());
+            case USE_TAG -> useTag(cwa);
+            case MARK_VOCABULARY_ENTRY_DIFFICULT, MARK_VOCABULARY_ENTRY_NOT_DIFFICULT -> new MarkVocabularyEntryDifficultCommandArgs(cwa.getId());
         };
     }
 
     private UseTagCommandArgs useTag(CommandWithArgs cmdWithArgs) {
         checkThatAnyTargetIsPresent(cmdWithArgs);
-        return new UseTagCommandArgs(cmdWithArgs.getTag().get(), cmdWithArgs.getNoteId(), cmdWithArgs.getVocabularyEntryId());
+        return new UseTagCommandArgs(cmdWithArgs.getTag(), ofNullable(cmdWithArgs.getNoteId()), ofNullable(cmdWithArgs.getVocabularyEntryId()));
     }
 
     // todo: find a place for validation
     private void checkThatAnyTargetIsPresent(CommandWithArgs commandWithArgs) {
         boolean noTargetsArePresent = Stream.of(commandWithArgs.getVocabularyEntryId(), commandWithArgs.getNoteId())
-                .allMatch(Optional::isEmpty);
+                .allMatch(Objects::nonNull);
 
         if (noTargetsArePresent) {
             String flagTypes = Stream.of(FlagType.NOTE_ID, FlagType.VOCABULARY_ENTRY_ID)
@@ -71,10 +71,6 @@ class CommandArgsService {
                     .collect(joining(", "));
 //            throw new ArgsValidationException("At least one target must be specified when using tags: " + flagTypes);
         }
-    }
-
-    private <T> T getOrNull(Supplier<Optional<T>> s) {
-        return s.get().orElse(null);
     }
 
 }

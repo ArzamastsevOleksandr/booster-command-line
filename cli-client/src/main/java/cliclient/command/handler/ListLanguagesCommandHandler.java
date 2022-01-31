@@ -20,7 +20,6 @@ public class ListLanguagesCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         Collection<LanguageDto> languageDtos = languageControllerApiClient.getAll();
-
         if (languageDtos.isEmpty()) {
             adapter.writeLine("There are no languages yet");
         } else {

@@ -22,7 +22,9 @@ public class UseTagCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (UseTagCommandArgs) commandArgs;
-        args.noteId().map(id -> addTagsToNote(args, id)).ifPresent(adapter::writeLine);
+        args.noteId()
+                .map(id -> addTagsToNote(args, id))
+                .ifPresent(adapter::writeLine);
     }
 
     private NoteDto addTagsToNote(UseTagCommandArgs args, Long id) {

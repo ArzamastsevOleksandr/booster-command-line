@@ -2,7 +2,6 @@ package cliclient.parser;
 
 import cliclient.command.Command;
 import cliclient.command.FlagType;
-import cliclient.util.ObjectUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -16,7 +15,6 @@ import static cliclient.parser.Token.SEPARATOR;
 class CommandLineInputTokenizer {
 
     List<Token> parseIntoTokens(String input) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(input, "input can not be null");
         return parse(input.toCharArray(), new LinkedList<>());
     }
 

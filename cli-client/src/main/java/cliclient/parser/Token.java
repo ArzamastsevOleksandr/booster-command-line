@@ -1,6 +1,5 @@
 package cliclient.parser;
 
-import cliclient.util.ObjectUtil;
 import lombok.Value;
 
 @Value
@@ -15,12 +14,10 @@ class Token {
     TokenType type;
 
     static Token number(String value) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(value, "number value can not be null");
         return new Token(value, TokenType.NUMBER);
     }
 
     static Token text(String value) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(value, "text value can not be null");
         return new Token(value, TokenType.TEXT);
     }
 
@@ -29,12 +26,10 @@ class Token {
     }
 
     static Token command(String value) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(value, "command value can not be null");
         return new Token(value, TokenType.COMMAND);
     }
 
     static Token flag(String value) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(value, "flag value can not be null");
         return new Token(value, TokenType.FLAG);
     }
 
