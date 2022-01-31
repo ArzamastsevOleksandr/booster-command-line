@@ -40,30 +40,30 @@ class VocabularyTrainingSessionStats {
         skipped.clear();
     }
 
-    void displayAnswers() {
-        displayCorrectAnswers();
-        displayPartialAnswers();
-        displayWrongAnswers();
-        displaySkipped();
+    void showAnswers() {
+        showCorrectAnswers();
+        showPartialAnswers();
+        showWrongAnswers();
+        showSkipped();
     }
 
-    private void displayCorrectAnswers() {
-        displayAnswers(correctAnswers, ColorCodes.green("Correct answers " + fraction(correctAnswers.size())));
+    private void showCorrectAnswers() {
+        showAnswers(correctAnswers, ColorCodes.green("Correct answers " + fraction(correctAnswers.size())));
     }
 
-    private void displayPartialAnswers() {
-        displayAnswers(partialAnswers, ColorCodes.yellow("Partial answers " + fraction(partialAnswers.size())));
+    private void showPartialAnswers() {
+        showAnswers(partialAnswers, ColorCodes.yellow("Partial answers " + fraction(partialAnswers.size())));
     }
 
-    private void displayWrongAnswers() {
-        displayAnswers(wrongAnswers, ColorCodes.red("Wrong answers " + fraction(wrongAnswers.size())));
+    private void showWrongAnswers() {
+        showAnswers(wrongAnswers, ColorCodes.red("Wrong answers " + fraction(wrongAnswers.size())));
     }
 
-    private void displaySkipped() {
-        displayAnswers(skipped, ColorCodes.blue("Skipped " + fraction(skipped.size())));
+    private void showSkipped() {
+        showAnswers(skipped, ColorCodes.blue("Skipped " + fraction(skipped.size())));
     }
 
-    private void displayAnswers(Set<VocabularyEntryDto> answers, String label) {
+    private void showAnswers(Set<VocabularyEntryDto> answers, String label) {
         if (!answers.isEmpty()) {
             ThreadUtil.sleepSeconds(1);
             adapter.writeLine(purpleSeparator());

@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -24,13 +23,6 @@ class TokenSequenceValidatorTest {
 
     @InjectMocks
     TokenSequenceValidator validator;
-
-    @Test
-    void throwsIAEIfTokensAreNull() {
-        assertThatThrownBy(() -> validator.validate(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("tokens can not be null");
-    }
 
     @Test
     void tokenSequenceMustConsistOfAtLeastOneArgument() {

@@ -80,14 +80,6 @@ public enum Command {
                 .orElse(UNRECOGNIZED);
     }
 
-    public static boolean isExit(Command command) {
-        return command == EXIT;
-    }
-
-    public static boolean isNotExit(Command command) {
-        return !isExit(command);
-    }
-
     public static boolean isRecognizable(Command command) {
         return command != UNRECOGNIZED;
     }

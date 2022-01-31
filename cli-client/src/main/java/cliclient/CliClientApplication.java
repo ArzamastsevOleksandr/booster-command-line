@@ -63,6 +63,8 @@ public class CliClientApplication {
         ConfigurableApplicationContext context = SpringApplication.run(CliClientApplication.class, args);
         var launcher = context.getBean(Launcher.class);
         launcher.launch();
+        context.registerShutdownHook();
+        context.close();
         // todo: window functions (row_number() etc)
         // todo: learn: use CompositeKey abstraction in the maps if the key is str1+str2
         // todo: learn: avoid using null with the help of:

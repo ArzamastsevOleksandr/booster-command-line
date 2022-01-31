@@ -21,7 +21,9 @@ public class CommandLineInputTransformer {
         if (validationResult.hasNoErrors()) {
             return transformer.transform(tokens);
         }
-        return CommandWithArgs.withErrors(validationResult.getErrors());
+        return CommandWithArgs.builder()
+                .errors(validationResult.getErrors())
+                .build();
     }
 
 }

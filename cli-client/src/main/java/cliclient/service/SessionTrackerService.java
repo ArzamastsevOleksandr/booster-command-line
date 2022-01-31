@@ -1,15 +1,12 @@
 package cliclient.service;
 
-import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalTime;
-import java.util.Optional;
 
 // todo: persist statistics to gather aggregated reports
 @Service
-@Getter
 public class SessionTrackerService {
 
     private long initStartTime;
@@ -25,7 +22,7 @@ public class SessionTrackerService {
         initStartTime = System.currentTimeMillis();
     }
 
-    public Optional<String> getStatistics() {
+    public String getStatistics() {
         var builder = new StringBuilder();
 
         if (vocabularyEntriesAddedCount != 0) {
@@ -45,7 +42,7 @@ public class SessionTrackerService {
         long millisSpent = System.currentTimeMillis() - initStartTime;
 
         builder.append("Time spent: ").append(convertToExpressiveFormat(millisSpent)).append('\n');
-        return Optional.of("Session statistics:\n" + builder);
+        return "Session statistics:\n" + builder;
     }
 
     private String convertToExpressiveFormat(long millisSpent) {

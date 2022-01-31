@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class TokenTest {
 
@@ -46,39 +45,6 @@ class TokenTest {
         @Test
         void separator() {
             assertThatTokenHasValueAndType(Token.separator(), SEPARATOR_VALUE, TokenType.SEPARATOR);
-        }
-
-    }
-
-    @Nested
-    class ThrowsIAEIf {
-
-        @Test
-        void textIsNull() {
-            assertThatThrownBy(() -> Token.text(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("text value can not be null");
-        }
-
-        @Test
-        void numberIsNull() {
-            assertThatThrownBy(() -> Token.number(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("number value can not be null");
-        }
-
-        @Test
-        void flagIsNull() {
-            assertThatThrownBy(() -> Token.flag(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("flag value can not be null");
-        }
-
-        @Test
-        void commandIsNull() {
-            assertThatThrownBy(() -> Token.command(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("command value can not be null");
         }
 
     }

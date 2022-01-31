@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -35,7 +35,7 @@ public class CommandHandlerCollectionService {
     public void handle(CommandWithArgs commandWithArgs) {
         if (commandWithArgs.hasNoErrors()) {
             Command command = commandWithArgs.getCommand();
-            Optional.ofNullable(commandHandlers.get(command)).ifPresentOrElse(
+            ofNullable(commandHandlers.get(command)).ifPresentOrElse(
                     commandHandler -> {
                         CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
                         commandHandler.handle(commandArgs);
@@ -48,15 +48,6 @@ public class CommandHandlerCollectionService {
         } else {
             commandWithArgs.getErrors().forEach(adapter::writeLine);
         }
-        adapter.newLine();
-    }
-
-    //    @PostConstruct
-    public void postConstruct() {
-        adapter.writeLine("Registered the following commands: ");
-        adapter.newLine();
-
-        commandHandlers.keySet().forEach(adapter::writeLine);
         adapter.newLine();
     }
 

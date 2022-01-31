@@ -3,8 +3,6 @@ package cliclient.parser;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.util.NumberUtil;
-import cliclient.util.ObjectUtil;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,14 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor
 class TokenSequenceValidator {
 
     private final NumberUtil numberUtil;
 
     // todo: implement support for flags with no values
     TokenValidationResult validate(List<Token> tokens) {
-        ObjectUtil.requireNonNullOrElseThrowIAE(tokens, "tokens can not be null");
         try {
             checkIfTokensAreEmpty(tokens);
 
@@ -139,7 +136,7 @@ class TokenSequenceValidator {
         final List<String> errors;
 
         TokenValidationException(String... errors) {
-            this.errors = List.of(ObjectUtil.requireNonNullOrElseThrowIAE(errors, "errors can not be null"));
+            this.errors = List.of(errors);
         }
 
     }

@@ -1,5 +1,6 @@
 package cliclient.command.handler;
 
+import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.DeleteNoteCommandArgs;
@@ -11,12 +12,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DeleteNoteCommandHandler implements CommandHandler {
 
+    private final CommandLineAdapter adapter;
     private final NotesServiceClient notesServiceClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (DeleteNoteCommandArgs) commandArgs;
         notesServiceClient.deleteById(args.id());
+        adapter.writeLine("Done");
     }
 
     @Override

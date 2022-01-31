@@ -30,10 +30,9 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         input.setSynonyms(args.getSynonyms());
 
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApi.add(input);
-
-        // todo: color + lastSeen
+        // todo: color
         adapter.writeLine(vocabularyEntryDto);
-        adapter.writeLine("Entries added so far: " + sessionTrackerService.getVocabularyEntriesAddedCount());
+        adapter.writeLine("Entries added so far: " + sessionTrackerService.vocabularyEntriesAddedCount);
     }
 
     @Override

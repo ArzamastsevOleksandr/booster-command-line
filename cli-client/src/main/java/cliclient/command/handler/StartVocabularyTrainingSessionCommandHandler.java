@@ -46,7 +46,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     @RequiredArgsConstructor
     private class EntryTracker {
-        // todo: configurable setting
+        // todo: setting + property
         final int maxHintsPerEntry = 3;
 
         VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
@@ -119,7 +119,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         List<VocabularyEntryDto> entries = findAllForMode(mode);
         adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
-        stats.displayAnswers();
+        stats.showAnswers();
         adapter.writeLine(ColorCodes.yellow("Training session finished!"));
     }
 
