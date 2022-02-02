@@ -8,6 +8,7 @@ import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -22,7 +23,6 @@ import java.util.Set;
 class VocabularyTrainingSessionStats {
 
     private static final String SEPARATOR = "*************************************************";
-    private static final int ENTRIES_PER_TRAINING_SESSION = 5;
 
     private final CommandLineAdapter adapter;
     private final VocabularyEntryService vocabularyEntryService;
@@ -32,6 +32,9 @@ class VocabularyTrainingSessionStats {
     private final Set<VocabularyEntryDto> correctAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> partialAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> skipped = new HashSet<>();
+
+    @Value("${session.vocabulary.size:10}")
+    private int entriesPerSession;
 
     void reset() {
         wrongAnswers.clear();
@@ -85,7 +88,7 @@ class VocabularyTrainingSessionStats {
     }
 
     private String fraction(int numerator) {
-        return "(" + numerator + "/" + ENTRIES_PER_TRAINING_SESSION + "):";
+        return "(" + numerator + "/" + entriesPerSession + "):";
     }
 
     void addCorrectAnswer(VocabularyEntryDto entry) {

@@ -8,10 +8,12 @@ import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
+import cliclient.service.SettingsService;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -28,9 +30,14 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
+    private final SettingsService settingsService;
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
+
+    // todo: a shared component config
+    @Value("${session.vocabulary.size:10}")
+    private int entriesPerSession;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -63,7 +70,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
             return index < entries.size();
         }
 
-        VocabularyEntryDto fetchNextAndPrint() {
+        VocabularyEntryDto showNextAndReturn() {
             current = entries.get(index);
             printCurrentWord(current);
             return current;
@@ -116,15 +123,18 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     }
 
     private void executeTrainingSession(VocabularyTrainingSessionMode mode) {
-        List<VocabularyEntryDto> entries = findAllForMode(mode);
+        List<VocabularyEntryDto> entries = findForMode(mode);
         adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
         executeTrainingSessionBasedOnMode(mode, entries);
         stats.showAnswers();
         adapter.writeLine(ColorCodes.yellow("Training session finished!"));
     }
 
-    private List<VocabularyEntryDto> findAllForMode(VocabularyTrainingSessionMode mode) {
-        return new ArrayList<>(vocabularyEntryControllerApiClient.getAll());
+    private List<VocabularyEntryDto> findForMode(VocabularyTrainingSessionMode mode) {
+        return settingsService.findOne()
+                .map(settingsDto -> vocabularyEntryControllerApiClient.findWithSynonyms(settingsDto.entriesPerVocabularyTrainingSession()))
+                .map(ArrayList::new)
+                .orElseGet(() -> new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(entriesPerSession)));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
@@ -165,7 +175,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private void executeTrainingSession(EntryTracker tracker,
                                         Supplier<String> answerSupplier,
                                         BiConsumer<Set<String>, VocabularyEntryDto> answerConsumer) {
-        VocabularyEntryDto entry = tracker.fetchNextAndPrint();
+        VocabularyEntryDto entry = tracker.showNextAndReturn();
         String answer = answerSupplier.get();
 
         while (tracker.shouldContinue(answer)) {
@@ -178,7 +188,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
                 answer = answerSupplier.get();
             }
             if (tracker.allHintsExhausted()) {
-                adapter.writeLine(ColorCodes.red("Max hints used."));
+                adapter.writeLine(ColorCodes.red("Max hints used"));
                 stats.skipped(tracker.current);
                 adapter.writeLine(tracker.current);
                 ThreadUtil.sleepSeconds(1);
@@ -187,7 +197,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
                 answerConsumer.accept(parsedAnswer, entry);
             }
             if (tracker.hasMoreEntries()) {
-                entry = tracker.fetchNextAndPrint();
+                entry = tracker.showNextAndReturn();
                 answer = answerSupplier.get();
             }
         }
