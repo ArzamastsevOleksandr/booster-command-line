@@ -1,3 +1,6 @@
 session:
   vocabulary:
     size: 5
+spring:
+  application:
+    name: Booster

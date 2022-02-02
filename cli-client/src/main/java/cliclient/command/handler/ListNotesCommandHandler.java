@@ -31,7 +31,7 @@ public class ListNotesCommandHandler implements CommandHandler {
     private void displayAllNotes() {
         Collection<NoteDto> notes = notesServiceClient.getAll();
         if (notes.isEmpty()) {
-            adapter.writeLine("There are no notes yet");
+            adapter.error("There are no notes yet");
         } else {
             notes.forEach(adapter::writeLine);
         }

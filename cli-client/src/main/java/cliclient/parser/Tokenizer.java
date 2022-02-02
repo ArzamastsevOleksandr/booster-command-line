@@ -12,7 +12,7 @@ import static cliclient.parser.Token.FLAG_MARKER;
 import static cliclient.parser.Token.SEPARATOR;
 
 @Component
-class CommandLineInputTokenizer {
+class Tokenizer {
 
     List<Token> parseIntoTokens(String input) {
         return parse(input.toCharArray(), new LinkedList<>());

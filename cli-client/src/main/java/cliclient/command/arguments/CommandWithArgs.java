@@ -54,4 +54,10 @@ public class CommandWithArgs {
         return errors == null || errors.isEmpty();
     }
 
+    public static CommandWithArgs withErrors(List<String> errors) {
+        return CommandWithArgs.builder()
+                .errors(errors)
+                .build();
+    }
+
 }

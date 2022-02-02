@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class CommandHandlerCollectionService {
 
-    private final Map<Command, CommandHandler> commandHandlers;
+    private final Map<Command, CommandHandler> command2Handler;
     private final CommandLineAdapter adapter;
     private final CommandArgsService commandArgsService;
 
@@ -27,28 +27,30 @@ public class CommandHandlerCollectionService {
                                            CommandArgsService commandArgsService) {
         this.adapter = adapter;
         this.commandArgsService = commandArgsService;
-        this.commandHandlers = commandHandlers.stream()
+        this.command2Handler = commandHandlers.stream()
                 .map(ch -> Map.entry(ch.getCommand(), ch))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public void handle(CommandWithArgs commandWithArgs) {
         if (commandWithArgs.hasNoErrors()) {
-            Command command = commandWithArgs.getCommand();
-            ofNullable(commandHandlers.get(command)).ifPresentOrElse(
-                    commandHandler -> {
-                        CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
-                        commandHandler.handle(commandArgs);
-                    }, () -> adapter.writeLine("No handler is present for the " + command.extendedToString() + " command.")
-            );
+            handleCommandWithArgs(commandWithArgs);
         } else if (commandWithArgs.getErrors().contains("Token sequence must consist of at least one argument")) {
-            // todo: use error codes
-            // do nothing
             return;
         } else {
             commandWithArgs.getErrors().forEach(adapter::writeLine);
         }
         adapter.newLine();
+    }
+
+    private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
+        Command command = commandWithArgs.getCommand();
+        ofNullable(command2Handler.get(command)).ifPresentOrElse(
+                commandHandler -> {
+                    CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
+                    commandHandler.handle(commandArgs);
+                }, () -> adapter.error("No handler is present for the " + command.extendedToString() + " command.")
+        );
     }
 
 }

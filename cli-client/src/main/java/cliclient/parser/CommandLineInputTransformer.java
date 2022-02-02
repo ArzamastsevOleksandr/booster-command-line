@@ -6,24 +6,20 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-// todo: clear naming
 @Component
 @RequiredArgsConstructor
 public class CommandLineInputTransformer {
 
-    private final CommandLineInputTokenizer tokenizer;
-    private final TokenSequenceValidator validator;
-    private final TokenSequenceTransformer transformer;
+    private final Tokenizer tokenizer;
+    private final TokenValidator tokenValidator;
+    private final TokenSequenceTransformer tokenSequenceTransformer;
 
-    public CommandWithArgs fromString(String input) {
+    public CommandWithArgs toCommandWithArgs(String input) {
         List<Token> tokens = tokenizer.parseIntoTokens(input);
-        TokenValidationResult validationResult = validator.validate(tokens);
-        if (validationResult.hasNoErrors()) {
-            return transformer.transform(tokens);
-        }
-        return CommandWithArgs.builder()
-                .errors(validationResult.getErrors())
-                .build();
+        TokenValidationResult tokenValidationResult = tokenValidator.validate(tokens);
+        return tokenValidationResult.hasNoErrors()
+                ? tokenSequenceTransformer.transform(tokens)
+                : CommandWithArgs.withErrors(tokenValidationResult.errors());
     }
 
 }

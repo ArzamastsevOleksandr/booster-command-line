@@ -1,17 +1,11 @@
 package cliclient.parser;
 
-import lombok.Value;
-
-@Value
-class Token {
+record Token(String value, TokenType type) {
 
     static final String SEPARATOR = "=";
     static final String FLAG_MARKER = "\\";
     static final String WORD_EQUIVALENT_DELIMITER = ";";
     static final String CONTEXT_DELIMITER = "/";
-
-    String value;
-    TokenType type;
 
     static Token number(String value) {
         return new Token(value, TokenType.NUMBER);
@@ -38,15 +32,15 @@ class Token {
     }
 
     static boolean isNotFlag(Token token) {
-        return token.getType() != TokenType.FLAG;
+        return token.type != TokenType.FLAG;
     }
 
     static boolean isNotCommand(Token token) {
-        return token.getType() != TokenType.COMMAND;
+        return token.type != TokenType.COMMAND;
     }
 
     static boolean isNotSeparator(Token token) {
-        return token.getType() != TokenType.SEPARATOR;
+        return token.type != TokenType.SEPARATOR;
     }
 
 }

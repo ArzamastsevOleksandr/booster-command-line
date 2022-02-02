@@ -2,7 +2,6 @@ package cliclient.launcher;
 
 import api.exception.HttpErrorResponse;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.adapter.CommonOperations;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
@@ -13,9 +12,12 @@ import cliclient.util.ColorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+
+import static cliclient.command.Command.HELP;
 
 @Component
 @RequiredArgsConstructor
@@ -23,15 +25,17 @@ public class Launcher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandLineAdapter adapter;
-    private final CommonOperations commonOperations;
     private final CommandWithArgsPostProcessor postProcessor;
     private final SessionTrackerService sessionTrackerService;
     private final CommandLineInputTransformer transformer;
     private final ObjectMapper objectMapper;
 
+    @Value("${spring.application.name}")
+    private String appName;
+
     public void launch() {
-        adapter.writeLine("Welcome to the Booster!");
-        commonOperations.help();
+        adapter.writeLine(ColorCodes.cyan("Welcome to the " + appName + "!"));
+        adapter.help();
         userInteractions();
         adapter.writeLine(sessionTrackerService.getStatistics());
         adapter.newLine();
@@ -67,8 +71,8 @@ public class Launcher {
 
     private CommandWithArgs readInputAndParseToCommandWithArgs() {
         adapter.write(ColorCodes.purple(">> "));
-        String line = adapter.readLine();
-        CommandWithArgs commandWithArgs = transformer.fromString(line);
+        String input = adapter.readLine();
+        CommandWithArgs commandWithArgs = transformer.toCommandWithArgs(input);
         return commandWithArgs.hasNoErrors() ? postProcessor.process(commandWithArgs) : commandWithArgs;
     }
 

@@ -16,20 +16,20 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TokenSequenceValidatorTest {
+class TokenValidatorTest {
 
     @Mock
     NumberUtil numberUtil;
 
     @InjectMocks
-    TokenSequenceValidator validator;
+    TokenValidator validator;
 
     @Test
     void tokenSequenceMustConsistOfAtLeastOneArgument() {
         TokenValidationResult validationResult = validator.validate(List.of());
 
-        assertThat(validationResult.getTokens()).hasSize(0);
-        assertThat(validationResult.getErrors()).containsOnly("Token sequence must consist of at least one argument");
+        assertThat(validationResult.tokens()).hasSize(0);
+        assertThat(validationResult.errors()).containsOnly("No input");
     }
 
     @Test
@@ -37,8 +37,8 @@ class TokenSequenceValidatorTest {
         Token command = Token.command("h");
         TokenValidationResult validationResult = validator.validate(List.of(command));
 
-        assertThat(validationResult.getErrors()).hasSize(0);
-        assertThat(validationResult.getTokens()).containsOnly(command);
+        assertThat(validationResult.errors()).hasSize(0);
+        assertThat(validationResult.tokens()).containsOnly(command);
     }
 
     @Test
@@ -46,8 +46,8 @@ class TokenSequenceValidatorTest {
         Token separator = Token.separator();
         TokenValidationResult validationResult = validator.validate(List.of(separator));
 
-        assertThat(validationResult.getErrors()).containsOnly("Token sequence must start with a command");
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.errors()).containsOnly("Sequence must start with a command");
+        assertThat(validationResult.tokens()).hasSize(0);
     }
 
     @Test
@@ -67,12 +67,12 @@ class TokenSequenceValidatorTest {
                 .forEach(tokens -> {
                     TokenValidationResult validationResult = validator.validate(tokens);
 
-                    softAssertions.assertThat(validationResult.getTokens())
-                            .withFailMessage(() -> "expected no tokens, got: " + validationResult.getTokens())
+                    softAssertions.assertThat(validationResult.tokens())
+                            .withFailMessage(() -> "expected no tokens, got: " + validationResult.tokens())
                             .hasSize(0);
 
-                    softAssertions.assertThat(validationResult.getErrors())
-                            .containsOnly("Arguments must follow a pattern of flag -> separator -> value");
+                    softAssertions.assertThat(validationResult.errors())
+                            .containsOnly("Arguments must follow a pattern of [flag separator value]");
 
                 });
         softAssertions.assertAll();
@@ -87,10 +87,10 @@ class TokenSequenceValidatorTest {
         List<Token> tokens = List.of(command, command, separator, text);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Expected flag, got: " + command.getValue() + " with type: " + tokenTypeToLowerCaseString(command));
+        assertThat(validationResult.errors())
+                .containsOnly("Expected flag, got: " + command.value() + " with type: " + tokenTypeToLowerCaseString(command));
     }
 
     @Test
@@ -102,10 +102,10 @@ class TokenSequenceValidatorTest {
         List<Token> tokens = List.of(command, flag, command, text);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Expected separator, got: " + command.getValue() + " with type: " + tokenTypeToLowerCaseString(command));
+        assertThat(validationResult.errors())
+                .containsOnly("Expected separator, got: " + command.value() + " with type: " + tokenTypeToLowerCaseString(command));
     }
 
     @Test
@@ -117,10 +117,10 @@ class TokenSequenceValidatorTest {
         List<Token> tokens = List.of(command, flag, separator, flag);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Separator is followed by a flag: " + flag.getValue());
+        assertThat(validationResult.errors())
+                .containsOnly("Separator is followed by a flag: " + flag.value());
     }
 
     @Test
@@ -132,13 +132,13 @@ class TokenSequenceValidatorTest {
 
         List<Token> tokens = List.of(command, flag, separator, text);
 
-        when(numberUtil.isNotPositiveLong(text.getValue())).thenReturn(true);
+        when(numberUtil.isNotPositiveLong(text.value())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Id argument must be a positive long number, got: " + text.getValue());
+        assertThat(validationResult.errors())
+                .containsOnly("Id argument must be a positive long number, got: " + text.value());
     }
 
     @Test
@@ -150,13 +150,13 @@ class TokenSequenceValidatorTest {
 
         List<Token> tokens = List.of(command, flag, separator, text);
 
-        when(numberUtil.isNotPositiveLong(text.getValue())).thenReturn(true);
+        when(numberUtil.isNotPositiveLong(text.value())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Language id argument must be a positive long number, got: " + text.getValue());
+        assertThat(validationResult.errors())
+                .containsOnly("Language id argument must be a positive long number, got: " + text.value());
     }
 
     @Test
@@ -168,31 +168,31 @@ class TokenSequenceValidatorTest {
 
         List<Token> tokens = List.of(command, flag, separator, text);
 
-        when(numberUtil.isNotPositiveInteger(text.getValue())).thenReturn(true);
+        when(numberUtil.isNotPositiveInteger(text.value())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Correct answers count argument must be a positive integer number, got: " + text.getValue());
+        assertThat(validationResult.errors())
+                .containsOnly("Correct answers count argument must be a positive integer number, got: " + text.value());
     }
 
     @Test
     void paginationMustBePositiveIntegerNumber() {
         Token command = Token.command("ve");
-        Token flag = Token.flag("p");
+        Token flag = Token.flag("pg");
         Token separator = Token.separator();
         Token text = Token.text("a");
 
         List<Token> tokens = List.of(command, flag, separator, text);
 
-        when(numberUtil.isNotPositiveInteger(text.getValue())).thenReturn(true);
+        when(numberUtil.isNotPositiveInteger(text.value())).thenReturn(true);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getTokens()).hasSize(0);
+        assertThat(validationResult.tokens()).hasSize(0);
 
-        assertThat(validationResult.getErrors())
-                .containsOnly("Pagination argument must be a positive integer number, got: " + text.getValue());
+        assertThat(validationResult.errors())
+                .containsOnly("Pagination argument must be a positive integer number, got: " + text.value());
     }
 
     @Test
@@ -205,12 +205,12 @@ class TokenSequenceValidatorTest {
         List<Token> tokens = List.of(command, flag, separator, number);
         TokenValidationResult validationResult = validator.validate(tokens);
 
-        assertThat(validationResult.getErrors()).hasSize(0);
-        assertThat(validationResult.getTokens()).containsExactly(command, flag, separator, number);
+        assertThat(validationResult.errors()).hasSize(0);
+        assertThat(validationResult.tokens()).containsExactly(command, flag, separator, number);
     }
 
     private String tokenTypeToLowerCaseString(Token token) {
-        return token.getType().toString().toLowerCase();
+        return token.type().toString().toLowerCase();
     }
 
 }
