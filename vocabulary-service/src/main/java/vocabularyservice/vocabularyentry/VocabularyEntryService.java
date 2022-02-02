@@ -20,13 +20,13 @@ import static java.util.stream.Collectors.toSet;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class VocabularyEntryService {
+@Transactional(readOnly = true)
+public class VocabularyEntryService {
 
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;
     private final LanguageService languageService;
 
-    @Transactional(readOnly = true)
     public Collection<VocabularyEntryDto> findAll() {
         return vocabularyEntryRepository.findAll()
                 .stream()
@@ -68,13 +68,13 @@ class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(entity));
     }
 
-    @Transactional(readOnly = true)
     public VocabularyEntryDto findById(Long id) {
         return vocabularyEntryRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new NotFoundException("Vocabulary entry not found by id: " + id));
     }
 
+    @Transactional
     public void deleteById(Long id) {
         vocabularyEntryRepository.deleteById(id);
     }
@@ -96,9 +96,15 @@ class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
 
-    @Transactional(readOnly = true)
     public Collection<VocabularyEntryDto> findAllByLanguageId(Long id) {
         return vocabularyEntryRepository.findAllByLanguageId(id)
+                .map(this::toDto)
+                .toList();
+    }
+
+    public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
+        return vocabularyEntryRepository.findWithSynonyms(limit)
+                .stream()
                 .map(this::toDto)
                 .toList();
     }
