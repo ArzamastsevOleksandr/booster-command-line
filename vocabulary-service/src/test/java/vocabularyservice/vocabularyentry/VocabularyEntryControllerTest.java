@@ -338,4 +338,38 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
         );
     }
 
+    // todo: a test for ?limit=n
+    @Test
+    void findsVocabularyEntriesWithSynonyms() {
+        // given
+        var name1 = "wade";
+        var definition1 = "walk with effort";
+        var synonyms1 = Set.of("ford", "paddle");
+
+        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
+        VocabularyEntryDto vocabularyEntryDto1 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name1)
+                .languageId(languageDto.id())
+                .definition(definition1)
+                .synonyms(synonyms1)
+                .build());
+
+        var name2 = "fallacy";
+        var definition2 = "a mistaken belief";
+        VocabularyEntryDto vocabularyEntryDto2 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
+                .name(name2)
+                .definition(definition2)
+                .languageId(languageDto.id())
+                .build());
+        // when
+        webTestClient.get()
+                .uri("/vocabulary-entries/with-synonyms/?limit=2")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntryDto1.getId());
+    }
+
 }

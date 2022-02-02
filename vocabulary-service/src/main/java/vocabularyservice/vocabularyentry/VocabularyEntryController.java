@@ -23,6 +23,11 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     }
 
     @Override
+    public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
+        return vocabularyEntryService.findWithSynonyms(limit);
+    }
+
+    @Override
     public Collection<VocabularyEntryDto> findAllByLanguageId(Long id) {
         return vocabularyEntryService.findAllByLanguageId(id);
     }
