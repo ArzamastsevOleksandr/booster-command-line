@@ -9,29 +9,27 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
-// todo: test
-// todo: custom service to allow clean unit tests?
 @RequiredArgsConstructor
 public enum FlagType {
 
     NAME("n"),
     ID("id"),
     LANGUAGE_ID("lid"),
-    VOCABULARY_ENTRY_ID("veid"),
+    VOCABULARY_ENTRY_ID("vid"),
     NOTE_ID("nid"),
     TAG("t"),
-    SYNONYMS("s"),
-    ANTONYMS("a"),
-    DESCRIPTION("d"),
-    MODE_VOCABULARY("m"),
+    SYNONYMS("syn"),
+    ANTONYMS("ant"),
+    DEFINITION("def"),
+    MODE_VOCABULARY("mv"),
     FILE("f"),
-    CONTENT("c"),
+    CONTENT("con"),
     CORRECT_ANSWERS_COUNT("cac"),
-    ADD_ANTONYMS("aa"),
-    ADD_SYNONYMS("as"),
-    REMOVE_ANTONYMS("ra"),
-    REMOVE_SYNONYMS("rs"),
-    PAGINATION("p"),
+    ADD_ANTONYMS("aant"),
+    ADD_SYNONYMS("asyn"),
+    REMOVE_ANTONYMS("rant"),
+    REMOVE_SYNONYMS("rsyn"),
+    PAGINATION("pg"),
     SUBSTRING("ss"),
     CONTEXTS("ctx"),
     VOCABULARY_TRAINING_SESSION_SIZE("vtss"),

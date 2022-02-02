@@ -4,6 +4,7 @@ import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
+import cliclient.util.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -16,24 +17,20 @@ import static java.util.stream.Collectors.toSet;
 class TokenSequenceTransformer {
 
     CommandWithArgs transform(List<Token> tokens) {
-
         Token token = tokens.get(0);
-        Command command = Command.fromString(token.getValue());
+        var command = Command.fromString(token.value());
+        var argumentsBuilder = CommandWithArgs.builder().command(command);
         if (tokens.size() == 1) {
-            return CommandWithArgs.builder().command(command).build();
+            return argumentsBuilder.build();
         }
-
-        var argumentsBuilder = CommandWithArgs.builder()
-                .command(command);
-
-        List<Token> copy = tokens.subList(1, tokens.size());
+        List<Token> copy = CollectionUtils.sublist(tokens, 1);
 
         for (int i = 0; i < copy.size(); i += 3) {
             Token flag = copy.get(i);
             Token value = copy.get(i + 2);
 
-            FlagType flagType = FlagType.fromString(flag.getValue());
-            String flagValue = value.getValue();
+            FlagType flagType = FlagType.fromString(flag.value());
+            String flagValue = value.value();
             argumentsBuilder = switch (flagType) {
                 case ID -> argumentsBuilder.id(Long.parseLong(flagValue));
                 case LANGUAGE_ID -> argumentsBuilder.languageId(Long.parseLong(flagValue));
@@ -41,7 +38,8 @@ class TokenSequenceTransformer {
                 case VOCABULARY_ENTRY_ID -> argumentsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
                 case NAME -> argumentsBuilder.name(flagValue);
                 case TAG -> argumentsBuilder.tag(flagValue);
-                case DESCRIPTION -> argumentsBuilder.definition(flagValue);
+                case DEFINITION -> argumentsBuilder.definition(flagValue);
+                // todo: separate types for download/upload?
                 case FILE -> argumentsBuilder.downloadFilename(flagValue);
                 case MODE_VOCABULARY -> argumentsBuilder.mode(VocabularyTrainingSessionMode.fromString(flagValue));
                 case SYNONYMS -> argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));

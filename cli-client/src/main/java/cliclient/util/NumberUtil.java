@@ -2,7 +2,6 @@ package cliclient.util;
 
 import org.springframework.stereotype.Component;
 
-// todo: test
 @Component
 public class NumberUtil {
 

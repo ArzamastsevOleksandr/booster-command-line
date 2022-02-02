@@ -22,7 +22,7 @@ public class ListTagsCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         Collection<TagDto> tags = tagServiceClient.findAll();
         if (CollectionUtils.isEmpty(tags)) {
-            adapter.writeLine("There are no tags yet");
+            adapter.error("There are no tags yet");
         } else {
             tags.forEach(adapter::writeLine);
         }

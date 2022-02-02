@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
+import static cliclient.command.Command.HELP;
+
 public class CommandLineAdapter {
 
     private final BufferedReader bufferedReader;
@@ -22,7 +24,7 @@ public class CommandLineAdapter {
             return bufferedReader.readLine().strip();
         } catch (IOException e) {
             error(e.getMessage());
-            return "AN ERROR OCCURRED";
+            return e.getMessage();
         }
     }
 
@@ -40,6 +42,10 @@ public class CommandLineAdapter {
 
     public void newLine() {
         System.out.println();
+    }
+
+    public void help() {
+        writeLine(ColorCodes.green("Type command or " + HELP.getEquivalents() + " to get help."));
     }
 
 }

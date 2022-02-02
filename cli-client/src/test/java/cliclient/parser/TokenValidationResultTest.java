@@ -21,7 +21,7 @@ class TokenValidationResultTest {
 
     @Test
     void createsResultWithErrorsAndNoTokens() {
-        List<String> errors = List.of("Error");
+        List<String> errors = List.of("No input");
         TokenValidationResult withErrors = TokenValidationResult.withErrors(errors);
 
         assertThat(withErrors)

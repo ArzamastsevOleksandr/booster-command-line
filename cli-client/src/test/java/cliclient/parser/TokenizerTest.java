@@ -2,7 +2,6 @@ package cliclient.parser;
 
 import cliclient.command.Command;
 import cliclient.command.FlagType;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -12,9 +11,9 @@ import java.util.stream.LongStream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class CommandLineInputTokenizerTest {
+class TokenizerTest {
 
-    CommandLineInputTokenizer tokenizer = new CommandLineInputTokenizer();
+    Tokenizer tokenizer = new Tokenizer();
 
     @Test
     void returnsEmptyTokensForEmptyInput() {
@@ -87,7 +86,7 @@ class CommandLineInputTokenizerTest {
 
     @Test
     void parsesInputStringIntoCorrectTokenSequence() {
-        String input = "  ave \\id  =1 \\n = one \\s=one1;one2 \\a=one1;one2 \\d=very long description ";
+        String input = "  ave \\id  =1 \\n = one \\syn=one1;one2 \\ant=one1;one2 \\def=very long description ";
         List<Token> tokens = tokenizer.parseIntoTokens(input);
 
         assertThat(tokens).hasSize(16);
@@ -122,7 +121,7 @@ class CommandLineInputTokenizerTest {
 
         assertThat(tokens.get(7))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "s");
+                .hasFieldOrPropertyWithValue("value", "syn");
 
         assertThat(tokens.get(8))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
@@ -134,7 +133,7 @@ class CommandLineInputTokenizerTest {
 
         assertThat(tokens.get(10))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "a");
+                .hasFieldOrPropertyWithValue("value", "ant");
 
         assertThat(tokens.get(11))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
@@ -146,7 +145,7 @@ class CommandLineInputTokenizerTest {
 
         assertThat(tokens.get(13))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "d");
+                .hasFieldOrPropertyWithValue("value", "def");
 
         assertThat(tokens.get(14))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
