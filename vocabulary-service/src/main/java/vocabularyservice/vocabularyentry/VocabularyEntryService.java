@@ -58,6 +58,8 @@ public class VocabularyEntryService {
         entity.setLanguage(languageEntity);
         entity.setDefinition(input.getDefinition());
         entity.setCorrectAnswersCount(input.getCorrectAnswersCount());
+        // todo: test
+        ofNullable(input.getLastSeenAt()).ifPresent(entity::setLastSeenAt);
 
         Set<WordEntity> synonyms = input.getSynonyms()
                 .stream()

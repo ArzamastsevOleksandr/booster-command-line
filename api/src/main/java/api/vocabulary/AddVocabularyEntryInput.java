@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
 import java.util.Set;
 
 @Data
@@ -16,6 +17,8 @@ public class AddVocabularyEntryInput {
     private String name;
     private String definition;
     private int correctAnswersCount;
+
+    Timestamp lastSeenAt;
 
     private Long languageId;
 
