@@ -16,12 +16,13 @@ public class DownloadCommandHandler implements CommandHandler {
 
     private final DownloadServiceClient downloadServiceClient;
 
+    // todo: if the download file already exists - warn and ask for confirmation
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (DownloadCommandArgs) commandArgs;
         byte[] bytes = downloadServiceClient.download();
         // todo: settings + properties
-        try (var out = new FileOutputStream("download.xlsx")) {
+        try (var out = new FileOutputStream(args.filename())) {
             out.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();

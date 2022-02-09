@@ -39,8 +39,7 @@ class TokenSequenceTransformer {
                 case NAME -> argumentsBuilder.name(flagValue);
                 case TAG -> argumentsBuilder.tag(flagValue);
                 case DEFINITION -> argumentsBuilder.definition(flagValue);
-                // todo: separate types for download/upload?
-                case FILE -> argumentsBuilder.downloadFilename(flagValue);
+                case FILE -> argumentsBuilder.filename(flagValue);
                 case MODE_VOCABULARY -> argumentsBuilder.mode(VocabularyTrainingSessionMode.fromString(flagValue));
                 case SYNONYMS -> argumentsBuilder.synonyms(getWordEquivalentNames(flagValue));
                 case ANTONYMS -> argumentsBuilder.antonyms(getWordEquivalentNames(flagValue));

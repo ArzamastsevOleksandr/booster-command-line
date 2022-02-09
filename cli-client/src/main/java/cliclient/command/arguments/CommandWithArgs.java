@@ -19,10 +19,7 @@ public class CommandWithArgs {
     Long vocabularyEntryId;
     String name;
     String definition;
-    @Builder.Default
-    String downloadFilename = "download.xlsx";
-    @Builder.Default
-    String uploadFilename = "upload.xlsx";
+    String filename;
     @Builder.Default
     VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
     String content;
