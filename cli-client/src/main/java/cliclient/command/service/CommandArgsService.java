@@ -2,6 +2,7 @@ package cliclient.command.service;
 
 import cliclient.command.FlagType;
 import cliclient.command.arguments.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -13,6 +14,11 @@ import static java.util.stream.Collectors.joining;
 
 @Service
 class CommandArgsService {
+
+    @Value("${upload.filename:upload.xlsx}")
+    private String uploadFilename;
+    @Value("${download.filename:download.xlsx}")
+    private String downloadFilename;
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
         return switch (cwa.getCommand()) {
@@ -43,8 +49,8 @@ class CommandArgsService {
                     .removeSynonyms(cwa.getRemoveSynonyms())
                     .build();
             case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cwa.getMode());
-            case DOWNLOAD -> new DownloadCommandArgs(cwa.getDownloadFilename());
-            case UPLOAD -> new UploadCommandArgs(cwa.getUploadFilename());
+            case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(downloadFilename));
+            case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(uploadFilename));
             case ADD_SETTINGS -> new AddSettingsCommandArgs(cwa.getLanguageId(), cwa.getVocabularyTrainingSessionSize());
             case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()));
             case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));

@@ -12,6 +12,11 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: list_flags command
+        // todo: patch request based on the rfc standard
+        // todo: settings service: it is not clear that only 1 instance of settings can exist for a user, make the flow standard,
+        //  return all settings even if it only consists of 1 instance
+        // todo: use color codes from adapter only
         // todo: implement support for flags with no values
         // todo: ave [500 ] during [POST] to [http://localhost:8082/vocabulary-entries/]
         // todo: add a new flag -ex (extended output). When writing to the output - present intel that is necessary. To present everything - use the extended flag.
@@ -41,7 +46,6 @@ public class CliClientApplication {
         //Arguments must follow a pattern of flag -> separator -> value
         // todo: when importing a file - do not specify the extension
         // todo: validator validates. command handler works with non-optional data and expects a happy path?
-        // todo: list_flags command
         // todo: HELP <command>
         // todo: pretty print of l, ve, w
         // todo: write 1-line open comments.
