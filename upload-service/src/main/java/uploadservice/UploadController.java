@@ -3,8 +3,10 @@ package uploadservice;
 import api.notes.AddNoteInput;
 import api.upload.UploadControllerApi;
 import api.upload.UploadResponse;
+import api.vocabulary.AddLanguageInput;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.LanguageDto;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -73,11 +75,20 @@ class UploadController implements UploadControllerApi {
     }
 
     private void importLanguages(XSSFSheet sheet, UploadProgressTracker tracker) {
-        String sheetName = sheet.getSheetName();
-
-        LanguageDto languageDto = languageControllerApiClient.findByName(sheetName);
+        LanguageDto languageDto = findLanguageByNameOrCreateIfNotExists(sheet.getSheetName());
         importLanguage(sheet, languageDto.id(), tracker);
-        // if lang does not exist: create one
+    }
+
+    private LanguageDto findLanguageByNameOrCreateIfNotExists(String sheetName) {
+        try {
+            return languageControllerApiClient.findByName(sheetName);
+        } catch (FeignException.FeignClientException e) {
+            if (e.status() == 404) {
+                return languageControllerApiClient.add(new AddLanguageInput(sheetName));
+            } else {
+                throw e;
+            }
+        }
     }
 
     private void importLanguage(XSSFSheet sheet, Long id, UploadProgressTracker tracker) {
