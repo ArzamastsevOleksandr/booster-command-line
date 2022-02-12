@@ -28,6 +28,8 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 class DownloadController implements DownloadControllerApi {
 
+    private static final int HEADER_ROW_NUMBER = 0;
+
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
@@ -44,7 +46,7 @@ class DownloadController implements DownloadControllerApi {
         } catch (IOException e) {
             log.error("Error during export process", e);
         }
-        throw new RuntimeException();
+        return new byte[]{};
     }
 
     private void exportNotes(XSSFWorkbook workbook) {
@@ -52,19 +54,27 @@ class DownloadController implements DownloadControllerApi {
         if (!notes.isEmpty()) {
             log.info("Exporting notes");
             XSSFSheet sheet = workbook.createSheet("notes");
-            XSSFRow row = sheet.createRow(0);
 
-            // todo: COLUMN_NAMES constants
-            row.createCell(0).setCellValue("content");
-//            row.createCell(1).setCellValue("Tags");
-
-            for (int i = 0; i < notes.size(); ++i) {
-                XSSFRow noteRow = sheet.createRow(i + 1);
-                NoteDto note = notes.get(i);
-                noteRow.createCell(0).setCellValue(note.content());
-//                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
-            }
+            createNotesHeaderRow(sheet);
+            createNoteRows(notes, sheet);
         }
+    }
+
+    private void createNoteRows(List<NoteDto> notes, XSSFSheet sheet) {
+        for (int i = 0; i < notes.size(); ++i) {
+            XSSFRow noteRow = sheet.createRow(i + 1);
+            NoteDto note = notes.get(i);
+            noteRow.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(note.content());
+//                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
+        }
+    }
+
+    private void createNotesHeaderRow(XSSFSheet sheet) {
+        XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
+
+        // todo: COLUMN_NAMES constants
+        row.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(XlsxNoteColumn.CONTENT.name);
+        row.createCell(XlsxNoteColumn.TAGS.position).setCellValue(XlsxNoteColumn.TAGS.name);
     }
 
     private void downloadLanguage(XSSFWorkbook workbook, LanguageDto languageDto) {
@@ -76,17 +86,15 @@ class DownloadController implements DownloadControllerApi {
     }
 
     private void createLanguageHeaderRow(XSSFSheet sheet) {
-        XSSFRow row = sheet.createRow(0);
+        XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
 
-        row.createCell(0).setCellValue("Word");
-        row.createCell(1).setCellValue("Definition");
-        row.createCell(2).setCellValue("Synonyms");
-        row.createCell(3).setCellValue("Antonyms");
-        row.createCell(4).setCellValue("Correct answer count");
-        row.createCell(5).setCellValue("Created at");
-        row.createCell(6).setCellValue("Tags");
-        row.createCell(7).setCellValue("Contexts");
-        row.createCell(8).setCellValue("Last seen at");
+        row.createCell(XlsxVocabularyColumn.WORD.position).setCellValue(XlsxVocabularyColumn.WORD.name);
+        row.createCell(XlsxVocabularyColumn.DEFINITION.position).setCellValue(XlsxVocabularyColumn.DEFINITION.name);
+        row.createCell(XlsxVocabularyColumn.SYNONYMS.position).setCellValue(XlsxVocabularyColumn.SYNONYMS.name);
+        row.createCell(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.position).setCellValue(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.name);
+        row.createCell(XlsxVocabularyColumn.TAGS.position).setCellValue(XlsxVocabularyColumn.TAGS.name);
+        row.createCell(XlsxVocabularyColumn.CONTEXTS.position).setCellValue(XlsxVocabularyColumn.CONTEXTS.name);
+        row.createCell(XlsxVocabularyColumn.LAST_SEEN_AT.position).setCellValue(XlsxVocabularyColumn.LAST_SEEN_AT.name);
     }
 
     private void createVocabularyEntryRows(LanguageDto languageDto, XSSFSheet sheet) {
@@ -101,15 +109,13 @@ class DownloadController implements DownloadControllerApi {
 
     // todo: export and import must use the same separators (shared component)
     private void exportVocabularyEntry(VocabularyEntryDto vocabularyEntryDto, XSSFRow row) {
-        row.createCell(0).setCellValue(vocabularyEntryDto.getName());
-        row.createCell(1).setCellValue(ofNullable(vocabularyEntryDto.getDefinition()).orElse(""));
-        row.createCell(2).setCellValue(String.join(";", vocabularyEntryDto.getSynonyms()));
-//        row.createCell(3).setCellValue(String.join(";", vocabularyEntryDto.getAntonyms()));
-        row.createCell(4).setCellValue(vocabularyEntryDto.getCorrectAnswersCount());
-//        row.createCell(5).setCellValue(vocabularyEntryDto.getCreatedAt().toString());
+        row.createCell(XlsxVocabularyColumn.WORD.position).setCellValue(vocabularyEntryDto.getName());
+        row.createCell(XlsxVocabularyColumn.DEFINITION.position).setCellValue(ofNullable(vocabularyEntryDto.getDefinition()).orElse(""));
+        row.createCell(XlsxVocabularyColumn.SYNONYMS.position).setCellValue(String.join(";", vocabularyEntryDto.getSynonyms()));
+        row.createCell(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.position).setCellValue(vocabularyEntryDto.getCorrectAnswersCount());
 //        row.createCell(6).setCellValue(String.join(";", vocabularyEntryDto.getTags()));
 //        row.createCell(7).setCellValue(String.join("/", vocabularyEntryDto.getContexts()));
-        row.createCell(8).setCellValue(vocabularyEntryDto.getLastSeenAt().toString());
+        row.createCell(XlsxVocabularyColumn.LAST_SEEN_AT.position).setCellValue(vocabularyEntryDto.getLastSeenAt().toString());
     }
 
 }

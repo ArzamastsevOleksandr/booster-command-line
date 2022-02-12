@@ -58,7 +58,7 @@ class UploadController implements UploadControllerApi {
                 switch (sheetName) {
                     case "notes" -> importNotes(sheet, tracker);
                     // todo: language recognition pattern (no hardcoding)
-                    case "english" -> importLanguages(sheet, tracker);
+                    case "english" -> importLanguage(sheet, tracker);
                     default -> log.error("Unrecognized upload page ignored: {}", sheetName);
                 }
             }
@@ -74,7 +74,7 @@ class UploadController implements UploadControllerApi {
         return null;
     }
 
-    private void importLanguages(XSSFSheet sheet, UploadProgressTracker tracker) {
+    private void importLanguage(XSSFSheet sheet, UploadProgressTracker tracker) {
         LanguageDto languageDto = findLanguageByNameOrCreateIfNotExists(sheet.getSheetName());
         importLanguage(sheet, languageDto.id(), tracker);
     }
@@ -96,23 +96,21 @@ class UploadController implements UploadControllerApi {
             XSSFRow row = sheet.getRow(rowNumber);
 
             Optional.ofNullable(row)
-                    .map(r -> r.getCell(0))
+                    .map(r -> r.getCell(XlsxVocabularyColumn.WORD.position))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
                     .filter(this::isNotBlank)
                     .ifPresent(vocabularyEntryName -> {
-                        String definition = readDefinition(row.getCell(1));
+                        String definition = readDefinition(row.getCell(XlsxVocabularyColumn.DEFINITION.position));
 
-                        Set<String> synonyms = getEquivalents(row.getCell(2));
+                        Set<String> synonyms = getEquivalents(row.getCell(XlsxVocabularyColumn.SYNONYMS.position));
 
-                        int correctAnswersCount = (int) row.getCell(4).getNumericCellValue();
-                        var createdAt = Timestamp.valueOf(row.getCell(5).getStringCellValue());
+                        int correctAnswersCount = (int) row.getCell(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.position).getNumericCellValue();
 
 //                        Set<String> tags = getStringValues(row.getCell(6), ";");
 //                        Set<String> contexts = getStringValues(row.getCell(7), "/");
 
-                        // todo: column index is not a magic number
-                        Timestamp lastSeenAt = Optional.ofNullable(row.getCell(8))
+                        Timestamp lastSeenAt = Optional.ofNullable(row.getCell(XlsxVocabularyColumn.LAST_SEEN_AT.position))
                                 .map(XSSFCell::getStringCellValue)
                                 .map(String::strip)
                                 .filter(this::isNotBlank)
@@ -125,6 +123,7 @@ class UploadController implements UploadControllerApi {
                                 .name(vocabularyEntryName)
                                 .correctAnswersCount(correctAnswersCount)
                                 .definition(definition)
+                                .lastSeenAt(lastSeenAt)
                                 .languageId(id)
                                 .synonyms(synonyms)
                                 .build());
@@ -139,7 +138,7 @@ class UploadController implements UploadControllerApi {
             XSSFRow row = sheet.getRow(rowNumber);
 
             Optional.ofNullable(row)
-                    .map(r -> r.getCell(0))
+                    .map(r -> r.getCell(XlsxNoteColumn.CONTENT.position))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
                     .filter(this::isNotBlank)
