@@ -12,6 +12,8 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: money tracking
+        // todo: favorite notes
         // todo: list_flags command
         // todo: patch request based on the rfc standard
         // todo: settings service: it is not clear that only 1 instance of settings can exist for a user, make the flow standard,
