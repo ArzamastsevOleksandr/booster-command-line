@@ -72,7 +72,6 @@ class DownloadController implements DownloadControllerApi {
     private void createNotesHeaderRow(XSSFSheet sheet) {
         XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
 
-        // todo: COLUMN_NAMES constants
         row.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(XlsxNoteColumn.CONTENT.name);
         row.createCell(XlsxNoteColumn.TAGS.position).setCellValue(XlsxNoteColumn.TAGS.name);
     }

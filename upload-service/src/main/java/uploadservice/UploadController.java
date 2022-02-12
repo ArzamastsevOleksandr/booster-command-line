@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +43,8 @@ import static java.util.stream.Collectors.toSet;
 class UploadController implements UploadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
+
+    private static final Collector<CharSequence, ?, String> VALIDATION_ERRORS_COLLECTOR = Collectors.joining("\n");
 
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
@@ -98,6 +101,7 @@ class UploadController implements UploadControllerApi {
     }
 
     private void importLanguage(XSSFSheet sheet, Long id, UploadProgressTracker tracker) {
+        validateLanguageHeaderRow(sheet.getRow(HEADER_ROW_NUMBER));
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
@@ -139,11 +143,52 @@ class UploadController implements UploadControllerApi {
         tracker.vocabularyEntriesUploadFinished();
     }
 
+    private void validateLanguageHeaderRow(XSSFRow headerRow) {
+        String validationErrors = Stream.of(
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.WORD),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.DEFINITION),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.SYNONYMS),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.TAGS),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CONTEXTS),
+                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
+                )
+                .flatMap(Optional::stream)
+                .collect(VALIDATION_ERRORS_COLLECTOR);
+
+        if (isNotBlank(validationErrors)) {
+            throw new XlsxStructureUnsupportedException(validationErrors);
+        }
+    }
+
+    private Optional<String> collectLanguageHeaderValidationError(XSSFRow headerRow, XlsxVocabularyColumn column) {
+        return collectHeaderValidationError(headerRow, column.position, column.name);
+    }
+
+    private Optional<String> collectHeaderValidationError(XSSFRow headerRow, int position, String name) {
+        Optional<String> optionalColumnValue = ofNullable(headerRow.getCell(position))
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank);
+
+        if (optionalColumnValue.isEmpty()) {
+            String error = "Expected '" + name + "' header column at index '" + position + "', but was empty" + " (" + headerRow.getSheet().getSheetName() + ")";
+            return Optional.of(error);
+        }
+        String cellValue = optionalColumnValue.get();
+        if (!name.equals(cellValue)) {
+            String error = "Expected '" + name + "' header column at index '" + position + "', but was '" + cellValue + "' (" + headerRow.getSheet().getSheetName() + ")";
+            return Optional.of(error);
+        }
+        return Optional.empty();
+    }
+
     private void importNotes(XSSFSheet sheet, UploadProgressTracker tracker) {
-        validateNoteHeaderRow(sheet);
+        validateNoteHeaderRow(sheet.getRow(HEADER_ROW_NUMBER));
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
+            // todo: if the content was empty - track the row and return it in the response
             ofNullable(row)
                     .map(r -> r.getCell(XlsxNoteColumn.CONTENT.position))
                     .map(Cell::getStringCellValue)
@@ -159,14 +204,12 @@ class UploadController implements UploadControllerApi {
         tracker.notesUploadFinished();
     }
 
-    private void validateNoteHeaderRow(XSSFSheet sheet) {
-        XSSFRow headerRow = sheet.getRow(HEADER_ROW_NUMBER);
-
+    private void validateNoteHeaderRow(XSSFRow headerRow) {
         Optional<String> contentValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.CONTENT);
         Optional<String> tagsValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.TAGS);
 
         String validationErrors = Stream.concat(contentValidationError.stream(), tagsValidationError.stream())
-                .collect(Collectors.joining("\n"));
+                .collect(VALIDATION_ERRORS_COLLECTOR);
 
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
@@ -174,21 +217,7 @@ class UploadController implements UploadControllerApi {
     }
 
     private Optional<String> collectNoteHeaderValidationError(XSSFRow headerRow, XlsxNoteColumn column) {
-        Optional<String> optionalColumnValue = ofNullable(headerRow.getCell(column.position))
-                .map(Cell::getStringCellValue)
-                .map(String::strip)
-                .filter(this::isNotBlank);
-
-        if (optionalColumnValue.isEmpty()) {
-            String error = "Expected '" + column.name + "' header column at index '" + column.position + "', but was empty" + " (" + headerRow.getSheet().getSheetName() + ")";
-            return Optional.of(error);
-        }
-        String cellValue = optionalColumnValue.get();
-        if (!column.name.equals(cellValue)) {
-            String error = "Expected '" + column.name + "' header column at index '" + column.position + "', but was " + cellValue + " (" + headerRow.getSheet().getSheetName() + ")";
-            return Optional.of(error);
-        }
-        return Optional.empty();
+        return collectHeaderValidationError(headerRow, column.position, column.name);
     }
 
     private boolean isNotBlank(String s) {
