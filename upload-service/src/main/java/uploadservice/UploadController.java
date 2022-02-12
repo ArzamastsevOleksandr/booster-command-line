@@ -1,5 +1,6 @@
 package uploadservice;
 
+import api.exception.XlsxStructureUnsupportedException;
 import api.notes.AddNoteInput;
 import api.upload.UploadControllerApi;
 import api.upload.UploadResponse;
@@ -28,7 +29,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -36,6 +40,8 @@ import static java.util.stream.Collectors.toSet;
 @RequestMapping(value = "/upload/")
 @RequiredArgsConstructor
 class UploadController implements UploadControllerApi {
+
+    private static final int HEADER_ROW_NUMBER = 0;
 
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
@@ -95,7 +101,7 @@ class UploadController implements UploadControllerApi {
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
-            Optional.ofNullable(row)
+            ofNullable(row)
                     .map(r -> r.getCell(XlsxVocabularyColumn.WORD.position))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
@@ -110,7 +116,7 @@ class UploadController implements UploadControllerApi {
 //                        Set<String> tags = getStringValues(row.getCell(6), ";");
 //                        Set<String> contexts = getStringValues(row.getCell(7), "/");
 
-                        Timestamp lastSeenAt = Optional.ofNullable(row.getCell(XlsxVocabularyColumn.LAST_SEEN_AT.position))
+                        Timestamp lastSeenAt = ofNullable(row.getCell(XlsxVocabularyColumn.LAST_SEEN_AT.position))
                                 .map(XSSFCell::getStringCellValue)
                                 .map(String::strip)
                                 .filter(this::isNotBlank)
@@ -134,10 +140,11 @@ class UploadController implements UploadControllerApi {
     }
 
     private void importNotes(XSSFSheet sheet, UploadProgressTracker tracker) {
+        validateNoteHeaderRow(sheet);
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
 
-            Optional.ofNullable(row)
+            ofNullable(row)
                     .map(r -> r.getCell(XlsxNoteColumn.CONTENT.position))
                     .map(Cell::getStringCellValue)
                     .map(String::strip)
@@ -152,12 +159,44 @@ class UploadController implements UploadControllerApi {
         tracker.notesUploadFinished();
     }
 
+    private void validateNoteHeaderRow(XSSFSheet sheet) {
+        XSSFRow headerRow = sheet.getRow(HEADER_ROW_NUMBER);
+
+        Optional<String> contentValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.CONTENT);
+        Optional<String> tagsValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.TAGS);
+
+        String validationErrors = Stream.concat(contentValidationError.stream(), tagsValidationError.stream())
+                .collect(Collectors.joining("\n"));
+
+        if (isNotBlank(validationErrors)) {
+            throw new XlsxStructureUnsupportedException(validationErrors);
+        }
+    }
+
+    private Optional<String> collectNoteHeaderValidationError(XSSFRow headerRow, XlsxNoteColumn column) {
+        Optional<String> optionalColumnValue = ofNullable(headerRow.getCell(column.position))
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank);
+
+        if (optionalColumnValue.isEmpty()) {
+            String error = "Expected '" + column.name + "' header column at index '" + column.position + "', but was empty" + " (" + headerRow.getSheet().getSheetName() + ")";
+            return Optional.of(error);
+        }
+        String cellValue = optionalColumnValue.get();
+        if (!column.name.equals(cellValue)) {
+            String error = "Expected '" + column.name + "' header column at index '" + column.position + "', but was " + cellValue + " (" + headerRow.getSheet().getSheetName() + ")";
+            return Optional.of(error);
+        }
+        return Optional.empty();
+    }
+
     private boolean isNotBlank(String s) {
         return !s.isBlank();
     }
 
     private Set<String> getStringValues(XSSFCell cell, String separator) {
-        return Optional.ofNullable(cell)
+        return ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
                 .filter(this::isNotBlank)
@@ -167,7 +206,7 @@ class UploadController implements UploadControllerApi {
     }
 
     private String readDefinition(XSSFCell cell) {
-        return Optional.ofNullable(cell)
+        return ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
                 .filter(this::isNotBlank)
@@ -175,7 +214,7 @@ class UploadController implements UploadControllerApi {
     }
 
     private Set<String> getEquivalents(XSSFCell cell) {
-        return Optional.ofNullable(cell)
+        return ofNullable(cell)
                 .map(Cell::getStringCellValue)
                 .map(String::strip)
                 .filter(this::isNotBlank)
