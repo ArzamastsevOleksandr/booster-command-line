@@ -41,4 +41,8 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(OK)
     Integer countAll();
 
+    @GetMapping(value = "/count-with-substring/{substring}")
+    @ResponseStatus(OK)
+    Integer countWithSubstring(@PathVariable("substring") String substring);
+
 }

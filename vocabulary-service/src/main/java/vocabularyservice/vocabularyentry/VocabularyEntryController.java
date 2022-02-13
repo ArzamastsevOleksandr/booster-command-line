@@ -57,4 +57,9 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
         return vocabularyEntryService.countAll();
     }
 
+    @Override
+    public Integer countWithSubstring(String substring) {
+        return vocabularyEntryService.countWithSubstring(substring);
+    }
+
 }

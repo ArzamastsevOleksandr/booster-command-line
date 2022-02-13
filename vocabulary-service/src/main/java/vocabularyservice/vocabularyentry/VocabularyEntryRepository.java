@@ -22,4 +22,6 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
 
     Integer countAllBy();
 
+    Integer countAllByWordNameContaining(String substring);
+
 }
