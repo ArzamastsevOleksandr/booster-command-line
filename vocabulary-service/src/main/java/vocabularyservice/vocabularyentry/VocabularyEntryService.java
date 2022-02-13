@@ -12,6 +12,7 @@ import vocabularyservice.language.LanguageEntity;
 import vocabularyservice.language.LanguageService;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Optional.ofNullable;
@@ -27,9 +28,8 @@ public class VocabularyEntryService {
     private final WordService wordService;
     private final LanguageService languageService;
 
-    public Collection<VocabularyEntryDto> findAll() {
-        return vocabularyEntryRepository.findAll()
-                .stream()
+    public List<VocabularyEntryDto> findFirst(Integer limit) {
+        return vocabularyEntryRepository.findFirst(limit)
                 .map(this::toDto)
                 .toList();
     }

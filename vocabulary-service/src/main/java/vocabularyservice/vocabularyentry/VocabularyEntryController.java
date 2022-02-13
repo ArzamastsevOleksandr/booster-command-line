@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,8 +19,8 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     private final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public Collection<VocabularyEntryDto> getAll() {
-        return vocabularyEntryService.findAll();
+    public List<VocabularyEntryDto> findFirst(Integer limit) {
+        return vocabularyEntryService.findFirst(limit);
     }
 
     @Override
