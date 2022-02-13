@@ -37,4 +37,8 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(OK)
     VocabularyEntryDto patchEntry(@RequestBody PatchVocabularyEntryInput input);
 
+    @GetMapping(value = "/count-all/")
+    @ResponseStatus(OK)
+    Integer countAll();
+
 }

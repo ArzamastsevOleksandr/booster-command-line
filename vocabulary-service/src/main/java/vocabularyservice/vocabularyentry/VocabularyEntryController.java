@@ -52,4 +52,9 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
         return vocabularyEntryService.patch(input);
     }
 
+    @Override
+    public Integer countAll() {
+        return vocabularyEntryService.countAll();
+    }
+
 }

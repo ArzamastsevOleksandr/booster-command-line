@@ -106,9 +106,12 @@ public class VocabularyEntryService {
 
     public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
         return vocabularyEntryRepository.findWithSynonyms(limit)
-                .stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    public Integer countAll() {
+        return vocabularyEntryRepository.countAllBy();
     }
 
 }

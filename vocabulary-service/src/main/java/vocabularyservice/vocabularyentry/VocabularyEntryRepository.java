@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 @Repository
@@ -19,6 +18,8 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
             order by last_seen_at
             limit ?1
             """, nativeQuery = true)
-    Collection<VocabularyEntryEntity> findWithSynonyms(Integer limit);
+    Stream<VocabularyEntryEntity> findWithSynonyms(Integer limit);
+
+    Integer countAllBy();
 
 }
