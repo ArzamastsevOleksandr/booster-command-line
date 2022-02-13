@@ -118,4 +118,10 @@ public class VocabularyEntryService {
         return vocabularyEntryRepository.countAllByWordNameContaining(substring);
     }
 
+    public List<VocabularyEntryDto> findFirstWithSubstring(Integer limit, String substring) {
+        return vocabularyEntryRepository.findFirstWithSubstring(limit, "%" + substring + "%")
+                .map(this::toDto)
+                .toList();
+    }
+
 }

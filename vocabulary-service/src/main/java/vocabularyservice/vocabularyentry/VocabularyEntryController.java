@@ -24,6 +24,11 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     }
 
     @Override
+    public List<VocabularyEntryDto> findFirstWithSubstring(Integer limit, String substring) {
+        return vocabularyEntryService.findFirstWithSubstring(limit, substring);
+    }
+
+    @Override
     public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
         return vocabularyEntryService.findWithSynonyms(limit);
     }

@@ -17,6 +17,17 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
             """, nativeQuery = true)
     Stream<VocabularyEntryEntity> findFirst(Integer limit);
 
+    @Query(value = """
+            select *
+            from vocabulary_entries ve
+            inner join words w
+            on w.id = ve.word_id
+            where w.name like ?2
+            order by ve.last_seen_at
+            limit ?1
+            """, nativeQuery = true)
+    Stream<VocabularyEntryEntity> findFirstWithSubstring(Integer limit, String substring);
+
     Stream<VocabularyEntryEntity> findAllByLanguageId(Long id);
 
     @Query(value = """

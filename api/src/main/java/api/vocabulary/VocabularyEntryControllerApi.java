@@ -16,6 +16,11 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(OK)
     List<VocabularyEntryDto> findFirst(@RequestParam(name = "limit") Integer limit);
 
+    @GetMapping(value = "/with-substring/{substring}", params = {"limit"})
+    @ResponseStatus(OK)
+    List<VocabularyEntryDto> findFirstWithSubstring(@RequestParam(name = "limit") Integer limit,
+                                                    @PathVariable("substring") String substring);
+
     @GetMapping(value = "/with-synonyms/", params = {"limit"})
     Collection<VocabularyEntryDto> findWithSynonyms(@RequestParam("limit") Integer limit);
 
