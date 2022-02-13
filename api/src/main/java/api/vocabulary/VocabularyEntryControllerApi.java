@@ -4,15 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 public interface VocabularyEntryControllerApi {
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "/", params = {"limit"})
     @ResponseStatus(OK)
-    Collection<VocabularyEntryDto> getAll();
+    List<VocabularyEntryDto> findFirst(@RequestParam(name = "limit") Integer limit);
 
     @GetMapping(value = "/with-synonyms/", params = {"limit"})
     Collection<VocabularyEntryDto> findWithSynonyms(@RequestParam("limit") Integer limit);

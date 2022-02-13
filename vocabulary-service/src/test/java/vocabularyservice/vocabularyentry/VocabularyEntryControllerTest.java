@@ -24,7 +24,7 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
     VocabularyEntryService vocabularyEntryService;
 
     @Test
-    void shouldReturnAllVocabularyEntries() {
+    void shouldReturnFirstVocabularyEntries() {
         // given
         var name = "entry";
         var definition = "walk with effort";
@@ -40,7 +40,7 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
                 .build());
         // then
         webTestClient.get()
-                .uri("/vocabulary-entries/")
+                .uri("/vocabulary-entries/?limit=1")
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -158,7 +158,7 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
     @Test
     void shouldCreateVocabularyEntry() {
         // given
-        assertThat(vocabularyEntryService.findAll()).isEmpty();
+        assertThat(vocabularyEntryService.findFirst(10)).isEmpty();
         var english = "English";
         LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         // when
