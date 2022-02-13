@@ -42,18 +42,13 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
-//        // todo: pagination
-//        Collection<VocabularyEntryDto> vocabularyEntryDtos = vocabularyEntryControllerApiClient.findFirst(vocabularyFetchSize);
-//        if (CollectionUtils.isEmpty(vocabularyEntryDtos)) {
-//            adapter.error("There are no vocabulary entries yet");
-//        } else {
-//            vocabularyEntryDtos.forEach(this::showAndUpdateLastSeenAt);
-//        }
-//        args.substring().ifPresent(s -> {
-//            adapter.writeLine("With substr: " + s + ": " + vocabularyEntryControllerApiClient.countWithSubstring(s));
-//        });
         args.substring().ifPresentOrElse(substring -> {
-
+            var paginator = new Paginator<VocabularyEntryDto>(args.pagination(), vocabularyEntryClient.countWithSubstring(substring)) {
+                List<VocabularyEntryDto> nextBatch() {
+                    return vocabularyEntryClient.findFirstWithSubstring(limit(), substring);
+                }
+            };
+            display(paginator);
         }, () -> {
             var paginator = new Paginator<VocabularyEntryDto>(args.pagination(), vocabularyEntryClient.countAll()) {
                 List<VocabularyEntryDto> nextBatch() {
@@ -62,19 +57,6 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
             };
             display(paginator);
         });
-//        args.pagination().ifPresentOrElse(pagination -> {
-//            args.substring().ifPresentOrElse(substring -> {
-//                var p = new Paginator(pagination, vocabularyEntryService.countWithSubstring(substring));
-//                display(p, () -> vocabularyEntryService.findWithSubstringLimit(substring, p.limit()));
-//            }, () -> {
-//                var p = new Paginator(pagination, vocabularyEntryService.countTotal());
-//                display(p, () -> vocabularyEntryService.findAllLimit(p.limit()));
-//            });
-//        }, () -> {
-//            args.substring().ifPresentOrElse(
-//                    substring -> displayAllAtOnce(vocabularyEntryService.findAllWithSubstring(substring)),
-//                    () -> displayAllAtOnce(vocabularyEntryService.findAll()));
-//        });
     }
 
     private static abstract class Paginator<T> {
