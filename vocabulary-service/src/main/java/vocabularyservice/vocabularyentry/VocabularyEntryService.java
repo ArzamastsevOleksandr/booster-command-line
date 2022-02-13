@@ -114,4 +114,8 @@ public class VocabularyEntryService {
         return vocabularyEntryRepository.countAllBy();
     }
 
+    public Integer countWithSubstring(String substring) {
+        return vocabularyEntryRepository.countAllByWordNameContaining(substring);
+    }
+
 }
