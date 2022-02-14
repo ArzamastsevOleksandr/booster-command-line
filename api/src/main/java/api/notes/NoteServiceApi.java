@@ -29,4 +29,8 @@ public interface NoteServiceApi {
     @ResponseStatus(OK)
     NoteDto addTags(@RequestBody AddTagsToNoteInput input);
 
+    @GetMapping(value = "/count-all/")
+    @ResponseStatus(OK)
+    Integer countAll();
+
 }

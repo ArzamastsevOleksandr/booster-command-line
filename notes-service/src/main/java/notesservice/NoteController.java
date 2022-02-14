@@ -42,4 +42,9 @@ class NoteController implements NoteServiceApi {
         return noteService.addTags(input);
     }
 
+    @Override
+    public Integer countAll() {
+        return noteService.countAll();
+    }
+
 }
