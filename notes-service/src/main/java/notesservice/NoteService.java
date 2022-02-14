@@ -81,4 +81,8 @@ class NoteService {
         return toDto(noteRepository.save(noteEntity));
     }
 
+    public Integer countAll() {
+        return noteRepository.countAllBy();
+    }
+
 }
