@@ -66,4 +66,8 @@ public enum FlagType {
         return flagType != UNKNOWN;
     }
 
+    public String extendedToString() {
+        return this + " (" + value + ")";
+    }
+
 }
