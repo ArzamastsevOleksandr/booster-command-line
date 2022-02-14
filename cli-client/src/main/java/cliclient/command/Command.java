@@ -46,6 +46,8 @@ public enum Command {
     MARK_VOCABULARY_ENTRY_DIFFICULT(Set.of("md")),
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),
 
+    LIST_FLAG_TYPES(Set.of("ft")),
+
     EXIT(Set.of("e")),
     NO_INPUT(Set.of()),
 
