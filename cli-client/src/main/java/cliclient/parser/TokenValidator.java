@@ -17,8 +17,9 @@ class TokenValidator {
 
     TokenValidationResult validate(List<Token> tokens) {
         try {
-            checkAreNotEmpty(tokens);
-
+            if (tokens.isEmpty()) {
+                return TokenValidationResult.empty();
+            }
             validateFirstToken(tokens);
             if (tokens.size() == 1) {
                 return TokenValidationResult.success(tokens);
@@ -53,12 +54,6 @@ class TokenValidator {
     private void validateFirstToken(List<Token> tokens) {
         Token command = eatFrontCommand(tokens);
         checkIsCommand(command);
-    }
-
-    private void checkAreNotEmpty(List<Token> tokens) {
-        if (tokens.isEmpty()) {
-            throw new TokenValidationException("No input");
-        }
     }
 
     private Token eatFrontCommand(List<Token> tokens) {

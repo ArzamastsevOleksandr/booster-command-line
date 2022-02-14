@@ -35,7 +35,7 @@ public class CommandHandlerCollectionService {
     public void handle(CommandWithArgs commandWithArgs) {
         if (commandWithArgs.hasNoErrors()) {
             handleCommandWithArgs(commandWithArgs);
-        } else if (commandWithArgs.getErrors().contains("Token sequence must consist of at least one argument")) {
+        } else if (commandWithArgs.isNoInput()) {
             return;
         } else {
             commandWithArgs.getErrors().forEach(adapter::writeLine);
