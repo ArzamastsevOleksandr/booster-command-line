@@ -16,7 +16,14 @@ import static java.util.stream.Collectors.toSet;
 @Component
 class TokenSequenceTransformer {
 
-    CommandWithArgs transform(List<Token> tokens) {
+    CommandWithArgs transform(TokenValidationResult tokenValidationResult) {
+        if (tokenValidationResult.hasErrors()) {
+            return CommandWithArgs.withErrors(tokenValidationResult.errors());
+        }
+        if (tokenValidationResult.hasNoTokens()) {
+            return CommandWithArgs.builder().command(Command.NO_INPUT).build();
+        }
+        List<Token> tokens = tokenValidationResult.tokens();
         Token token = tokens.get(0);
         var command = Command.fromString(token.value());
         var argumentsBuilder = CommandWithArgs.builder().command(command);

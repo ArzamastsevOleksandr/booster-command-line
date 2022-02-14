@@ -47,6 +47,7 @@ public enum Command {
     MARK_VOCABULARY_ENTRY_NOT_DIFFICULT(Set.of("mnd")),
 
     EXIT(Set.of("e")),
+    NO_INPUT(Set.of()),
 
     UNRECOGNIZED(Set.of("UNRECOGNIZED"));
 
@@ -69,6 +70,8 @@ public enum Command {
         }
     }
 
+    static final Set<Command> NON_RECOGNIZABLE_COMMANDS = Set.of(UNRECOGNIZED, NO_INPUT);
+
     private final Set<String> equivalents;
 
     public static Command fromString(String str) {
@@ -79,7 +82,7 @@ public enum Command {
     }
 
     public static boolean isRecognizable(Command command) {
-        return command != UNRECOGNIZED;
+        return !NON_RECOGNIZABLE_COMMANDS.contains(command);
     }
 
     public Set<String> getEquivalents() {

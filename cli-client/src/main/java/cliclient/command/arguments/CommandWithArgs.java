@@ -48,7 +48,11 @@ public class CommandWithArgs {
     List<String> errors = List.of();
 
     public boolean hasNoErrors() {
-        return errors == null || errors.isEmpty();
+        return (errors == null || errors.isEmpty()) && !isNoInput();
+    }
+
+    public boolean isNoInput() {
+        return command == Command.NO_INPUT;
     }
 
     public static CommandWithArgs withErrors(List<String> errors) {
