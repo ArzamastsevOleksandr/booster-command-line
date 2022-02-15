@@ -2,6 +2,7 @@ package uploadservice;
 
 import api.exception.XlsxStructureUnsupportedException;
 import api.notes.AddNoteInput;
+import api.tags.CreateTagInput;
 import api.upload.UploadControllerApi;
 import api.upload.UploadResponse;
 import api.vocabulary.AddLanguageInput;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uploadservice.feign.notes.NotesServiceClient;
+import uploadservice.feign.tags.TagServiceClient;
 import uploadservice.feign.vocabulary.LanguageControllerApiClient;
 import uploadservice.feign.vocabulary.VocabularyEntryControllerApiClient;
 
@@ -42,6 +44,7 @@ class UploadController implements UploadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
+    private final TagServiceClient tagServiceClient;
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
@@ -61,17 +64,50 @@ class UploadController implements UploadControllerApi {
                 String sheetName = sheet.getSheetName().strip().toLowerCase();
 
                 switch (sheetName) {
+                    case "tags" -> importTags(sheet, tracker);
                     case "notes" -> importNotes(sheet, tracker);
                     // todo: language recognition pattern (no hardcoding)
                     case "english" -> importLanguage(sheet, tracker);
                     default -> log.error("Unrecognized upload page ignored: {}", sheetName);
                 }
             }
-            return new UploadResponse(tracker.vocabularyEntriesUploadCount, tracker.notesUploadCount);
+            return UploadResponse.builder()
+                    .notesUploaded(tracker.notesUploadCount)
+                    .vocabularyEntriesUploaded(tracker.vocabularyEntriesUploadCount)
+                    .tagsUploaded(tracker.tagsUploadCount)
+                    .build();
         } catch (IOException e) {
             log.error("Error during upload process", e);
         }
-        return new UploadResponse(0, 0);
+        return UploadResponse.empty();
+    }
+
+    private void importTags(XSSFSheet sheet, UploadProgressTracker tracker) {
+        validateTagsHeaderRow(sheet.getRow(HEADER_ROW_NUMBER));
+        for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
+            XSSFRow row = sheet.getRow(rowNumber);
+
+            // todo: if the content was empty - track the row and return it in the response
+            ofNullable(row)
+                    .map(r -> r.getCell(XlsxTagColumn.NAME.position))
+                    .map(Cell::getStringCellValue)
+                    .map(String::strip)
+                    .filter(this::isNotBlank)
+                    .ifPresent(name -> {
+                        tagServiceClient.create(CreateTagInput.builder()
+                                .name(name)
+                                .build());
+                        tracker.incTagsUploadCount();
+                    });
+        }
+        tracker.tagsUploadFinished();
+    }
+
+    private void validateTagsHeaderRow(XSSFRow row) {
+        String validationErrors = collectValidationErrors(checkTagsHeaderColumn(row, XlsxTagColumn.NAME));
+        if (isNotBlank(validationErrors)) {
+            throw new XlsxStructureUnsupportedException(validationErrors);
+        }
     }
 
     @Lookup
@@ -136,20 +172,24 @@ class UploadController implements UploadControllerApi {
 
     private void validateLanguageHeaderRow(XSSFRow headerRow) {
         String validationErrors = collectValidationErrors(
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.WORD),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.DEFINITION),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.SYNONYMS),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.TAGS),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CONTEXTS),
-                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.WORD),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.DEFINITION),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.SYNONYMS),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.TAGS),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.CONTEXTS),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
         );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
         }
     }
 
-    private Optional<String> collectLanguageHeaderValidationError(XSSFRow headerRow, XlsxVocabularyColumn column) {
+    private Optional<String> checkTagsHeaderColumn(XSSFRow headerRow, XlsxTagColumn column) {
+        return collectHeaderValidationError(headerRow, column.position, column.name);
+    }
+
+    private Optional<String> checkLanguageHeaderColumn(XSSFRow headerRow, XlsxVocabularyColumn column) {
         return collectHeaderValidationError(headerRow, column.position, column.name);
     }
 
@@ -207,9 +247,9 @@ class UploadController implements UploadControllerApi {
 
     private void validateNoteHeaderRow(XSSFRow headerRow) {
         String validationErrors = collectValidationErrors(
-                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.CONTENT),
-                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.TAGS),
-                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.LAST_SEEN_AT)
+                checkNoteHeaderColumn(headerRow, XlsxNoteColumn.CONTENT),
+                checkNoteHeaderColumn(headerRow, XlsxNoteColumn.TAGS),
+                checkNoteHeaderColumn(headerRow, XlsxNoteColumn.LAST_SEEN_AT)
         );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
@@ -222,7 +262,7 @@ class UploadController implements UploadControllerApi {
                 .collect(joining("\n"));
     }
 
-    private Optional<String> collectNoteHeaderValidationError(XSSFRow headerRow, XlsxNoteColumn column) {
+    private Optional<String> checkNoteHeaderColumn(XSSFRow headerRow, XlsxNoteColumn column) {
         return collectHeaderValidationError(headerRow, column.position, column.name);
     }
 

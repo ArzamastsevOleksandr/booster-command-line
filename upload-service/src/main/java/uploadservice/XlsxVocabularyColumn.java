@@ -1,5 +1,8 @@
 package uploadservice;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 enum XlsxVocabularyColumn {
 
     WORD(0, "word"),
@@ -12,10 +15,5 @@ enum XlsxVocabularyColumn {
 
     final int position;
     final String name;
-
-    XlsxVocabularyColumn(int position, String name) {
-        this.position = position;
-        this.name = name;
-    }
 
 }
