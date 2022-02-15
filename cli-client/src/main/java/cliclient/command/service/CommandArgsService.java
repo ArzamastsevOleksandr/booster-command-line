@@ -52,7 +52,7 @@ class CommandArgsService {
             case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(downloadFilename));
             case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(uploadFilename));
             case ADD_SETTINGS -> new AddSettingsCommandArgs(cwa.getLanguageId(), cwa.getVocabularyTrainingSessionSize());
-            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()));
+            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination());
             case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));
             case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());
             case ADD_TAG -> new AddTagCommandArgs(cwa.getName());
