@@ -116,12 +116,7 @@ class UploadController implements UploadControllerApi {
 //                        Set<String> tags = getStringValues(row.getCell(6), ";");
 //                        Set<String> contexts = getStringValues(row.getCell(7), "/");
 
-                        Timestamp lastSeenAt = ofNullable(row.getCell(XlsxVocabularyColumn.LAST_SEEN_AT.position))
-                                .map(XSSFCell::getStringCellValue)
-                                .map(String::strip)
-                                .filter(this::isNotBlank)
-                                .map(Timestamp::valueOf)
-                                .orElse(new Timestamp(System.currentTimeMillis()));
+                        Timestamp lastSeenAt = getLastSeenAt(row, XlsxVocabularyColumn.LAST_SEEN_AT.position);
 
 //                        tagService.createIfNotExist(tags);
 
@@ -188,13 +183,26 @@ class UploadController implements UploadControllerApi {
                     .map(String::strip)
                     .filter(this::isNotBlank)
                     .ifPresent(content -> {
+                        Timestamp lastSeenAt = getLastSeenAt(row, XlsxNoteColumn.LAST_SEEN_AT.position);
 //                        Set<String> tags = getStringValues(row.getCell(1), ";");
 //                        tagService.createIfNotExist(tags);
-                        notesServiceClient.add(new AddNoteInput(content));
+                        notesServiceClient.add(AddNoteInput.builder()
+                                .content(content)
+                                .lastSeenAt(lastSeenAt)
+                                .build());
                         tracker.incNotesUploadCount();
                     });
         }
         tracker.notesUploadFinished();
+    }
+
+    private Timestamp getLastSeenAt(XSSFRow row, int position) {
+        return ofNullable(row.getCell(position))
+                .map(XSSFCell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .map(Timestamp::valueOf)
+                .orElse(new Timestamp(System.currentTimeMillis()));
     }
 
     private void validateNoteHeaderRow(XSSFRow headerRow) {

@@ -53,7 +53,8 @@ class NoteService {
     @Transactional
     public NoteDto add(AddNoteInput input) {
         var noteEntity = new NoteEntity();
-        noteEntity.setContent(input.content());
+        noteEntity.setContent(input.getContent());
+        noteEntity.setLastSeenAt(input.getLastSeenAt());
         noteEntity = noteRepository.save(noteEntity);
         return toDto(noteEntity);
     }

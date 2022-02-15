@@ -67,7 +67,9 @@ class NotesServiceApplicationTest {
         // given
         var content = "Test Note";
         // when
-        NoteDto noteDto = noteService.add(new AddNoteInput(content));
+        NoteDto noteDto = noteService.add(AddNoteInput.builder()
+                .content(content)
+                .build());
         // then
         webTestClient.get()
                 .uri("/notes/" + noteDto.getId())
@@ -87,7 +89,7 @@ class NotesServiceApplicationTest {
         // when
         NoteDto note = webTestClient.post()
                 .uri("/notes/")
-                .bodyValue(new AddNoteInput(CONTENT_1))
+                .bodyValue(AddNoteInput.builder().content(CONTENT_1).build())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -105,8 +107,12 @@ class NotesServiceApplicationTest {
     @Test
     void shouldReturnAllNotes() {
         // given
-        NoteDto noteDto1 = noteService.add(new AddNoteInput(CONTENT_1));
-        NoteDto noteDto2 = noteService.add(new AddNoteInput(CONTENT_2));
+        NoteDto noteDto1 = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_1)
+                .build());
+        NoteDto noteDto2 = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_2)
+                .build());
         // when
         NoteDto[] notes = webTestClient.get()
                 .uri("/notes/")
@@ -146,7 +152,9 @@ class NotesServiceApplicationTest {
     @Test
     void shouldDeleteNoteById() {
         // given
-        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
+        NoteDto noteDto = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_1)
+                .build());
         // when
         webTestClient.delete()
                 .uri("/notes/" + noteDto.getId())
@@ -167,7 +175,9 @@ class NotesServiceApplicationTest {
         long tagId1 = 1L;
         long tagId2 = 2L;
 
-        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
+        NoteDto noteDto = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_1)
+                .build());
 
         when(tagServiceClient.findByName(TAG_NAME_1))
                 .thenReturn(TagDto.builder().id(tagId1).name(TAG_NAME_1).build());
@@ -209,7 +219,9 @@ class NotesServiceApplicationTest {
     @Test
     void shouldThrowExceptionIfTagsNotFound() {
         // given
-        NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
+        NoteDto noteDto = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_1)
+                .build());
 
         when(tagServiceClient.findByName(TAG_NAME_1))
                 .thenThrow(new NotFoundException("Tag not found by name: " + TAG_NAME_1));
