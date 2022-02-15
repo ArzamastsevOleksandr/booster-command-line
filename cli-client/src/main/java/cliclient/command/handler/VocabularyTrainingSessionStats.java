@@ -2,7 +2,6 @@ package cliclient.command.handler;
 
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
@@ -26,7 +25,6 @@ class VocabularyTrainingSessionStats {
 
     private final CommandLineAdapter adapter;
     private final VocabularyEntryService vocabularyEntryService;
-    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
 
     private final Set<VocabularyEntryDto> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> correctAnswers = new HashSet<>();
@@ -72,13 +70,7 @@ class VocabularyTrainingSessionStats {
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(label);
             adapter.newLine();
-            answers.stream()
-                    .map(VocabularyEntryDto::getId)
-                    .map(vocabularyEntryControllerApiClient::findById)
-                    .forEach(entry -> {
-                        adapter.writeLine(entry);
-                        vocabularyEntryService.updateLastSeenAt(entry);
-                    });
+            vocabularyEntryService.updateLastSeenAt(answers);
             adapter.newLine();
         }
     }
