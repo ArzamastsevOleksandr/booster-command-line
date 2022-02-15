@@ -66,6 +66,7 @@ class DownloadController implements DownloadControllerApi {
             NoteDto note = notes.get(i);
             noteRow.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(note.getContent());
 //                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
+            noteRow.createCell(XlsxNoteColumn.LAST_SEEN_AT.position).setCellValue(note.getLastSeenAt().toString());
         }
     }
 
@@ -74,6 +75,7 @@ class DownloadController implements DownloadControllerApi {
 
         row.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(XlsxNoteColumn.CONTENT.name);
         row.createCell(XlsxNoteColumn.TAGS.position).setCellValue(XlsxNoteColumn.TAGS.name);
+        row.createCell(XlsxNoteColumn.LAST_SEEN_AT.position).setCellValue(XlsxNoteColumn.LAST_SEEN_AT.name);
     }
 
     private void downloadLanguage(XSSFWorkbook workbook, LanguageDto languageDto) {

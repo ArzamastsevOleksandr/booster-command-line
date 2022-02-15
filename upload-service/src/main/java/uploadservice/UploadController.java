@@ -29,11 +29,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -43,8 +41,6 @@ import static java.util.stream.Collectors.toSet;
 class UploadController implements UploadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
-
-    private static final Collector<CharSequence, ?, String> VALIDATION_ERRORS_COLLECTOR = Collectors.joining("\n");
 
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
@@ -144,18 +140,15 @@ class UploadController implements UploadControllerApi {
     }
 
     private void validateLanguageHeaderRow(XSSFRow headerRow) {
-        String validationErrors = Stream.of(
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.WORD),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.DEFINITION),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.SYNONYMS),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.TAGS),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CONTEXTS),
-                        collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
-                )
-                .flatMap(Optional::stream)
-                .collect(VALIDATION_ERRORS_COLLECTOR);
-
+        String validationErrors = collectValidationErrors(
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.WORD),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.DEFINITION),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.SYNONYMS),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.TAGS),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.CONTEXTS),
+                collectLanguageHeaderValidationError(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
+        );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
         }
@@ -205,15 +198,20 @@ class UploadController implements UploadControllerApi {
     }
 
     private void validateNoteHeaderRow(XSSFRow headerRow) {
-        Optional<String> contentValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.CONTENT);
-        Optional<String> tagsValidationError = collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.TAGS);
-
-        String validationErrors = Stream.concat(contentValidationError.stream(), tagsValidationError.stream())
-                .collect(VALIDATION_ERRORS_COLLECTOR);
-
+        String validationErrors = collectValidationErrors(
+                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.CONTENT),
+                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.TAGS),
+                collectNoteHeaderValidationError(headerRow, XlsxNoteColumn.LAST_SEEN_AT)
+        );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
         }
+    }
+
+    private String collectValidationErrors(Optional<String>... validationError) {
+        return Arrays.stream(validationError)
+                .flatMap(Optional::stream)
+                .collect(joining("\n"));
     }
 
     private Optional<String> collectNoteHeaderValidationError(XSSFRow headerRow, XlsxNoteColumn column) {
