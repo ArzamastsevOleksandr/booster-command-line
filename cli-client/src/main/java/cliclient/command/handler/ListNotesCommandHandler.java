@@ -1,6 +1,7 @@
 package cliclient.command.handler;
 
 import api.notes.NoteDto;
+import api.notes.PatchNoteLastSeenAtInput;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
@@ -9,7 +10,8 @@ import cliclient.feign.notes.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
+import java.sql.Timestamp;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,20 +23,65 @@ public class ListNotesCommandHandler implements CommandHandler {
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (ListNotesCommandArgs) commandArgs;
-        args.id().ifPresentOrElse(this::displayNoteById, this::displayAllNotes);
+        args.id().ifPresentOrElse(this::displayNoteById, () -> displayNotes(args));
     }
 
     private void displayNoteById(Long id) {
-        adapter.writeLine(notesServiceClient.getById(id));
+        NoteDto noteDto = notesServiceClient.getById(id);
+        showAndUpdateLastSeenAt(noteDto);
     }
 
-    private void displayAllNotes() {
-        Collection<NoteDto> notes = notesServiceClient.getAll();
-        if (notes.isEmpty()) {
-            adapter.error("There are no notes yet");
+    private void showAndUpdateLastSeenAt(NoteDto noteDto) {
+        adapter.writeLine(noteDto);
+        updateLastSeenAt(List.of(noteDto.getId()));
+    }
+
+    private void displayNotes(ListNotesCommandArgs args) {
+        var paginator = new Paginator<NoteDto>(args.pagination(), notesServiceClient.countAll()) {
+            @Override
+            List<NoteDto> nextBatch() {
+                return notesServiceClient.findFirst(limit());
+            }
+        };
+        display(paginator);
+    }
+
+    // todo: DRY
+    private void display(Paginator<NoteDto> paginator) {
+        if (paginator.isEmpty()) {
+            adapter.error("No records");
         } else {
-            notes.forEach(adapter::writeLine);
+            displayAndUpdateLastSeenAt(paginator);
+
+            String line = readLineIfInRangeOrEnd(paginator);
+            while (!line.equals("e") && paginator.isInRange()) {
+                displayAndUpdateLastSeenAt(paginator);
+                line = readLineIfInRangeOrEnd(paginator);
+            }
         }
+    }
+
+    private void displayAndUpdateLastSeenAt(Paginator<NoteDto> paginator) {
+        adapter.writeLine(paginator.counter());
+        // todo: color
+        List<NoteDto> noteDtos = paginator.nextBatchAndUpdateRange();
+        noteDtos.forEach(adapter::writeLine);
+        List<Long> noteIds = noteDtos
+                .stream()
+                .map(NoteDto::getId)
+                .toList();
+        updateLastSeenAt(noteIds);
+    }
+
+    private void updateLastSeenAt(List<Long> noteIds) {
+        notesServiceClient.patchLastSeenAt(PatchNoteLastSeenAtInput.builder()
+                .ids(noteIds)
+                .lastSeenAt(new Timestamp(System.currentTimeMillis()))
+                .build());
+    }
+
+    private String readLineIfInRangeOrEnd(Paginator<NoteDto> paginator) {
+        return paginator.isInRange() ? adapter.readLine() : "e";
     }
 
     @Override

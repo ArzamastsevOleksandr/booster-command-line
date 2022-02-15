@@ -28,39 +28,30 @@ public class CliClientApplication {
         // todo: have a pre-training session, where vocabulary entries are shown 1 by 1 with a delayed interval.
         //  I can then start the training session with these words.
         // todo: custom note impl (if the note is large - pretty print it
-        // todo: test dao layer (containers?)
-        // todo: do we need to make read operations transactional?
-        // todo: try using @Transactional (enable it)
         // todo: feat: show all ves with descriptions/contexts only
         // todo: feat: connect ves (reluctance -> reluctant) and display all related ves when 1 is requested
         // todo: command to look for entries that have words in common (merge the entry into 1 single ve)
         // todo: ave \n=abound \s=be plentiful \d=exist in large numbers or amounts \c=Examples like this abound
-        // todo: n/ve \p=no
         // todo: feat n \ss=<substr>
         // todo: enable adding ve/n with many tags
         // todo: uve \t \at \rt
         // todo: un \t \at \rt
         // todo: I can list the tags along with the count of items related to them
-        // todo: if null is returned when querying for count - log the error and return 0
         // todo: fix: uve enable \ctx
         // todo: add logging to a file
         // todo: fix: ave \n=stuffy \s=airless;staid \d=(of a place) lacking fresh air or ventilation
         //Arguments must follow a pattern of flag -> separator -> value
         // todo: when importing a file - do not specify the extension
-        // todo: validator validates. command handler works with non-optional data and expects a happy path?
         // todo: HELP <command>
         // todo: pretty print of l, ve, w
         // todo: write 1-line open comments.
-        // todo: use settings in the preprocessor
         // todo: I can search for words by tags
         // todo: I can mark the ve as learned for it not to appear in the training sessions
         // todo: I can mark the ve as hard for it to always appear in the training sessions
-        // todo: when I have seen the note - update it to decrease its precedence for it not to occur in the list of notes again
         // todo: I can have a calc training session
         // todo: I have a level in calc
         // todo: Correct calc answers increase level and complexity of all subsequent calcs
         // todo: I can have a mul/div/sub/add/mixed training sessions in calc
-        // todo: use over(), rank() and partition by when searching for which ves to output
         // todo: use indexes in tables where frequent search is done
         // todo: add benchmarks for standard sql and sql with indexes
         // todo: I can manually increase/decrease calc session level
