@@ -1,9 +1,6 @@
 package notesservice;
 
-import api.notes.AddNoteInput;
-import api.notes.AddTagsToNoteInput;
-import api.notes.NoteDto;
-import api.notes.NoteServiceApi;
+import api.notes.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +49,11 @@ class NoteController implements NoteServiceApi {
     @Override
     public Integer countAll() {
         return noteService.countAll();
+    }
+
+    @Override
+    public List<NoteDto> patchLastSeenAt(PatchNoteLastSeenAtInput input) {
+        return noteService.patchLastSeenAt(input);
     }
 
 }
