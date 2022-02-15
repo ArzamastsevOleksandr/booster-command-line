@@ -4,6 +4,7 @@ import api.exception.NotFoundException;
 import api.notes.AddNoteInput;
 import api.notes.AddTagsToNoteInput;
 import api.notes.NoteDto;
+import api.notes.PatchNoteLastSeenAtInput;
 import api.tags.TagDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +94,19 @@ class NoteService {
 
     public List<NoteDto> findFirst(Integer limit) {
         return noteRepository.findFirst(limit)
+                .map(this::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public List<NoteDto> patchLastSeenAt(PatchNoteLastSeenAtInput input) {
+        // todo: execute in batches or have a limit as to how many ids can be processed by an endpoint
+        List<NoteEntity> noteEntities = noteRepository.findAllById(input.getIds())
+                .stream()
+                .peek(noteEntity -> noteEntity.setLastSeenAt(input.getLastSeenAt()))
+                .toList();
+        return noteRepository.saveAll(noteEntities)
+                .stream()
                 .map(this::toDto)
                 .toList();
     }

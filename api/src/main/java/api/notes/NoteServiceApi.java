@@ -39,4 +39,8 @@ public interface NoteServiceApi {
     @ResponseStatus(OK)
     Integer countAll();
 
+    @PatchMapping(value = "/patch/last-seen-at/")
+    @ResponseStatus(OK)
+    List<NoteDto> patchLastSeenAt(@RequestBody PatchNoteLastSeenAtInput input);
+
 }
