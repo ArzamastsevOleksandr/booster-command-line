@@ -70,7 +70,7 @@ class NotesServiceApplicationTest {
         NoteDto noteDto = noteService.add(new AddNoteInput(content));
         // then
         webTestClient.get()
-                .uri("/notes/" + noteDto.id())
+                .uri("/notes/" + noteDto.getId())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -78,7 +78,7 @@ class NotesServiceApplicationTest {
                 .expectHeader()
                 .contentType(APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(noteDto.id())
+                .jsonPath("$.id").isEqualTo(noteDto.getId())
                 .jsonPath("$.content").isEqualTo(content);
     }
 
@@ -98,8 +98,8 @@ class NotesServiceApplicationTest {
                 .returnResult()
                 .getResponseBody();
         // then
-        assertThat(note.content()).isEqualTo(CONTENT_1);
-        assertThat(noteService.findById(note.id())).isEqualTo(note);
+        assertThat(note.getContent()).isEqualTo(CONTENT_1);
+        assertThat(noteService.findById(note.getId())).isEqualTo(note);
     }
 
     @Test
@@ -123,7 +123,7 @@ class NotesServiceApplicationTest {
         assertThat(List.of(noteDto1, noteDto2)).containsExactlyInAnyOrder(notes);
         // then
         List<NoteDto> notesFromDb = Arrays.stream(notes)
-                .map(NoteDto::id)
+                .map(NoteDto::getId)
                 .map(noteService::findById)
                 .toList();
         assertThat(notesFromDb).containsExactlyInAnyOrder(noteDto1, noteDto2);
@@ -149,16 +149,16 @@ class NotesServiceApplicationTest {
         NoteDto noteDto = noteService.add(new AddNoteInput(CONTENT_1));
         // when
         webTestClient.delete()
-                .uri("/notes/" + noteDto.id())
+                .uri("/notes/" + noteDto.getId())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
                 .isNoContent()
                 .expectBody(Void.class);
         // then
-        assertThatThrownBy(() -> noteService.findById(noteDto.id()))
+        assertThatThrownBy(() -> noteService.findById(noteDto.getId()))
                 .isInstanceOf(NotFoundException.class)
-                .hasMessage("Note not found by id: " + noteDto.id());
+                .hasMessage("Note not found by id: " + noteDto.getId());
     }
 
     @Test
@@ -177,15 +177,15 @@ class NotesServiceApplicationTest {
         webTestClient.post()
                 .uri("/notes/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
-                        .noteId(noteDto.id())
+                        .noteId(noteDto.getId())
                         .tagNames(Set.of(TAG_NAME_1, TAG_NAME_2))
                         .build())
                 .exchange()
                 .expectStatus()
                 .isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(noteDto.id())
-                .jsonPath("$.content").isEqualTo(noteDto.content());
+                .jsonPath("$.id").isEqualTo(noteDto.getId())
+                .jsonPath("$.content").isEqualTo(noteDto.getContent());
         // then
         assertThat(tagIdRepository.findAllById(Set.of(tagId1, tagId2))).hasSize(2);
     }
@@ -217,7 +217,7 @@ class NotesServiceApplicationTest {
         webTestClient.post()
                 .uri("/notes/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
-                        .noteId(noteDto.id())
+                        .noteId(noteDto.getId())
                         .tagNames(Set.of(TAG_NAME_1))
                         .build())
                 .exchange()
