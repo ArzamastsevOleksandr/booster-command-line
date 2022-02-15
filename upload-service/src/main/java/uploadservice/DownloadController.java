@@ -1,6 +1,7 @@
 package uploadservice;
 
 import api.notes.NoteDto;
+import api.tags.TagDto;
 import api.upload.DownloadControllerApi;
 import api.vocabulary.LanguageDto;
 import api.vocabulary.VocabularyEntryDto;
@@ -12,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uploadservice.feign.notes.NotesServiceClient;
+import uploadservice.feign.tags.TagServiceClient;
 import uploadservice.feign.vocabulary.LanguageControllerApiClient;
 import uploadservice.feign.vocabulary.VocabularyEntryControllerApiClient;
 
@@ -30,6 +32,7 @@ class DownloadController implements DownloadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
+    private final TagServiceClient tagServiceClient;
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
@@ -37,6 +40,7 @@ class DownloadController implements DownloadControllerApi {
     @Override
     public byte[] download() {
         try (var workbook = new XSSFWorkbook()) {
+            exportTags(workbook);
             exportNotes(workbook);
             languageControllerApiClient.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
             try (var out = new ByteArrayOutputStream()) {
@@ -47,6 +51,31 @@ class DownloadController implements DownloadControllerApi {
             log.error("Error during export process", e);
         }
         return new byte[]{};
+    }
+
+    private void exportTags(XSSFWorkbook workbook) {
+        List<TagDto> tagDtos = new ArrayList<>(tagServiceClient.findAll());
+        if (!tagDtos.isEmpty()) {
+            log.info("Exporting tags");
+            XSSFSheet sheet = workbook.createSheet("tags");
+
+            createTagsHeaderRow(sheet);
+            createTagRows(tagDtos, sheet);
+        }
+    }
+
+    private void createTagsHeaderRow(XSSFSheet sheet) {
+        XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
+
+        row.createCell(XlsxTagColumn.NAME.position).setCellValue(XlsxTagColumn.NAME.name);
+    }
+
+    private void createTagRows(List<TagDto> tagDtos, XSSFSheet sheet) {
+        for (int i = 0; i < tagDtos.size(); ++i) {
+            XSSFRow tagRow = sheet.createRow(i + 1);
+            TagDto tagDto = tagDtos.get(i);
+            tagRow.createCell(XlsxTagColumn.NAME.position).setCellValue(tagDto.getName());
+        }
     }
 
     private void exportNotes(XSSFWorkbook workbook) {

@@ -46,8 +46,9 @@ public class UploadCommandHandler implements CommandHandler {
             MultipartFile multipartFile = createMultipartFile(filename);
             UploadResponse uploadResponse = uploadServiceClient.upload(multipartFile);
 
-            adapter.writeLine("Notes uploaded: " + uploadResponse.notesUploaded());
-            adapter.writeLine("Vocabulary entries uploaded: " + uploadResponse.vocabularyEntriesUploaded());
+            adapter.writeLine("Notes uploaded: " + uploadResponse.getNotesUploaded());
+            adapter.writeLine("Vocabulary entries uploaded: " + uploadResponse.getVocabularyEntriesUploaded());
+            adapter.writeLine("Tags uploaded: " + uploadResponse.getTagsUploaded());
         } catch (IOException e) {
             adapter.writeLine("Error during upload process: " + e.getMessage());
         }

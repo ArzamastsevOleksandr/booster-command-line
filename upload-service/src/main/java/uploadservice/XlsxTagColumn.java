@@ -3,11 +3,9 @@ package uploadservice;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-enum XlsxNoteColumn {
+enum XlsxTagColumn {
 
-    CONTENT(0, "content"),
-    TAGS(1, "tags"),
-    LAST_SEEN_AT(2, "last seen at");
+    NAME(0, "name");
 
     final int position;
     final String name;

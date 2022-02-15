@@ -20,6 +20,7 @@ class UploadProgressTracker {
 
     int vocabularyEntriesUploadCount;
     int notesUploadCount;
+    int tagsUploadCount;
 
     void incVocabularyEntriesUploadCount() {
         if (enabled) {
@@ -52,6 +53,23 @@ class UploadProgressTracker {
         if (enabled) {
             log.info("Notes upload process finished");
             log.info("Total notes count: {}", notesUploadCount);
+        }
+    }
+
+    void incTagsUploadCount() {
+        if (enabled) {
+            ++tagsUploadCount;
+
+            if (tagsUploadCount % progressStep == 0) {
+                log.info("{} tags uploaded", tagsUploadCount);
+            }
+        }
+    }
+
+    void tagsUploadFinished() {
+        if (enabled) {
+            log.info("Tags upload process finished");
+            log.info("Total tags count: {}", tagsUploadCount);
         }
     }
 
