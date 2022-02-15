@@ -29,6 +29,7 @@ class NoteService {
     private final TagIdRepository tagIdRepository;
     private final TagServiceClient tagServiceClient;
 
+    @Deprecated
     public Collection<NoteDto> findAll() {
         return noteRepository.findAll()
                 .stream()
@@ -36,12 +37,15 @@ class NoteService {
                 .collect(toList());
     }
 
-    // todo: include tag ids
     private NoteDto toDto(NoteEntity noteEntity) {
         return NoteDto.builder()
                 .id(noteEntity.getId())
                 .content(noteEntity.getContent())
                 .lastSeenAt(noteEntity.getLastSeenAt())
+                .tags(noteEntity.getTagIds()
+                        .stream()
+                        .map(tagIdEntity -> tagServiceClient.findById(tagIdEntity.id))
+                        .collect(toSet()))
                 .build();
     }
 
