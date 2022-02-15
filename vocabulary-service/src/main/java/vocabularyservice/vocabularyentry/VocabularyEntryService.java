@@ -3,6 +3,7 @@ package vocabularyservice.vocabularyentry;
 import api.exception.NotFoundException;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.PatchVocabularyEntryLastSeenAtInput;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,6 +121,18 @@ public class VocabularyEntryService {
 
     public List<VocabularyEntryDto> findFirstWithSubstring(Integer limit, String substring) {
         return vocabularyEntryRepository.findFirstWithSubstring(limit, "%" + substring + "%")
+                .map(this::toDto)
+                .toList();
+    }
+
+    public List<VocabularyEntryDto> patchLastSeenAt(PatchVocabularyEntryLastSeenAtInput input) {
+        // todo: max size of ids ~ 20
+        List<VocabularyEntryEntity> vocabularyEntryEntities = vocabularyEntryRepository.findAllById(input.getIds())
+                .stream()
+                .peek(vocabularyEntryEntity -> vocabularyEntryEntity.setLastSeenAt(input.getLastSeenAt()))
+                .toList();
+        return vocabularyEntryRepository.saveAll(vocabularyEntryEntities)
+                .stream()
                 .map(this::toDto)
                 .toList();
     }
