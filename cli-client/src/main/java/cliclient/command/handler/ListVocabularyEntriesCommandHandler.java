@@ -59,50 +59,17 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         });
     }
 
-    private static abstract class Paginator<T> {
-        int pagination, count, endInclusive;
-        int startInclusive = 1;
-
-        Paginator(int pagination, int count) {
-            this.pagination = pagination;
-            this.count = count;
-            this.endInclusive = Math.min(this.startInclusive + this.pagination - 1, this.count);
-        }
-
-        boolean isInRange() {
-            return startInclusive <= count;
-        }
-
-        void updateRange() {
-            startInclusive = endInclusive + 1;
-            endInclusive = Math.min(endInclusive + pagination, count);
-        }
-
-        int limit() {
-            int limit = endInclusive - startInclusive + 1;
-            return Math.max(limit, 0);
-        }
-
-        String counter() {
-            return endInclusive + "/" + count;
-        }
-
-        abstract List<T> nextBatch();
-
-        List<T> nextBatchAndUpdateRange() {
-            List<T> nextBatch = nextBatch();
-            updateRange();
-            return nextBatch;
-        }
-    }
-
     private void display(Paginator<VocabularyEntryDto> paginator) {
-        displayAndUpdateLastSeenAt(paginator);
-
-        String line = readLineIfInRangeOrEnd(paginator);
-        while (!line.equals("e") && paginator.isInRange()) {
+        if (paginator.isEmpty()) {
+            adapter.error("No records");
+        } else {
             displayAndUpdateLastSeenAt(paginator);
-            line = readLineIfInRangeOrEnd(paginator);
+
+            String line = readLineIfInRangeOrEnd(paginator);
+            while (!line.equals("e") && paginator.isInRange()) {
+                displayAndUpdateLastSeenAt(paginator);
+                line = readLineIfInRangeOrEnd(paginator);
+            }
         }
     }
 
