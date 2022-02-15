@@ -11,8 +11,8 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
 
     @Query(value = """
             select *
-            from vocabulary_entries
-            order by last_seen_at
+            from vocabulary_entries ve
+            order by ve.last_seen_at
             limit ?1
             """, nativeQuery = true)
     Stream<VocabularyEntryEntity> findFirst(Integer limit);
