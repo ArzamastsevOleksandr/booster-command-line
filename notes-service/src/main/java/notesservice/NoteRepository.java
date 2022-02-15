@@ -12,6 +12,7 @@ interface NoteRepository extends JpaRepository<NoteEntity, Long> {
     @Query(value = """
             select *
             from notes
+            order by last_seen_at
             limit ?1
             """, nativeQuery = true)
     Stream<NoteEntity> findFirst(Integer limit);

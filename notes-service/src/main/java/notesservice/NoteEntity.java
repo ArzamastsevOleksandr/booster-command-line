@@ -6,6 +6,7 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,6 +23,8 @@ class NoteEntity {
     private Long id;
 
     private String content;
+
+    private Timestamp lastSeenAt = new Timestamp(System.currentTimeMillis());
 
     @ManyToMany
     @ToString.Exclude

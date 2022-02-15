@@ -64,7 +64,7 @@ class DownloadController implements DownloadControllerApi {
         for (int i = 0; i < notes.size(); ++i) {
             XSSFRow noteRow = sheet.createRow(i + 1);
             NoteDto note = notes.get(i);
-            noteRow.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(note.content());
+            noteRow.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(note.getContent());
 //                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
         }
     }

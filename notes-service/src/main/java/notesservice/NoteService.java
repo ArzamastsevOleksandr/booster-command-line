@@ -37,7 +37,11 @@ class NoteService {
 
     // todo: include tag ids
     private NoteDto toDto(NoteEntity noteEntity) {
-        return new NoteDto(noteEntity.getId(), noteEntity.getContent());
+        return NoteDto.builder()
+                .id(noteEntity.getId())
+                .content(noteEntity.getContent())
+                .lastSeenAt(noteEntity.getLastSeenAt())
+                .build();
     }
 
     public NoteDto findById(Long id) {
