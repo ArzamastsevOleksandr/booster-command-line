@@ -40,9 +40,14 @@ public interface VocabularyEntryControllerApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteById(@PathVariable("id") Long id);
 
+    @Deprecated
     @PatchMapping(value = "/")
     @ResponseStatus(OK)
     VocabularyEntryDto patchEntry(@RequestBody PatchVocabularyEntryInput input);
+
+    @PatchMapping(value = "/patch/last-seen-at/")
+    @ResponseStatus(OK)
+    List<VocabularyEntryDto> patchLastSeenAt(PatchVocabularyEntryLastSeenAtInput input);
 
     @GetMapping(value = "/count-all/")
     @ResponseStatus(OK)

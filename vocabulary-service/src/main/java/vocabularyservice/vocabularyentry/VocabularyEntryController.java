@@ -1,9 +1,6 @@
 package vocabularyservice.vocabularyentry;
 
-import api.vocabulary.AddVocabularyEntryInput;
-import api.vocabulary.PatchVocabularyEntryInput;
-import api.vocabulary.VocabularyEntryControllerApi;
-import api.vocabulary.VocabularyEntryDto;
+import api.vocabulary.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +53,11 @@ class VocabularyEntryController implements VocabularyEntryControllerApi {
     @Override
     public VocabularyEntryDto patchEntry(PatchVocabularyEntryInput input) {
         return vocabularyEntryService.patch(input);
+    }
+
+    @Override
+    public List<VocabularyEntryDto> patchLastSeenAt(PatchVocabularyEntryLastSeenAtInput input) {
+        return vocabularyEntryService.patchLastSeenAt(input);
     }
 
     @Override
