@@ -1,11 +1,13 @@
 package api.notes;
 
+import api.tags.TagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Data
 @Builder
@@ -15,5 +17,7 @@ public class NoteDto {
     Long id;
     String content;
     Timestamp lastSeenAt;
-    // todo: add tags
+
+    @Builder.Default
+    Set<TagDto> tags = Set.of();
 }
