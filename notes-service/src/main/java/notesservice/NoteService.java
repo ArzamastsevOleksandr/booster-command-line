@@ -60,6 +60,16 @@ class NoteService {
         var noteEntity = new NoteEntity();
         noteEntity.setContent(input.getContent());
         noteEntity.setLastSeenAt(input.getLastSeenAt());
+        Set<TagIdEntity> tagIdEntities = input.getTags()
+                .stream()
+                .map(tagServiceClient::findByName)
+                .map(tagDto -> tagIdRepository.findById(tagDto.getId())
+                        .orElseGet(() -> {
+                            var tagIdEntity = new TagIdEntity();
+                            tagIdEntity.id = tagDto.getId();
+                            return tagIdRepository.saveAndFlush(tagIdEntity);
+                        })).collect(toSet());
+        noteEntity.setTagIds(tagIdEntities);
         noteEntity = noteRepository.save(noteEntity);
         return toDto(noteEntity);
     }

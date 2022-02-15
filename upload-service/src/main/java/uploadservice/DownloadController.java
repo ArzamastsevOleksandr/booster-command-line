@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 
 @Slf4j
 @RestController
@@ -79,6 +80,7 @@ class DownloadController implements DownloadControllerApi {
     }
 
     private void exportNotes(XSSFWorkbook workbook) {
+        // todo: execute in batches
         List<NoteDto> notes = new ArrayList<>(notesServiceClient.getAll());
         if (!notes.isEmpty()) {
             log.info("Exporting notes");
@@ -94,7 +96,7 @@ class DownloadController implements DownloadControllerApi {
             XSSFRow noteRow = sheet.createRow(i + 1);
             NoteDto note = notes.get(i);
             noteRow.createCell(XlsxNoteColumn.CONTENT.position).setCellValue(note.getContent());
-//                noteRow.createCell(1).setCellValue(String.join(";", note.getTags()));
+            noteRow.createCell(XlsxNoteColumn.TAGS.position).setCellValue(note.getTags().stream().map(TagDto::getName).collect(joining(";")));
             noteRow.createCell(XlsxNoteColumn.LAST_SEEN_AT.position).setCellValue(note.getLastSeenAt().toString());
         }
     }

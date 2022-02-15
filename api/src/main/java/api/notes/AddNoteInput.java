@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Data
 @Builder
@@ -16,4 +17,7 @@ public class AddNoteInput {
 
     @Builder.Default
     Timestamp lastSeenAt = new Timestamp(System.currentTimeMillis());
+
+    @Builder.Default
+    Set<String> tags = Set.of();
 }

@@ -224,11 +224,11 @@ class UploadController implements UploadControllerApi {
                     .filter(this::isNotBlank)
                     .ifPresent(content -> {
                         Timestamp lastSeenAt = getLastSeenAt(row, XlsxNoteColumn.LAST_SEEN_AT.position);
-//                        Set<String> tags = getStringValues(row.getCell(1), ";");
-//                        tagService.createIfNotExist(tags);
+                        Set<String> tags = getStringValues(row.getCell(XlsxNoteColumn.TAGS.position), ";");
                         notesServiceClient.add(AddNoteInput.builder()
                                 .content(content)
                                 .lastSeenAt(lastSeenAt)
+                                .tags(tags)
                                 .build());
                         tracker.incNotesUploadCount();
                     });
