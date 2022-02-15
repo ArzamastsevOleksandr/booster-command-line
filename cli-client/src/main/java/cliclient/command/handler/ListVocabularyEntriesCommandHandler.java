@@ -33,12 +33,13 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private void displayVocabularyEntryById(Long id) {
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryClient.findById(id);
-        showAndUpdateLastSeenAt(vocabularyEntryDto);
+        showAndUpdateLastSeenAt(List.of(vocabularyEntryDto));
     }
 
-    private void showAndUpdateLastSeenAt(VocabularyEntryDto vocabularyEntryDto) {
-        adapter.writeLine(vocabularyEntryDto);
-        vocabularyEntryService.updateLastSeenAt(vocabularyEntryDto);
+    private void showAndUpdateLastSeenAt(List<VocabularyEntryDto> vocabularyEntryDtos) {
+        // todo: color
+        vocabularyEntryDtos.forEach(adapter::writeLine);
+        vocabularyEntryService.updateLastSeenAt(vocabularyEntryDtos);
     }
 
     private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
@@ -79,8 +80,7 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
 
     private void displayAndUpdateLastSeenAt(Paginator<VocabularyEntryDto> paginator) {
         adapter.writeLine(paginator.counter());
-        // todo: color + use 1 batch request to update last seen at
-        paginator.nextBatchAndUpdateRange().forEach(this::showAndUpdateLastSeenAt);
+        showAndUpdateLastSeenAt(paginator.nextBatchAndUpdateRange());
     }
 
 }
