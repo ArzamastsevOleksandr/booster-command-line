@@ -4,14 +4,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
 public interface NoteServiceApi {
 
+    @Deprecated
     @GetMapping(value = "/")
     @ResponseStatus(OK)
     Collection<NoteDto> getAll();
+
+    @GetMapping(value = "/", params = {"limit"})
+    @ResponseStatus(OK)
+    List<NoteDto> findFirst(@RequestParam(name = "limit") Integer limit);
 
     @GetMapping("{id}")
     @ResponseStatus(OK)

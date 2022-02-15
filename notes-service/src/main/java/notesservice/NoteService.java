@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -83,6 +84,12 @@ class NoteService {
 
     public Integer countAll() {
         return noteRepository.countAllBy();
+    }
+
+    public List<NoteDto> findFirst(Integer limit) {
+        return noteRepository.findFirst(limit)
+                .map(this::toDto)
+                .toList();
     }
 
 }
