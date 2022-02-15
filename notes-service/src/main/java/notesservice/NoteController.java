@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/notes/")
@@ -17,9 +18,15 @@ class NoteController implements NoteServiceApi {
 
     private final NoteService noteService;
 
+    @Deprecated
     @Override
     public Collection<NoteDto> getAll() {
         return noteService.findAll();
+    }
+
+    @Override
+    public List<NoteDto> findFirst(Integer limit) {
+        return noteService.findFirst(limit);
     }
 
     @Override
