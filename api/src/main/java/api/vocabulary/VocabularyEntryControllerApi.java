@@ -47,7 +47,7 @@ public interface VocabularyEntryControllerApi {
 
     @PatchMapping(value = "/patch/last-seen-at/")
     @ResponseStatus(OK)
-    List<VocabularyEntryDto> patchLastSeenAt(PatchVocabularyEntryLastSeenAtInput input);
+    List<VocabularyEntryDto> patchLastSeenAt(@RequestBody PatchVocabularyEntryLastSeenAtInput input);
 
     @GetMapping(value = "/count-all/")
     @ResponseStatus(OK)

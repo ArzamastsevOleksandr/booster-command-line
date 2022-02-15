@@ -125,6 +125,7 @@ public class VocabularyEntryService {
                 .toList();
     }
 
+    @Transactional
     public List<VocabularyEntryDto> patchLastSeenAt(PatchVocabularyEntryLastSeenAtInput input) {
         // todo: max size of ids ~ 20
         List<VocabularyEntryEntity> vocabularyEntryEntities = vocabularyEntryRepository.findAllById(input.getIds())
