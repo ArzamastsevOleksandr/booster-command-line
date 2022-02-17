@@ -73,4 +73,10 @@ class UploadProgressTracker {
         }
     }
 
+    void settingsUploadFinished() {
+        if (enabled) {
+            log.info("Settings upload process finished");
+        }
+    }
+
 }
