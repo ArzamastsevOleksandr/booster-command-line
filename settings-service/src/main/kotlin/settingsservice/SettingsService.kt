@@ -30,9 +30,17 @@ class SettingsService {
     private fun toDto(settingsEntity: SettingsEntity): SettingsDto {
         return SettingsDto.builder()
             .id(settingsEntity.id)
+
             .defaultLanguageId(settingsEntity.defaultLanguageId)
             .defaultLanguageName(settingsEntity.defaultLanguageName)
+
             .entriesPerVocabularyTrainingSession(settingsEntity.entriesPerVocabularyTrainingSession)
+
+            .vocabularyPagination(settingsEntity.vocabularyPagination)
+            .languagesPagination(settingsEntity.languagesPagination)
+            .notesPagination(settingsEntity.notesPagination)
+            .tagsPagination(settingsEntity.tagsPagination)
+
             .build()
     }
 
@@ -49,6 +57,12 @@ class SettingsService {
             ?. let { setLanguageDetails(settingsEntity, it) }
 
         settingsEntity.entriesPerVocabularyTrainingSession = input.entriesPerVocabularyTrainingSession
+
+        settingsEntity.notesPagination = input.notesPagination
+        settingsEntity.vocabularyPagination = input.vocabularyPagination
+        settingsEntity.languagesPagination = input.languagesPagination
+        settingsEntity.tagsPagination = input.tagsPagination
+
         return toDto(settingsRepository.save(settingsEntity))
     }
 
@@ -63,6 +77,7 @@ class SettingsService {
         settingsRepository.deleteById(settingsDto.id)
     }
 
+    @Deprecated(message = "Use a standard rfc approach")
     @Transactional
     fun patch(input: PatchSettingsInput): SettingsDto {
         val settingsEntity = settingsRepository.findFirstBy() ?: throw NotFoundException("Settings not found")
