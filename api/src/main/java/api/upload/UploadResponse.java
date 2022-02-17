@@ -14,6 +14,7 @@ public class UploadResponse {
     int vocabularyEntriesUploaded;
     int notesUploaded;
     int tagsUploaded;
+    // todo: include settings?
 
     public static UploadResponse empty() {
         return new UploadResponse(0, 0, 0);

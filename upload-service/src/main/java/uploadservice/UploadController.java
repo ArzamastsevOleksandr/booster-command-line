@@ -2,6 +2,7 @@ package uploadservice;
 
 import api.exception.XlsxStructureUnsupportedException;
 import api.notes.AddNoteInput;
+import api.settings.CreateSettingsInput;
 import api.tags.CreateTagInput;
 import api.upload.UploadControllerApi;
 import api.upload.UploadResponse;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import uploadservice.feign.SettingsServiceClient;
 import uploadservice.feign.notes.NotesServiceClient;
 import uploadservice.feign.tags.TagServiceClient;
 import uploadservice.feign.vocabulary.LanguageControllerApiClient;
@@ -44,6 +46,7 @@ class UploadController implements UploadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
+    private final SettingsServiceClient settingsServiceClient;
     private final TagServiceClient tagServiceClient;
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
@@ -64,6 +67,7 @@ class UploadController implements UploadControllerApi {
                 String sheetName = sheet.getSheetName().strip().toLowerCase();
 
                 switch (sheetName) {
+                    case "settings" -> importSettings(sheet, tracker);
                     case "tags" -> importTags(sheet, tracker);
                     case "notes" -> importNotes(sheet, tracker);
                     // todo: language recognition pattern (no hardcoding)
@@ -80,6 +84,45 @@ class UploadController implements UploadControllerApi {
             log.error("Error during upload process", e);
         }
         return UploadResponse.empty();
+    }
+
+    // todo: if the settings sheet is uploaded first - the language will not exist
+    private void importSettings(XSSFSheet sheet, UploadProgressTracker tracker) {
+        validateSettingsHeaderRow(sheet.getRow(HEADER_ROW_NUMBER));
+        XSSFRow row = sheet.getRow(1);
+
+        var input = new CreateSettingsInput();
+        // todo: dry when safe-accessing cell values
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME.position))
+                .map(Cell::getStringCellValue)
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .ifPresent(input::setDefaultLanguageName);
+
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.position))
+                .map(Cell::getNumericCellValue)
+                .map(Double::intValue)
+                .ifPresent(input::setEntriesPerVocabularyTrainingSession);
+
+        settingsServiceClient.create(input);
+
+        tracker.settingsUploadFinished();
+    }
+
+    private void validateSettingsHeaderRow(XSSFRow row) {
+        String validationErrors = collectValidationErrors(
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME),
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION)
+        );
+        if (isNotBlank(validationErrors)) {
+            throw new XlsxStructureUnsupportedException(validationErrors);
+        }
+    }
+
+    private Optional<String> checkSettingsHeaderColumn(XSSFRow row, XlsxSettingsColumn column) {
+        return collectHeaderValidationError(row, column.position, column.name);
     }
 
     private void importTags(XSSFSheet sheet, UploadProgressTracker tracker) {
