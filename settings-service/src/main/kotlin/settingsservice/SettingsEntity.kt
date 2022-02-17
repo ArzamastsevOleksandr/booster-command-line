@@ -13,6 +13,11 @@ open class SettingsEntity(
     open var defaultLanguageId: Long? = null,
     open var defaultLanguageName: String? = null,
 
-    open var entriesPerVocabularyTrainingSession: Int? = 5
+    open var entriesPerVocabularyTrainingSession: Int? = null,
+
+    open var vocabularyPagination: Int? = null,
+    open var notesPagination: Int? = null,
+    open var languagesPagination: Int? = null,
+    open var tagsPagination: Int? = null
 
 )

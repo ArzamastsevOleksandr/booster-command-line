@@ -11,7 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SettingsDto {
     Long id;
+
     Long defaultLanguageId;
     String defaultLanguageName;
+
     Integer entriesPerVocabularyTrainingSession;
+
+    Integer vocabularyPagination;
+    Integer notesPagination;
+    Integer languagesPagination;
+    Integer tagsPagination;
 }
