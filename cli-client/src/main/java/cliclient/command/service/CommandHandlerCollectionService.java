@@ -5,6 +5,7 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.handler.CommandHandler;
+import cliclient.service.ColorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,17 @@ import static java.util.stream.Collectors.toMap;
 @Service
 public class CommandHandlerCollectionService {
 
+    private final ColorProcessor colorProcessor;
     private final Map<Command, CommandHandler> command2Handler;
     private final CommandLineAdapter adapter;
     private final CommandArgsService commandArgsService;
 
     @Autowired
-    public CommandHandlerCollectionService(List<CommandHandler> commandHandlers,
+    public CommandHandlerCollectionService(ColorProcessor colorProcessor,
+                                           List<CommandHandler> commandHandlers,
                                            CommandLineAdapter adapter,
                                            CommandArgsService commandArgsService) {
+        this.colorProcessor = colorProcessor;
         this.adapter = adapter;
         this.commandArgsService = commandArgsService;
         this.command2Handler = commandHandlers.stream()
@@ -49,7 +53,7 @@ public class CommandHandlerCollectionService {
                 commandHandler -> {
                     CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
                     commandHandler.handle(commandArgs);
-                }, () -> adapter.error("No handler is present for the " + command.extendedToString() + " command.")
+                }, () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
         );
     }
 
