@@ -61,7 +61,7 @@ class DownloadController implements DownloadControllerApi {
     private void exportSettings(XSSFWorkbook workbook) {
         SettingsDto settingsDto = settingsServiceClient.findOne();
 
-        XSSFSheet sheet = workbook.createSheet("settings");
+        XSSFSheet sheet = workbook.createSheet(XlsxSheetName.SETTINGS);
         createSettingsHeaderRow(sheet);
 
         XSSFRow settingsRow = sheet.createRow(1);
@@ -88,7 +88,7 @@ class DownloadController implements DownloadControllerApi {
         List<TagDto> tagDtos = new ArrayList<>(tagServiceClient.findAll());
         if (!tagDtos.isEmpty()) {
             log.info("Exporting tags");
-            XSSFSheet sheet = workbook.createSheet("tags");
+            XSSFSheet sheet = workbook.createSheet(XlsxSheetName.TAGS);
 
             createTagsHeaderRow(sheet);
             createTagRows(tagDtos, sheet);
@@ -114,7 +114,7 @@ class DownloadController implements DownloadControllerApi {
         List<NoteDto> notes = new ArrayList<>(notesServiceClient.getAll());
         if (!notes.isEmpty()) {
             log.info("Exporting notes");
-            XSSFSheet sheet = workbook.createSheet("notes");
+            XSSFSheet sheet = workbook.createSheet(XlsxSheetName.NOTES);
 
             createNotesHeaderRow(sheet);
             createNoteRows(notes, sheet);
@@ -141,7 +141,7 @@ class DownloadController implements DownloadControllerApi {
 
     private void downloadLanguage(XSSFWorkbook workbook, LanguageDto languageDto) {
         log.info("Exporting language: {}", languageDto.name());
-        XSSFSheet sheet = workbook.createSheet(languageDto.name());
+        XSSFSheet sheet = workbook.createSheet(XlsxSheetName.LANGUAGE + languageDto.name());
 
         createLanguageHeaderRow(sheet);
         createVocabularyEntryRows(languageDto, sheet);

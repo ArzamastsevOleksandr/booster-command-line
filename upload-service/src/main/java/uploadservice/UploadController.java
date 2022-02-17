@@ -67,12 +67,16 @@ class UploadController implements UploadControllerApi {
                 String sheetName = sheet.getSheetName().strip().toLowerCase();
 
                 switch (sheetName) {
-                    case "settings" -> importSettings(sheet, tracker);
-                    case "tags" -> importTags(sheet, tracker);
-                    case "notes" -> importNotes(sheet, tracker);
-                    // todo: language recognition pattern (no hardcoding)
-                    case "english" -> importLanguage(sheet, tracker);
-                    default -> log.error("Unrecognized upload page ignored: {}", sheetName);
+                    case XlsxSheetName.SETTINGS -> importSettings(sheet, tracker);
+                    case XlsxSheetName.TAGS -> importTags(sheet, tracker);
+                    case XlsxSheetName.NOTES -> importNotes(sheet, tracker);
+                    default -> {
+                        if (sheetName.startsWith(XlsxSheetName.LANGUAGE)) {
+                            importLanguage(sheet, tracker);
+                        } else {
+                            log.error("Unrecognized upload page ignored: {}", sheetName);
+                        }
+                    }
                 }
             }
             return UploadResponse.builder()
@@ -159,7 +163,7 @@ class UploadController implements UploadControllerApi {
     }
 
     private void importLanguage(XSSFSheet sheet, UploadProgressTracker tracker) {
-        LanguageDto languageDto = findLanguageByNameOrCreateIfNotExists(sheet.getSheetName());
+        LanguageDto languageDto = findLanguageByNameOrCreateIfNotExists(sheet.getSheetName().substring(XlsxSheetName.LANGUAGE.length()));
         importLanguage(sheet, languageDto.id(), tracker);
     }
 
