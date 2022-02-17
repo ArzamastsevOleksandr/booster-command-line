@@ -8,10 +8,12 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import settingsservice.feign.LanguageClient
 
 @ActiveProfiles("test")
 @SpringBootTest(
@@ -21,9 +23,10 @@ import org.springframework.test.web.reactive.server.WebTestClient
 @AutoConfigureEmbeddedDatabase(refresh = AutoConfigureEmbeddedDatabase.RefreshMode.AFTER_EACH_TEST_METHOD)
 class SettingsServiceApplicationTests {
 
+    @MockBean
+    lateinit var languageClient: LanguageClient
     @Autowired
     lateinit var settingsService: SettingsService
-
     @Autowired
     lateinit var webTestClient: WebTestClient
 
@@ -48,7 +51,10 @@ class SettingsServiceApplicationTests {
         val entriesPerVocabularyTrainingSession = 5
         // given
         val settingsDto =
-            settingsService.create(CreateSettingsInput(defaultLanguageId, entriesPerVocabularyTrainingSession))
+            settingsService.create(CreateSettingsInput.builder()
+                .defaultLanguageId(defaultLanguageId)
+                .entriesPerVocabularyTrainingSession(entriesPerVocabularyTrainingSession)
+                .build())
         // then
         webTestClient.get()
             .uri("/settings/")
@@ -69,7 +75,10 @@ class SettingsServiceApplicationTests {
         // when
         webTestClient.post()
             .uri("/settings/")
-            .bodyValue(CreateSettingsInput(defaultLanguageId, entriesPerVocabularyTrainingSession))
+            .bodyValue(CreateSettingsInput.builder()
+                .defaultLanguageId(defaultLanguageId)
+                .entriesPerVocabularyTrainingSession(entriesPerVocabularyTrainingSession)
+                .build())
             .exchange()
             .expectStatus()
             .isCreated
@@ -100,7 +109,10 @@ class SettingsServiceApplicationTests {
     @Test
     fun shouldDeleteSettings() {
         // given
-        val settingsDto = settingsService.create(CreateSettingsInput(1, 5))
+        val settingsDto = settingsService.create(CreateSettingsInput.builder()
+            .defaultLanguageId(1)
+            .entriesPerVocabularyTrainingSession(5)
+            .build())
         // when
         webTestClient.delete()
             .uri("/settings/")
@@ -117,7 +129,10 @@ class SettingsServiceApplicationTests {
     @Test
     fun shouldPatchSettings() {
         // given
-        val settingsDto = settingsService.create(CreateSettingsInput(1, 2))
+        val settingsDto = settingsService.create(CreateSettingsInput.builder()
+            .defaultLanguageId(1)
+            .entriesPerVocabularyTrainingSession(2)
+            .build())
         // when
         val factor = 5
         webTestClient.patch()

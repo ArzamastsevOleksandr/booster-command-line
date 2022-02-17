@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateSettingsInput {
 
     Long defaultLanguageId;
+    String defaultLanguageName;
     Integer entriesPerVocabularyTrainingSession;
 
 }
