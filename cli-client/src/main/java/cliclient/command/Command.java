@@ -91,4 +91,8 @@ public enum Command {
         return equivalents;
     }
 
+    public String firstEquivalent() {
+        return equivalents.iterator().next();
+    }
+
 }

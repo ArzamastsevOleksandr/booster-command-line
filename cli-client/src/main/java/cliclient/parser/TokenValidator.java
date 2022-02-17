@@ -1,5 +1,6 @@
 package cliclient.parser;
 
+import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.util.CollectionUtils;
@@ -24,7 +25,10 @@ class TokenValidator {
             if (tokens.size() == 1) {
                 return TokenValidationResult.success(tokens);
             }
-
+            if (tokens.size() == 2) {
+                checkSequenceIsHelpOnCommand(tokens);
+                return TokenValidationResult.success(tokens);
+            }
             List<Token> commandArguments = CollectionUtils.sublist(tokens, 1);
             checkCommandArgumentsSize(commandArguments);
 
@@ -63,6 +67,13 @@ class TokenValidator {
     private void checkIsCommand(Token token) {
         if (Token.isNotCommand(token)) {
             throw new TokenValidationException("Sequence must start with a command");
+        }
+    }
+
+    private void checkSequenceIsHelpOnCommand(List<Token> tokens) {
+        var help = Command.fromString(tokens.get(0).value());
+        if (help != Command.HELP && Token.isNotCommand(tokens.get(1))) {
+            throw new TokenValidationException("Allowed format for 2 tokens is: " + Command.HELP + " [command]");
         }
     }
 

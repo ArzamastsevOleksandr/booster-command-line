@@ -30,6 +30,10 @@ class TokenSequenceTransformer {
         if (tokens.size() == 1) {
             return argumentsBuilder.build();
         }
+        if (tokens.size() == 2) {
+            var helpTarget = Command.fromString(tokens.get(1).value());
+            return argumentsBuilder.helpTarget(helpTarget).build();
+        }
         List<Token> copy = CollectionUtils.sublist(tokens, 1);
 
         for (int i = 0; i < copy.size(); i += 3) {

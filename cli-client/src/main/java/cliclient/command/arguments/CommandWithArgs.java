@@ -12,6 +12,7 @@ import java.util.Set;
 public class CommandWithArgs {
 
     Command command;
+    Command helpTarget;
 
     Long id;
     Long languageId;

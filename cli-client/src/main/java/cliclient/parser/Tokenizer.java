@@ -4,6 +4,7 @@ import cliclient.command.Command;
 import cliclient.command.FlagType;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +31,7 @@ class Tokenizer {
         if (isWhitespace(firstChar)) {
             return getRidOfFrontWhitespaces(chars);
         } else if (isLetter(firstChar)) {
-            return eatFrontWhileNotCommandFlag(chars, tokens);
+            return eatFrontWhileNotCommandFlagOrCommand(chars, tokens);
         } else if (isFlagMarker(firstChar)) {
             return eatFrontFlagOrText(chars, tokens);
         } else if (isSeparator(firstChar)) {
@@ -126,14 +127,27 @@ class Tokenizer {
         return FLAG_MARKER.equals(Character.toString(character));
     }
 
-    private char[] eatFrontWhileNotCommandFlag(char[] chars, List<Token> tokens) {
+    private char[] eatFrontWhileNotCommandFlagOrCommand(char[] chars, List<Token> tokens) {
         int i = 0;
         var sb = new StringBuilder();
         while (i < chars.length && (!FLAG_MARKER.equals(Character.toString(chars[i])))) {
             sb.append(chars[i++]);
+            // if the next chunk is command, then we have a [c] [c] sequence
+            if (Character.isWhitespace(chars[i - 1]) && isNextChunkCommand(Arrays.copyOfRange(chars, i, chars.length))) {
+                addCommandOrText(tokens, sb);
+                return Arrays.copyOfRange(chars, i, chars.length);
+            }
         }
         addCommandOrText(tokens, sb);
         return Arrays.copyOfRange(chars, i, chars.length);
+    }
+
+    private boolean isNextChunkCommand(char[] chars) {
+        List<Token> tokens = new ArrayList<>();
+        eatFrontWhileNotCommandFlagOrCommand(chars, tokens);
+        Token token = tokens.get(0);
+        var command = Command.fromString(token.value());
+        return Command.isRecognizable(command);
     }
 
     private void addCommandOrText(List<Token> tokens, StringBuilder sb) {
