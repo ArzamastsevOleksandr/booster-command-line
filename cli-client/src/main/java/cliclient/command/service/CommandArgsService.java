@@ -22,7 +22,8 @@ class CommandArgsService {
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
         return switch (cwa.getCommand()) {
-            case EXIT, NO_INPUT, HELP, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
+            case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
+            case HELP -> new HelpCommandArgs(cwa.getHelpTarget());
             case ADD_LANGUAGE -> new AddLanguageCommandArgs(cwa.getName());
             case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cwa.getId());
             case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring()));
