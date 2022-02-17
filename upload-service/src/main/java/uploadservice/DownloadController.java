@@ -1,6 +1,7 @@
 package uploadservice;
 
 import api.notes.NoteDto;
+import api.settings.SettingsDto;
 import api.tags.TagDto;
 import api.upload.DownloadControllerApi;
 import api.vocabulary.LanguageDto;
@@ -12,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uploadservice.feign.SettingsServiceClient;
 import uploadservice.feign.notes.NotesServiceClient;
 import uploadservice.feign.tags.TagServiceClient;
 import uploadservice.feign.vocabulary.LanguageControllerApiClient;
@@ -33,6 +35,7 @@ class DownloadController implements DownloadControllerApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
+    private final SettingsServiceClient settingsServiceClient;
     private final TagServiceClient tagServiceClient;
     private final NotesServiceClient notesServiceClient;
     private final LanguageControllerApiClient languageControllerApiClient;
@@ -41,6 +44,7 @@ class DownloadController implements DownloadControllerApi {
     @Override
     public byte[] download() {
         try (var workbook = new XSSFWorkbook()) {
+            exportSettings(workbook);
             exportTags(workbook);
             exportNotes(workbook);
             languageControllerApiClient.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
@@ -52,6 +56,32 @@ class DownloadController implements DownloadControllerApi {
             log.error("Error during export process", e);
         }
         return new byte[]{};
+    }
+
+    private void exportSettings(XSSFWorkbook workbook) {
+        SettingsDto settingsDto = settingsServiceClient.findOne();
+
+        XSSFSheet sheet = workbook.createSheet("settings");
+        createSettingsHeaderRow(sheet);
+
+        XSSFRow settingsRow = sheet.createRow(1);
+        settingsRow
+                .createCell(XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME.position)
+                .setCellValue(settingsDto.getDefaultLanguageName());
+        settingsRow
+                .createCell(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.position)
+                .setCellValue(settingsDto.getEntriesPerVocabularyTrainingSession());
+    }
+
+    private void createSettingsHeaderRow(XSSFSheet sheet) {
+        XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
+
+        row
+                .createCell(XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME.position)
+                .setCellValue(XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME.name);
+        row
+                .createCell(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.position)
+                .setCellValue(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.name);
     }
 
     private void exportTags(XSSFWorkbook workbook) {
