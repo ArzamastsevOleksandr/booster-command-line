@@ -132,7 +132,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     private List<VocabularyEntryDto> findForMode(VocabularyTrainingSessionMode mode) {
         return settingsService.findOne()
-                .map(settingsDto -> vocabularyEntryControllerApiClient.findWithSynonyms(settingsDto.entriesPerVocabularyTrainingSession()))
+                .map(settingsDto -> vocabularyEntryControllerApiClient.findWithSynonyms(settingsDto.getEntriesPerVocabularyTrainingSession()))
                 .map(ArrayList::new)
                 .orElseGet(() -> new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(entriesPerSession)));
 //        return switch (mode) {
