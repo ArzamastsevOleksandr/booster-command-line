@@ -48,6 +48,7 @@ class TokenSequenceTransformer {
                 case NOTE_ID -> argumentsBuilder.noteId(Long.parseLong(flagValue));
                 case VOCABULARY_ENTRY_ID -> argumentsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
                 case NAME -> argumentsBuilder.name(flagValue);
+                case LANGUAGE_NAME -> argumentsBuilder.languageName(flagValue);
                 case TAG -> argumentsBuilder.tag(flagValue);
                 case DEFINITION -> argumentsBuilder.definition(flagValue);
                 case FILE -> argumentsBuilder.filename(flagValue);
