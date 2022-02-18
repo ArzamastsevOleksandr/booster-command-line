@@ -21,7 +21,7 @@ public class ListLanguagesCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         Collection<LanguageDto> languageDtos = languageControllerApiClient.getAll();
         if (languageDtos.isEmpty()) {
-            adapter.error("There are no languages yet");
+            adapter.error("No records");
         } else {
             languageDtos.forEach(adapter::writeLine);
         }

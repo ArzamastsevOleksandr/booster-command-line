@@ -61,9 +61,13 @@ class TokenSequenceTransformer {
                 case REMOVE_ANTONYMS -> argumentsBuilder.removeAntonyms(getWordEquivalentNames(flagValue));
                 case REMOVE_SYNONYMS -> argumentsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
                 case PAGINATION -> argumentsBuilder.pagination(Integer.parseInt(flagValue));
+                case LANGUAGES_PAGINATION -> argumentsBuilder.languagesPagination(Integer.parseInt(flagValue));
+                case NOTES_PAGINATION -> argumentsBuilder.notesPagination(Integer.parseInt(flagValue));
+                case TAGS_PAGINATION -> argumentsBuilder.tagsPagination(Integer.parseInt(flagValue));
+                case VOCABULARY_PAGINATION -> argumentsBuilder.vocabularyPagination(Integer.parseInt(flagValue));
                 case SUBSTRING -> argumentsBuilder.substring(flagValue);
                 case CONTEXTS -> argumentsBuilder.contexts(getContexts(flagValue));
-                case VOCABULARY_TRAINING_SESSION_SIZE -> argumentsBuilder.vocabularyTrainingSessionSize(Integer.parseInt(flagValue));
+                case ENTRIES_PER_VOCABULARY_TRAINING_SESSION -> argumentsBuilder.entriesPerVocabularyTrainingSession(Integer.parseInt(flagValue));
                 default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
             };
         }

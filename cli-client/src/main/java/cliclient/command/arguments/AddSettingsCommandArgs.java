@@ -1,5 +1,18 @@
 package cliclient.command.arguments;
 
-public record AddSettingsCommandArgs(Long languageId,
-                                     Integer entriesPerVocabularyTrainingSession) implements CommandArgs {
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class AddSettingsCommandArgs implements CommandArgs {
+    Long defaultLanguageId;
+    String defaultLanguageName;
+
+    Integer entriesPerVocabularyTrainingSession;
+
+    Integer vocabularyPagination;
+    Integer notesPagination;
+    Integer languagesPagination;
+    Integer tagsPagination;
 }

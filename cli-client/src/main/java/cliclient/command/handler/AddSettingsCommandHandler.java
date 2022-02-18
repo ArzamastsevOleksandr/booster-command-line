@@ -21,8 +21,17 @@ public class AddSettingsCommandHandler implements CommandHandler {
     public void handle(CommandArgs commandArgs) {
         var args = (AddSettingsCommandArgs) commandArgs;
         SettingsDto settingsDto = settingsServiceClient.create(CreateSettingsInput.builder()
-                .entriesPerVocabularyTrainingSession(args.entriesPerVocabularyTrainingSession())
-                .defaultLanguageId(args.languageId())
+
+                .defaultLanguageId(args.getDefaultLanguageId())
+                .defaultLanguageName(args.getDefaultLanguageName())
+
+                .entriesPerVocabularyTrainingSession(args.getEntriesPerVocabularyTrainingSession())
+
+                .tagsPagination(args.getTagsPagination())
+                .notesPagination(args.getNotesPagination())
+                .vocabularyPagination(args.getVocabularyPagination())
+                .languagesPagination(args.getLanguagesPagination())
+
                 .build());
         adapter.writeLine(settingsDto);
     }

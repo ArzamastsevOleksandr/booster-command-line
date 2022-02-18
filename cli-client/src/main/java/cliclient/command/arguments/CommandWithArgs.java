@@ -18,17 +18,32 @@ public class CommandWithArgs {
     Long languageId;
     Long noteId;
     Long vocabularyEntryId;
+
     String name;
+    String languageName;
+
     String definition;
+
     String filename;
+
     @Builder.Default
     VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
+
     String content;
+
     Integer correctAnswersCount;
+
     Integer pagination;
+    Integer languagesPagination;
+    Integer notesPagination;
+    Integer tagsPagination;
+    Integer vocabularyPagination;
+
     String substring;
+
     String tag;
-    Integer vocabularyTrainingSessionSize;
+
+    Integer entriesPerVocabularyTrainingSession;
 
     @Builder.Default
     Set<String> addAntonyms = Set.of();

@@ -52,7 +52,19 @@ class CommandArgsService {
             case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cwa.getMode());
             case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(downloadFilename));
             case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(uploadFilename));
-            case ADD_SETTINGS -> new AddSettingsCommandArgs(cwa.getLanguageId(), cwa.getVocabularyTrainingSessionSize());
+            case ADD_SETTINGS -> AddSettingsCommandArgs.builder()
+
+                    .defaultLanguageId(cwa.getLanguageId())
+                    .defaultLanguageName(cwa.getLanguageName())
+
+                    .entriesPerVocabularyTrainingSession(cwa.getEntriesPerVocabularyTrainingSession())
+
+                    .languagesPagination(cwa.getLanguagesPagination())
+                    .notesPagination(cwa.getNotesPagination())
+                    .tagsPagination(cwa.getTagsPagination())
+                    .vocabularyPagination(cwa.getVocabularyPagination())
+
+                    .build();
             case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination());
             case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));
             case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());

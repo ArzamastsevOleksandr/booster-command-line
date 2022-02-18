@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.*;
 public enum FlagType {
 
     NAME("n"),
+    LANGUAGE_NAME("ln"),
     ID("id"),
     LANGUAGE_ID("lid"),
     VOCABULARY_ENTRY_ID("vid"),
@@ -30,9 +31,13 @@ public enum FlagType {
     REMOVE_ANTONYMS("rant"),
     REMOVE_SYNONYMS("rsyn"),
     PAGINATION("pg"),
+    VOCABULARY_PAGINATION("vpg"),
+    NOTES_PAGINATION("npg"),
+    TAGS_PAGINATION("tpg"),
+    LANGUAGES_PAGINATION("lpg"),
     SUBSTRING("ss"),
     CONTEXTS("ctx"),
-    VOCABULARY_TRAINING_SESSION_SIZE("vtss"),
+    ENTRIES_PER_VOCABULARY_TRAINING_SESSION("epvts"),
     UNKNOWN("UNKNOWN");
 
     // if any of the flag types have shared values - crash the program early
