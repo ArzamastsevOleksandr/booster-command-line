@@ -5,6 +5,7 @@ import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
+import cliclient.config.PropertyHolder;
 import cliclient.parser.CommandLineInputTransformer;
 import cliclient.postprocessor.CommandWithArgsPostProcessor;
 import cliclient.service.SessionTrackerService;
@@ -12,12 +13,9 @@ import cliclient.util.ColorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
-import static cliclient.command.Command.HELP;
 
 @Component
 @RequiredArgsConstructor
@@ -29,12 +27,10 @@ public class Launcher {
     private final SessionTrackerService sessionTrackerService;
     private final CommandLineInputTransformer transformer;
     private final ObjectMapper objectMapper;
-
-    @Value("${spring.application.name}")
-    private String appName;
+    private final PropertyHolder propertyHolder;
 
     public void launch() {
-        adapter.writeLine(ColorCodes.cyan("Welcome to the " + appName + "!"));
+        adapter.writeLine(ColorCodes.cyan("Welcome to the " + propertyHolder.getAppName() + "!"));
         adapter.help();
         userInteractions();
         adapter.writeLine(sessionTrackerService.getStatistics());

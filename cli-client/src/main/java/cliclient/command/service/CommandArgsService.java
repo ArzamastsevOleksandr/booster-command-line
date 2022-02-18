@@ -3,10 +3,10 @@ package cliclient.command.service;
 import api.settings.SettingsDto;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.*;
+import cliclient.config.PropertyHolder;
 import cliclient.feign.settings.SettingsServiceClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +23,7 @@ import static java.util.stream.Collectors.joining;
 class CommandArgsService {
 
     private final SettingsServiceClient settingsServiceClient;
-
-    @Value("${upload.filename:upload.xlsx}")
-    private String uploadFilename;
-    @Value("${download.filename:download.xlsx}")
-    private String downloadFilename;
+    private final PropertyHolder propertyHolder;
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
         return switch (cwa.getCommand()) {
@@ -59,8 +55,8 @@ class CommandArgsService {
                     .removeSynonyms(cwa.getRemoveSynonyms())
                     .build();
             case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cwa.getMode());
-            case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(downloadFilename));
-            case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(uploadFilename));
+            case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(propertyHolder.getDownloadFilename()));
+            case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(propertyHolder.getUploadFilename()));
             case ADD_SETTINGS -> AddSettingsCommandArgs.builder()
 
                     .defaultLanguageId(cwa.getLanguageId())
