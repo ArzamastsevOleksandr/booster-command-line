@@ -7,13 +7,13 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
+import cliclient.config.PropertyHolder;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.service.SettingsService;
 import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -34,9 +34,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
-
-    @Value("${session.vocabulary.size:10}")
-    private int entriesPerSession;
+    private final PropertyHolder propertyHolder;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -132,7 +130,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         return settingsService.findOne()
                 .map(settingsDto -> vocabularyEntryControllerApiClient.findWithSynonyms(settingsDto.getEntriesPerVocabularyTrainingSession()))
                 .map(ArrayList::new)
-                .orElseGet(() -> new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(entriesPerSession)));
+                .orElseGet(() -> new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(propertyHolder.getEntriesPerVocabularyTrainingSession())));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);

@@ -5,10 +5,10 @@ import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.HelpCommandArgs;
+import cliclient.config.PropertyHolder;
 import cliclient.service.ColorProcessor;
 import cliclient.util.ColorCodes;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -17,15 +17,9 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class HelpCommandHandler implements CommandHandler {
 
+    private final PropertyHolder propertyHolder;
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
-
-    @Value("${session.vocabulary.size:10}")
-    private int entriesPerSession;
-    @Value("${upload.filename:upload.xlsx}")
-    private String uploadFilename;
-    @Value("${download.filename:download.xlsx}")
-    private String downloadFilename;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -80,7 +74,7 @@ public class HelpCommandHandler implements CommandHandler {
                     """.formatted(
                     colorProcessor.coloredCommand(Command.START_VOCABULARY_TRAINING_SESSION),
                     ColorCodes.green(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.name()),
-                    ColorCodes.green(entriesPerSession)
+                    ColorCodes.green(propertyHolder.getEntriesPerVocabularyTrainingSession())
             );
             case DOWNLOAD -> """
                     %s: Export all the data into the excel file (vocabulary, notes, settings etc)
@@ -91,9 +85,9 @@ public class HelpCommandHandler implements CommandHandler {
                                  %s \\f=%s: export the data to the %s file
                     """.formatted(
                     colorProcessor.coloredCommand(Command.DOWNLOAD),
-                    ColorCodes.green(downloadFilename),
+                    ColorCodes.green(propertyHolder.getDownloadFilename()),
                     ColorCodes.green(Command.DOWNLOAD.firstEquivalent()),
-                    ColorCodes.green(downloadFilename),
+                    ColorCodes.green(propertyHolder.getDownloadFilename()),
                     ColorCodes.green(Command.DOWNLOAD.firstEquivalent()),
                     ColorCodes.green(exampleFileName),
                     ColorCodes.green(exampleFileName)
@@ -107,9 +101,9 @@ public class HelpCommandHandler implements CommandHandler {
                                  %s \\f=%s: upload the data from the %s file
                     """.formatted(
                     colorProcessor.coloredCommand(Command.UPLOAD),
-                    ColorCodes.green(uploadFilename),
+                    ColorCodes.green(propertyHolder.getUploadFilename()),
                     ColorCodes.green(Command.UPLOAD.firstEquivalent()),
-                    ColorCodes.green(uploadFilename),
+                    ColorCodes.green(propertyHolder.getUploadFilename()),
                     ColorCodes.green(Command.UPLOAD.firstEquivalent()),
                     ColorCodes.green(exampleFileName),
                     ColorCodes.green(exampleFileName)
