@@ -71,6 +71,18 @@ class DownloadController implements DownloadControllerApi {
         settingsRow
                 .createCell(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.position)
                 .setCellValue(settingsDto.getEntriesPerVocabularyTrainingSession());
+        settingsRow
+                .createCell(XlsxSettingsColumn.LANGUAGES_PAGINATION.position)
+                .setCellValue(settingsDto.getLanguagesPagination());
+        settingsRow
+                .createCell(XlsxSettingsColumn.TAGS_PAGINATION.position)
+                .setCellValue(settingsDto.getTagsPagination());
+        settingsRow
+                .createCell(XlsxSettingsColumn.NOTES_PAGINATION.position)
+                .setCellValue(settingsDto.getNotesPagination());
+        settingsRow
+                .createCell(XlsxSettingsColumn.VOCABULARY_PAGINATION.position)
+                .setCellValue(settingsDto.getVocabularyPagination());
     }
 
     private void createSettingsHeaderRow(XSSFSheet sheet) {
@@ -82,6 +94,18 @@ class DownloadController implements DownloadControllerApi {
         row
                 .createCell(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.position)
                 .setCellValue(XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.name);
+        row
+                .createCell(XlsxSettingsColumn.LANGUAGES_PAGINATION.position)
+                .setCellValue(XlsxSettingsColumn.LANGUAGES_PAGINATION.name);
+        row
+                .createCell(XlsxSettingsColumn.TAGS_PAGINATION.position)
+                .setCellValue(XlsxSettingsColumn.TAGS_PAGINATION.name);
+        row
+                .createCell(XlsxSettingsColumn.NOTES_PAGINATION.position)
+                .setCellValue(XlsxSettingsColumn.NOTES_PAGINATION.name);
+        row
+                .createCell(XlsxSettingsColumn.VOCABULARY_PAGINATION.position)
+                .setCellValue(XlsxSettingsColumn.VOCABULARY_PAGINATION.name);
     }
 
     private void exportTags(XSSFWorkbook workbook) {
