@@ -105,15 +105,12 @@ class TokenValidator {
 
     private void validateFlagValueBasedOnFlagType(Token expectedFlag, Token expectedValue) {
         var flagType = FlagType.fromString(expectedFlag.value());
+        String flagTypeName = flagType.name();
         String value = expectedValue.value();
         switch (flagType) {
-            case ID -> checkIdIsPositiveLong("Id", value);
-            case LANGUAGE_ID -> checkIdIsPositiveLong("Language id", value);
-            case NOTE_ID -> checkIdIsPositiveLong("Note id", value);
-            case VOCABULARY_ENTRY_ID -> checkIdIsPositiveLong("Vocabulary entry id", value);
-            case CORRECT_ANSWERS_COUNT -> checkValueIsPositiveInteger("Correct answers count", value);
-            case PAGINATION -> checkValueIsPositiveInteger("Pagination", value);
-            case VOCABULARY_TRAINING_SESSION_SIZE -> checkValueIsPositiveInteger("Vocabulary training session size", value);
+            case ID, LANGUAGE_ID, NOTE_ID, VOCABULARY_ENTRY_ID -> checkIdIsPositiveLong(flagTypeName, value);
+            case CORRECT_ANSWERS_COUNT, ENTRIES_PER_VOCABULARY_TRAINING_SESSION,
+                    PAGINATION, NOTES_PAGINATION, LANGUAGES_PAGINATION, TAGS_PAGINATION, VOCABULARY_PAGINATION -> checkValueIsPositiveInteger(flagTypeName, value);
             case MODE_VOCABULARY -> checkVocabularyTrainingSessionModeIsCorrect(value);
         }
     }
