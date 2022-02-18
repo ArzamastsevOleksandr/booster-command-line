@@ -20,7 +20,6 @@ public class HelpCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
     private final ColorProcessor colorProcessor;
 
-    // todo: a shared component config
     @Value("${session.vocabulary.size:10}")
     private int entriesPerSession;
     @Value("${upload.filename:upload.xlsx}")
@@ -28,7 +27,6 @@ public class HelpCommandHandler implements CommandHandler {
     @Value("${download.filename:download.xlsx}")
     private String downloadFilename;
 
-    // todo: help with pagination + help --all
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (HelpCommandArgs) commandArgs;
@@ -115,6 +113,99 @@ public class HelpCommandHandler implements CommandHandler {
                     ColorCodes.green(Command.UPLOAD.firstEquivalent()),
                     ColorCodes.green(exampleFileName),
                     ColorCodes.green(exampleFileName)
+            );
+            case SHOW_SETTINGS -> """
+                    %s: Show the custom settings
+                        The settings may contain the following configurations:
+                        
+                        * default language id
+                        * default language name (is directly related to the default language id)
+                        
+                        * number of words per vocabulary training session
+                        
+                        * pagination parameter for the %s command
+                        * pagination parameter for the %s command
+                        * pagination parameter for the %s command
+                        * pagination parameter for the %s command
+                    """.formatted(
+                    colorProcessor.coloredCommand(Command.SHOW_SETTINGS),
+                    colorProcessor.coloredCommand(Command.LIST_LANGUAGES),
+                    colorProcessor.coloredCommand(Command.LIST_NOTES),
+                    colorProcessor.coloredCommand(Command.LIST_TAGS),
+                    colorProcessor.coloredCommand(Command.LIST_VOCABULARY_ENTRIES)
+            );
+            case ADD_SETTINGS -> """
+                    %s: Add custom settings
+                    The following optional flags may be used with this command:
+                    * %s
+                    * %s
+                    * %s
+                    * %s
+                    * %s
+                    * %s
+                    * %s
+                    Examples:
+                             %s \\%s=1 \\%s=5: will create settings with default language id 1 and vocabulary training session size of 5
+                    """.formatted(
+                    colorProcessor.coloredCommand(Command.ADD_SETTINGS),
+                    colorProcessor.coloredFlagType(FlagType.LANGUAGE_ID),
+                    colorProcessor.coloredFlagType(FlagType.LANGUAGE_NAME),
+                    colorProcessor.coloredFlagType(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION),
+                    colorProcessor.coloredFlagType(FlagType.LANGUAGES_PAGINATION),
+                    colorProcessor.coloredFlagType(FlagType.NOTES_PAGINATION),
+                    colorProcessor.coloredFlagType(FlagType.TAGS_PAGINATION),
+                    colorProcessor.coloredFlagType(FlagType.VOCABULARY_PAGINATION),
+                    ColorCodes.green(Command.ADD_SETTINGS.firstEquivalent()),
+                    ColorCodes.green(FlagType.LANGUAGE_ID.value),
+                    ColorCodes.green(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.value)
+            );
+            case DELETE_SETTINGS -> """
+                    %s: Delete custom settings
+                    """.formatted(colorProcessor.coloredCommand(Command.DELETE_SETTINGS));
+            case LIST_NOTES -> """
+                    %s: Display notes
+                    The following optional flags may be used with this command:
+                    * %s
+                    * %s
+                    Examples:
+                            %s \\%s=1: will display the note by id 1
+                            %s \\%s=5: will display notes in chunks of 5
+                    """.formatted(
+                    colorProcessor.coloredCommand(Command.LIST_NOTES),
+                    colorProcessor.coloredFlagType(FlagType.ID),
+                    colorProcessor.coloredFlagType(FlagType.PAGINATION),
+                    ColorCodes.green(Command.LIST_NOTES.firstEquivalent()),
+                    ColorCodes.green(FlagType.ID.value),
+                    ColorCodes.green(Command.LIST_NOTES.firstEquivalent()),
+                    ColorCodes.green(FlagType.PAGINATION.value)
+            );
+            case ADD_NOTE -> """
+                    %s: Create a note
+                    Mandatory flags:
+                    * %s
+                    Optional flags:
+                    * %s
+                    Example:
+                            %s \\%s=Slowly is the fastest way \\%s=wisdom
+                    """.formatted(
+                    colorProcessor.coloredCommand(Command.ADD_NOTE),
+                    ColorCodes.green(FlagType.CONTENT.value),
+                    ColorCodes.green(FlagType.TAG.value),
+                    ColorCodes.green(Command.ADD_NOTE.firstEquivalent()),
+                    ColorCodes.green(FlagType.CONTENT.value),
+                    ColorCodes.green(FlagType.TAG.value)
+            );
+            case DELETE_NOTE -> """
+                    %s: Delete the note by id
+                    Mandatory flags:
+                    * %s
+                    Example:
+                            %s \\%s=1
+                    """.formatted(
+                    colorProcessor.coloredCommand(Command.DELETE_NOTE),
+                    ColorCodes.green(FlagType.ID.value),
+                    ColorCodes.green(Command.DELETE_NOTE.firstEquivalent()),
+                    ColorCodes.green(FlagType.ID.value)
             );
             default -> throw new RuntimeException("Help not implemented for: " + command);
         };

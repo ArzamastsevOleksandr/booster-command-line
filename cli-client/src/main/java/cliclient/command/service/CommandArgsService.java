@@ -31,7 +31,6 @@ class CommandArgsService {
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
         return switch (cwa.getCommand()) {
-            // todo: paginated languages and tags
             case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
             case HELP -> new HelpCommandArgs(cwa.getHelpTarget());
             case ADD_LANGUAGE -> new AddLanguageCommandArgs(cwa.getName());
@@ -84,7 +83,6 @@ class CommandArgsService {
         };
     }
 
-    // todo: fetch settings once and use the cached version
     private Integer getVocabularyPagination(CommandWithArgs cwa) {
         return findSettingsIgnoringNotFound()
                 .map(SettingsDto::getVocabularyPagination)
@@ -113,7 +111,6 @@ class CommandArgsService {
         return new UseTagCommandArgs(cmdWithArgs.getTag(), ofNullable(cmdWithArgs.getNoteId()), ofNullable(cmdWithArgs.getVocabularyEntryId()));
     }
 
-    // todo: find a place for validation
     private void checkThatAnyTargetIsPresent(CommandWithArgs commandWithArgs) {
         boolean noTargetsArePresent = Stream.of(commandWithArgs.getVocabularyEntryId(), commandWithArgs.getNoteId())
                 .allMatch(Objects::nonNull);

@@ -37,7 +37,6 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     private void showAndUpdateLastSeenAt(List<VocabularyEntryDto> vocabularyEntryDtos) {
-        // todo: color
         vocabularyEntryDtos.forEach(adapter::writeLine);
         vocabularyEntryService.updateLastSeenAt(vocabularyEntryDtos);
     }
