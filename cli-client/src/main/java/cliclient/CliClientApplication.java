@@ -12,6 +12,8 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: at the end of the training session - save the details.
+        //  I can later start a training session with words that I did not provide a correct answer for.
         // todo: if as used with no args - use system default values?
         // todo: fix: I can upload the same file many times
         // todo: money tracking
