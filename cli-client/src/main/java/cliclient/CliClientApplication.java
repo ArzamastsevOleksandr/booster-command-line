@@ -12,6 +12,17 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: a centralized validator for commands and flags
+        // todo: fetch settings once and use the cached version
+        // todo: amount of hints per session to settings
+        // todo: help must describe optional & mandatory flags
+        // todo: use @Value in 1 shared properties placeholder
+        // todo: colored output everywhere
+        // todo: help with pagination + help --all
+        // todo: l, t: paginated output
+        // todo: an \t= allow creating notes with tags
+        // todo: if the first token is a recognized command, but the rest of the input is wrong - display an error message + the help on the command
+        // todo: an NoteDto(id=336, content=null
         // todo: svts \c=10 to override training session size
         // todo: dl \lid=5 Cannot invoke "java.lang.Long.longValue()" because the return value of "cliclient.command.arguments.CommandWithArgs.getId()" is null
         // todo: at the end of the training session - save the details.

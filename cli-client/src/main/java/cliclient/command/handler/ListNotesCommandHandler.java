@@ -63,7 +63,6 @@ public class ListNotesCommandHandler implements CommandHandler {
 
     private void displayAndUpdateLastSeenAt(Paginator<NoteDto> paginator) {
         adapter.writeLine(paginator.counter());
-        // todo: color
         List<NoteDto> noteDtos = paginator.nextBatchAndUpdateRange();
         noteDtos.forEach(adapter::writeLine);
         List<Long> noteIds = noteDtos

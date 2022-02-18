@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
-// todo: group commands based on functionality (HELP command will use it to print data expressively).
 @RequiredArgsConstructor
 public enum Command {
 

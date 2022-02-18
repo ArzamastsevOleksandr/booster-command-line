@@ -35,7 +35,6 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
 
-    // todo: a shared component config
     @Value("${session.vocabulary.size:10}")
     private int entriesPerSession;
 
@@ -53,7 +52,6 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     @RequiredArgsConstructor
     private class EntryTracker {
-        // todo: setting + property
         final int maxHintsPerEntry = 3;
 
         VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
