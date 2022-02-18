@@ -12,7 +12,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
-        // todo: as \ln=English
+        // todo: if as used with no args - use system default values?
         // todo: fix: I can upload the same file many times
         // todo: money tracking
         // todo: favorite notes
