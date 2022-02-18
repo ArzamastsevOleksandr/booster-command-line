@@ -110,6 +110,27 @@ class UploadController implements UploadControllerApi {
                 .map(Double::intValue)
                 .ifPresent(input::setEntriesPerVocabularyTrainingSession);
 
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.LANGUAGES_PAGINATION.position))
+                .map(Cell::getNumericCellValue)
+                .map(Double::intValue)
+                .ifPresent(input::setLanguagesPagination);
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.TAGS_PAGINATION.position))
+                .map(Cell::getNumericCellValue)
+                .map(Double::intValue)
+                .ifPresent(input::setTagsPagination);
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.NOTES_PAGINATION.position))
+                .map(Cell::getNumericCellValue)
+                .map(Double::intValue)
+                .ifPresent(input::setNotesPagination);
+        ofNullable(row)
+                .map(r -> r.getCell(XlsxSettingsColumn.VOCABULARY_PAGINATION.position))
+                .map(Cell::getNumericCellValue)
+                .map(Double::intValue)
+                .ifPresent(input::setVocabularyPagination);
+
         settingsServiceClient.create(input);
 
         tracker.settingsUploadFinished();
@@ -118,7 +139,11 @@ class UploadController implements UploadControllerApi {
     private void validateSettingsHeaderRow(XSSFRow row) {
         String validationErrors = collectValidationErrors(
                 checkSettingsHeaderColumn(row, XlsxSettingsColumn.DEFAULT_LANGUAGE_NAME),
-                checkSettingsHeaderColumn(row, XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION)
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.ENTRIES_PER_VOCABULARY_TRAINING_SESSION),
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.LANGUAGES_PAGINATION),
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.TAGS_PAGINATION),
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.NOTES_PAGINATION),
+                checkSettingsHeaderColumn(row, XlsxSettingsColumn.VOCABULARY_PAGINATION)
         );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);
