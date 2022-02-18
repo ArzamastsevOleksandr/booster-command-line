@@ -25,7 +25,7 @@ public enum Command {
     ADD_VOCABULARY_ENTRY(Set.of("ave")),
     UPDATE_VOCABULARY_ENTRY(Set.of("uve")),
 
-    START_VOCABULARY_TRAINING_SESSION(Set.of("stv")),
+    START_VOCABULARY_TRAINING_SESSION(Set.of("svts")),
 
     DOWNLOAD(Set.of("dwn")),
     UPLOAD(Set.of("upl")),
