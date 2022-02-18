@@ -44,10 +44,10 @@ class DownloadController implements DownloadControllerApi {
     @Override
     public byte[] download() {
         try (var workbook = new XSSFWorkbook()) {
-            exportSettings(workbook);
             exportTags(workbook);
             exportNotes(workbook);
             languageControllerApiClient.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
+            exportSettings(workbook);
             try (var out = new ByteArrayOutputStream()) {
                 workbook.write(out);
                 return out.toByteArray();
