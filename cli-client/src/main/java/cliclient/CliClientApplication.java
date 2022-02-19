@@ -12,6 +12,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: >> svts Loaded 0 entries. Index 0 out of bounds for length 0
         // todo: a centralized validator for commands and flags
         // todo: fetch settings once and use the cached version
         // todo: amount of hints per session to settings

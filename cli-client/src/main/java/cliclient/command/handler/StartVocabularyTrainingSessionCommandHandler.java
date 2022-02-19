@@ -75,7 +75,6 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         void printCurrentWord(VocabularyEntryDto entry) {
             adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
             adapter.newLine();
-            vocabularyEntryService.updateLastSeenAt(List.of(entry));
         }
 
         void inc() {
