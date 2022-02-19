@@ -34,7 +34,7 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
             select *
             from vocabulary_entries
             where id in (select vocabulary_entry_entity_id from vocabulary_entries_synonyms)
-            order by last_seen_at
+            order by correct_answers_count, last_seen_at
             limit ?1
             """, nativeQuery = true)
     Stream<VocabularyEntryEntity> findWithSynonyms(Integer limit);
