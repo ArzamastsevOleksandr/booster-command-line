@@ -103,7 +103,7 @@ class CommandArgsService {
 
     private UseTagCommandArgs useTag(CommandWithArgs cmdWithArgs) {
         checkThatAnyTargetIsPresent(cmdWithArgs);
-        return new UseTagCommandArgs(cmdWithArgs.getTag(), ofNullable(cmdWithArgs.getNoteId()), ofNullable(cmdWithArgs.getVocabularyEntryId()));
+        return new UseTagCommandArgs(cmdWithArgs.getTag(), ofNullable(cmdWithArgs.getNoteId()));
     }
 
     private void checkThatAnyTargetIsPresent(CommandWithArgs commandWithArgs) {
