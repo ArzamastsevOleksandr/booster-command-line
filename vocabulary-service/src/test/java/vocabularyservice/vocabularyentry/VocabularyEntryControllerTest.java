@@ -291,7 +291,6 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
                 .build());
         // when
         var lastSeenAt = new Timestamp(System.currentTimeMillis());
-        var isDifficult = true;
 
         webTestClient.patch()
                 .uri("/vocabulary-entries/")
@@ -301,7 +300,6 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
                         .definition(definition)
                         .correctAnswersCount(correctAnswersCount)
                         .lastSeenAt(lastSeenAt)
-                        .isDifficult(isDifficult)
                         .build())
                 .accept(APPLICATION_JSON)
                 .exchange()
@@ -314,7 +312,6 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(correctAnswersCount)
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
                 .jsonPath("$.lastSeenAt").isEqualTo(lastSeenAt.getTime())
-                .jsonPath("$.isDifficult").isEqualTo(isDifficult)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
                     public void describeTo(Description description) {
@@ -333,8 +330,7 @@ class VocabularyEntryControllerTest extends BaseIntegrationTest {
                 () -> assertThat(patchedEntry.getName()).isEqualTo(name),
                 () -> assertThat(patchedEntry.getDefinition()).isEqualTo(definition),
                 () -> assertThat(patchedEntry.getCorrectAnswersCount()).isEqualTo(correctAnswersCount),
-                () -> assertThat(patchedEntry.getLastSeenAt()).isEqualTo(lastSeenAt),
-                () -> assertThat(patchedEntry.getIsDifficult()).isTrue()
+                () -> assertThat(patchedEntry.getLastSeenAt()).isEqualTo(lastSeenAt)
         );
     }
 

@@ -18,6 +18,5 @@ public class PatchVocabularyEntryInput {
     private String definition;
     private Integer correctAnswersCount;
     private Timestamp lastSeenAt;
-    private Boolean isDifficult;
 
 }
