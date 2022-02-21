@@ -51,6 +51,7 @@ public class VocabularyEntryService {
     public VocabularyEntryDto add(AddVocabularyEntryInput input) {
         var entity = new VocabularyEntryEntity();
 
+        //todo:  if language id is null = find from settings
         LanguageEntity languageEntity = languageService.findEntityById(input.getLanguageId());
         WordEntity wordEntity = wordService.findByNameOrCreateAndGet(input.getName());
 
