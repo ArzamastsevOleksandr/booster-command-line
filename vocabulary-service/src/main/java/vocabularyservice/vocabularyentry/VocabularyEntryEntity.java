@@ -35,7 +35,6 @@ class VocabularyEntryEntity {
 
     private String definition;
     private Integer correctAnswersCount = 0;
-    private Boolean isDifficult = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @ToString.Exclude
