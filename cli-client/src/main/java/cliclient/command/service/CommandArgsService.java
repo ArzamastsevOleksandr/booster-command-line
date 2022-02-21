@@ -75,7 +75,6 @@ class CommandArgsService {
             case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());
             case ADD_TAG -> new AddTagCommandArgs(cwa.getName());
             case USE_TAG -> useTag(cwa);
-            case MARK_VOCABULARY_ENTRY_DIFFICULT, MARK_VOCABULARY_ENTRY_NOT_DIFFICULT -> new MarkVocabularyEntryDifficultCommandArgs(cwa.getId());
         };
     }
 
