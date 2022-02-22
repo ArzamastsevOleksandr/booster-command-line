@@ -12,11 +12,9 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: ve returns ALL ves, regardless of the language. Differentiate ves from different ls
         // todo: fix: dve => Cannot invoke "java.lang.Long.longValue()" because the return value of "cliclient.command.arguments.CommandWithArgs.getId()" is null
         // todo: fix: h j => Sequence must start with a command
-        // todo: fix: n \pg=5 pg is ignored
-        // todo: fix: ve \ss=a \pg=1 pg is ignored
-        // todo: fix: ve \pg=1 pg is ignored
         // todo: dl => Cannot invoke "java.lang.Long.longValue()" because the return value of "cliclient.command.arguments.CommandWithArgs.getId()" is null
         // todo: >> svts Loaded 0 entries. Index 0 out of bounds for length 0
         // todo: a centralized validator for commands and flags

@@ -1,17 +1,12 @@
 package cliclient.command.service;
 
-import api.settings.SettingsDto;
 import cliclient.command.FlagType;
 import cliclient.command.arguments.*;
 import cliclient.config.PropertyHolder;
-import cliclient.feign.settings.SettingsServiceClient;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -22,7 +17,6 @@ import static java.util.stream.Collectors.joining;
 @RequiredArgsConstructor
 class CommandArgsService {
 
-    private final SettingsServiceClient settingsServiceClient;
     private final PropertyHolder propertyHolder;
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
@@ -31,7 +25,7 @@ class CommandArgsService {
             case HELP -> new HelpCommandArgs(cwa.getHelpTarget());
             case ADD_LANGUAGE -> new AddLanguageCommandArgs(cwa.getName());
             case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cwa.getId());
-            case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), getVocabularyPagination(cwa), ofNullable(cwa.getSubstring()));
+            case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring()));
             case DELETE_VOCABULARY_ENTRY -> new DeleteVocabularyEntryCommandArgs(cwa.getId());
             case ADD_VOCABULARY_ENTRY -> AddVocabularyEntryCommandArgs.builder()
                     .name(cwa.getName())
@@ -70,35 +64,12 @@ class CommandArgsService {
                     .vocabularyPagination(cwa.getVocabularyPagination())
 
                     .build();
-            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()), getNotesPagination(cwa));
+            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination());
             case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));
             case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());
             case ADD_TAG -> new AddTagCommandArgs(cwa.getName());
             case USE_TAG -> useTag(cwa);
         };
-    }
-
-    private Integer getVocabularyPagination(CommandWithArgs cwa) {
-        return findSettingsIgnoringNotFound()
-                .map(SettingsDto::getVocabularyPagination)
-                .orElse(cwa.getPagination());
-    }
-
-    private Integer getNotesPagination(CommandWithArgs cwa) {
-        return findSettingsIgnoringNotFound()
-                .map(SettingsDto::getNotesPagination)
-                .orElse(cwa.getPagination());
-    }
-
-    private Optional<SettingsDto> findSettingsIgnoringNotFound() {
-        try {
-            return Optional.of(settingsServiceClient.findOne());
-        } catch (FeignException.FeignClientException ex) {
-            if (ex.status() == HttpStatus.NOT_FOUND.value()) {
-                return Optional.empty();
-            }
-            throw ex;
-        }
     }
 
     private UseTagCommandArgs useTag(CommandWithArgs cmdWithArgs) {
