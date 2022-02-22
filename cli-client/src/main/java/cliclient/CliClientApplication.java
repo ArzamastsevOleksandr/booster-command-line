@@ -23,8 +23,6 @@ public class CliClientApplication {
         // todo: an \t= allow creating notes with tags
         // todo: if the first token is a recognized command, but the rest of the input is wrong - display an error message + the help on the command
         // todo: an NoteDto(id=336, content=null
-        // todo: svts \c=10 to override training session size
-        // todo: dl \lid=5 Cannot invoke "java.lang.Long.longValue()" because the return value of "cliclient.command.arguments.CommandWithArgs.getId()" is null
         // todo: at the end of the training session - save the details.
         //  I can later start a training session with words that I did not provide a correct answer for.
         // todo: if as used with no args - use system default values?
