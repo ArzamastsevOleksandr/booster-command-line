@@ -42,18 +42,17 @@ public class CommandHandlerCollectionService {
         } else if (commandWithArgs.isNoInput()) {
             return;
         } else {
-            commandWithArgs.getErrors().forEach(adapter::writeLine);
+            commandWithArgs.getErrors().forEach(adapter::error);
         }
         adapter.newLine();
     }
 
     private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
+        CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
         Command command = commandWithArgs.getCommand();
         ofNullable(command2Handler.get(command)).ifPresentOrElse(
-                commandHandler -> {
-                    CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
-                    commandHandler.handle(commandArgs);
-                }, () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
+                commandHandler -> commandHandler.handle(commandArgs),
+                () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
         );
     }
 

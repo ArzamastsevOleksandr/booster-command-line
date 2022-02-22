@@ -26,8 +26,7 @@ public class CommandWithArgs {
 
     String filename;
 
-    @Builder.Default
-    VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
+    VocabularyTrainingSessionMode mode;
 
     String content;
 

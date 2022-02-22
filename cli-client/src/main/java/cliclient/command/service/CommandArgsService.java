@@ -1,57 +1,33 @@
 package cliclient.command.service;
 
-import cliclient.command.FlagType;
+import cliclient.command.Command;
 import cliclient.command.arguments.*;
-import cliclient.config.PropertyHolder;
+import cliclient.exception.IncorrectCommandFormatException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 
 @Service
 @RequiredArgsConstructor
 class CommandArgsService {
 
-    private final PropertyHolder propertyHolder;
-
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
-        return switch (cwa.getCommand()) {
-            case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> new EmptyCommandArgs();
-            case HELP -> new HelpCommandArgs(cwa.getHelpTarget());
-            case ADD_LANGUAGE -> new AddLanguageCommandArgs(cwa.getName());
-            case DELETE_LANGUAGE -> new DeleteLanguageCommandArgs(cwa.getId());
-            case LIST_VOCABULARY_ENTRIES -> new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring()));
-            case DELETE_VOCABULARY_ENTRY -> new DeleteVocabularyEntryCommandArgs(cwa.getId());
-            case ADD_VOCABULARY_ENTRY -> AddVocabularyEntryCommandArgs.builder()
-                    .name(cwa.getName())
-                    .languageId(cwa.getLanguageId())
-                    .definition(cwa.getDefinition())
-                    .tag(cwa.getTag())
-                    .antonyms(cwa.getAntonyms())
-                    .synonyms(cwa.getSynonyms())
-                    .contexts(cwa.getContexts())
-                    .build();
-            case UPDATE_VOCABULARY_ENTRY -> UpdateVocabularyEntryCommandArgs.builder()
-                    .id(cwa.getId())
-                    .name(cwa.getName())
-                    .definition(cwa.getDefinition())
-                    .correctAnswersCount(cwa.getCorrectAnswersCount())
-                    .antonyms(cwa.getAntonyms())
-                    .synonyms(cwa.getSynonyms())
-                    .addAntonyms(cwa.getAddAntonyms())
-                    .removeAntonyms(cwa.getRemoveAntonyms())
-                    .addSynonyms(cwa.getAddSynonyms())
-                    .removeSynonyms(cwa.getRemoveSynonyms())
-                    .build();
-            case START_VOCABULARY_TRAINING_SESSION -> new StartVocabularyTrainingSessionCommandArgs(cwa.getMode());
-            case DOWNLOAD -> new DownloadCommandArgs(ofNullable(cwa.getFilename()).orElse(propertyHolder.getDownloadFilename()));
-            case UPLOAD -> new UploadCommandArgs(ofNullable(cwa.getFilename()).orElse(propertyHolder.getUploadFilename()));
-            case ADD_SETTINGS -> AddSettingsCommandArgs.builder()
+        CommandArgsResult commandArgsResult = switch (cwa.getCommand()) {
+            case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> CommandArgsResult.empty();
+            case HELP -> CommandArgsResult.success(new HelpCommandArgs(cwa.getHelpTarget()));
+            case ADD_LANGUAGE -> addLanguage(cwa);
+            case DELETE_LANGUAGE -> deleteLanguage(cwa);
+            case LIST_VOCABULARY_ENTRIES -> CommandArgsResult.success(new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring())));
+            case DELETE_VOCABULARY_ENTRY -> deleteVocabularyEntry(cwa);
+            case ADD_VOCABULARY_ENTRY -> addVocabularyEntry(cwa);
+            case UPDATE_VOCABULARY_ENTRY -> updateVocabularyEntry(cwa);
+            case START_VOCABULARY_TRAINING_SESSION -> CommandArgsResult.success(new StartVocabularyTrainingSessionCommandArgs(cwa.getMode()));
+            case DOWNLOAD -> CommandArgsResult.success(new DownloadCommandArgs(cwa.getFilename()));
+            case UPLOAD -> CommandArgsResult.success(new UploadCommandArgs(cwa.getFilename()));
+            case ADD_SETTINGS -> CommandArgsResult.success(AddSettingsCommandArgs.builder()
 
                     .defaultLanguageId(cwa.getLanguageId())
                     .defaultLanguageName(cwa.getLanguageName())
@@ -63,29 +39,121 @@ class CommandArgsService {
                     .tagsPagination(cwa.getTagsPagination())
                     .vocabularyPagination(cwa.getVocabularyPagination())
 
-                    .build();
-            case LIST_NOTES -> new ListNotesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination());
-            case ADD_NOTE -> new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag()).map(Set::of).orElse(Set.of()));
-            case DELETE_NOTE -> new DeleteNoteCommandArgs(cwa.getId());
-            case ADD_TAG -> new AddTagCommandArgs(cwa.getName());
+                    .build());
+            case LIST_NOTES -> CommandArgsResult.success(new ListNotesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination()));
+            case ADD_NOTE -> addNote(cwa);
+            case DELETE_NOTE -> deleteNote(cwa);
+            case ADD_TAG -> addTag(cwa);
             case USE_TAG -> useTag(cwa);
         };
+        commandArgsResult.validate();
+        return commandArgsResult.commandArgs;
     }
 
-    private UseTagCommandArgs useTag(CommandWithArgs cmdWithArgs) {
-        checkThatAnyTargetIsPresent(cmdWithArgs);
-        return new UseTagCommandArgs(cmdWithArgs.getTag(), ofNullable(cmdWithArgs.getNoteId()));
+    private CommandArgsResult addTag(CommandWithArgs cwa) {
+        if (cwa.getName() == null) {
+            return CommandArgsResult.withErrors("Name is missing", Command.ADD_TAG);
+        }
+        return CommandArgsResult.success(new AddTagCommandArgs(cwa.getName()));
     }
 
-    private void checkThatAnyTargetIsPresent(CommandWithArgs commandWithArgs) {
-        boolean noTargetsArePresent = Stream.of(commandWithArgs.getVocabularyEntryId(), commandWithArgs.getNoteId())
-                .allMatch(Objects::nonNull);
+    private CommandArgsResult deleteNote(CommandWithArgs cwa) {
+        if (cwa.getId() == null) {
+            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_NOTE);
+        }
+        return CommandArgsResult.success(new DeleteNoteCommandArgs(cwa.getId()));
+    }
 
-        if (noTargetsArePresent) {
-            String flagTypes = Stream.of(FlagType.NOTE_ID, FlagType.VOCABULARY_ENTRY_ID)
-                    .map(f -> f + "(" + f.value + ")")
-                    .collect(joining(", "));
-//            throw new ArgsValidationException("At least one target must be specified when using tags: " + flagTypes);
+    private CommandArgsResult addNote(CommandWithArgs cwa) {
+        if (cwa.getContent() == null) {
+            return CommandArgsResult.withErrors("Content is missing", Command.ADD_NOTE);
+        }
+        return CommandArgsResult.success(new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag())
+                .map(Set::of)
+                .orElse(Set.of())));
+    }
+
+    private CommandArgsResult updateVocabularyEntry(CommandWithArgs cwa) {
+        if (cwa.getId() == null) {
+            return CommandArgsResult.withErrors("Id is missing", Command.UPDATE_VOCABULARY_ENTRY);
+        }
+        var commandArgs = UpdateVocabularyEntryCommandArgs.builder()
+                .id(cwa.getId())
+                .name(cwa.getName())
+                .definition(cwa.getDefinition())
+                .correctAnswersCount(cwa.getCorrectAnswersCount())
+                .antonyms(cwa.getAntonyms())
+                .synonyms(cwa.getSynonyms())
+                .addAntonyms(cwa.getAddAntonyms())
+                .removeAntonyms(cwa.getRemoveAntonyms())
+                .addSynonyms(cwa.getAddSynonyms())
+                .removeSynonyms(cwa.getRemoveSynonyms())
+                .build();
+        return CommandArgsResult.success(commandArgs);
+    }
+
+    private CommandArgsResult addVocabularyEntry(CommandWithArgs cwa) {
+        if (cwa.getName() == null) {
+            return CommandArgsResult.withErrors("Name is missing", Command.ADD_VOCABULARY_ENTRY);
+        }
+        var commandArgs = AddVocabularyEntryCommandArgs.builder()
+                .name(cwa.getName())
+                .languageId(cwa.getLanguageId())
+                .definition(cwa.getDefinition())
+                .tag(cwa.getTag())
+                .antonyms(cwa.getAntonyms())
+                .synonyms(cwa.getSynonyms())
+                .contexts(cwa.getContexts())
+                .build();
+        return CommandArgsResult.success(commandArgs);
+    }
+
+    private CommandArgsResult deleteVocabularyEntry(CommandWithArgs cwa) {
+        if (cwa.getId() == null) {
+            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_VOCABULARY_ENTRY);
+        }
+        return CommandArgsResult.success(new DeleteVocabularyEntryCommandArgs(cwa.getId()));
+    }
+
+    private CommandArgsResult addLanguage(CommandWithArgs cwa) {
+        if (cwa.getName() == null) {
+            return CommandArgsResult.withErrors("Name is missing", Command.ADD_LANGUAGE);
+        }
+        return CommandArgsResult.success(new AddLanguageCommandArgs(cwa.getName()));
+    }
+
+    private CommandArgsResult deleteLanguage(CommandWithArgs cwa) {
+        if (cwa.getId() == null) {
+            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_LANGUAGE);
+        }
+        return CommandArgsResult.success(new DeleteLanguageCommandArgs(cwa.getId()));
+    }
+
+    private CommandArgsResult useTag(CommandWithArgs cwa) {
+        if (cwa.getNoteId() == null) {
+            return CommandArgsResult.withErrors("Note id is missing", Command.USE_TAG);
+        }
+        return CommandArgsResult.success(new UseTagCommandArgs(cwa.getTag(), cwa.getNoteId()));
+    }
+
+    private record CommandArgsResult(Command command, CommandArgs commandArgs, String error) {
+
+        static CommandArgsResult success(CommandArgs commandArgs) {
+            return new CommandArgsResult(null, commandArgs, null);
+        }
+
+        static CommandArgsResult withErrors(String error, Command command) {
+            return new CommandArgsResult(command, null, error);
+        }
+
+        static CommandArgsResult empty() {
+            return new CommandArgsResult(null, new EmptyCommandArgs(), null);
+        }
+
+        void validate() {
+            if (error != null) {
+                throw new IncorrectCommandFormatException(error, command);
+            }
         }
     }
 
