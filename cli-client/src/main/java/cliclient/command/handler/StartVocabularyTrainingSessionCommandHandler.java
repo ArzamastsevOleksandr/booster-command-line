@@ -119,10 +119,14 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     private void executeTrainingSession(VocabularyTrainingSessionMode mode) {
         List<VocabularyEntryDto> entries = findForMode(mode);
-        adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
-        executeTrainingSessionBasedOnMode(mode, entries);
-        stats.showAnswers();
-        adapter.writeLine(ColorCodes.yellow("Training session finished!"));
+        if (entries.size() == 0) {
+            adapter.error("No records");
+        } else {
+            adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
+            executeTrainingSessionBasedOnMode(mode, entries);
+            stats.showAnswers();
+            adapter.writeLine(ColorCodes.yellow("Training session finished!"));
+        }
     }
 
     private List<VocabularyEntryDto> findForMode(VocabularyTrainingSessionMode mode) {
