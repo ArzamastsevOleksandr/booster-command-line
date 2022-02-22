@@ -1,14 +1,18 @@
 package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
+import api.settings.SettingsDto;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.PatchVocabularyEntryLastSeenAtInput;
 import api.vocabulary.VocabularyEntryDto;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vocabularyservice.feign.SettingsServiceClient;
 import vocabularyservice.language.LanguageEntity;
 import vocabularyservice.language.LanguageService;
 
@@ -28,6 +32,7 @@ public class VocabularyEntryService {
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;
     private final LanguageService languageService;
+    private final SettingsServiceClient settingsServiceClient;
 
     public List<VocabularyEntryDto> findFirst(Integer limit) {
         return vocabularyEntryRepository.findFirst(limit)
@@ -51,8 +56,7 @@ public class VocabularyEntryService {
     public VocabularyEntryDto add(AddVocabularyEntryInput input) {
         var entity = new VocabularyEntryEntity();
 
-        //todo:  if language id is null = find from settings
-        LanguageEntity languageEntity = languageService.findEntityById(input.getLanguageId());
+        LanguageEntity languageEntity = languageService.findEntityById(resolveLanguageId(input));
         WordEntity wordEntity = wordService.findByNameOrCreateAndGet(input.getName());
 
         entity.setWord(wordEntity);
@@ -69,6 +73,25 @@ public class VocabularyEntryService {
         entity.setSynonyms(synonyms);
 
         return toDto(vocabularyEntryRepository.save(entity));
+    }
+
+    private Long resolveLanguageId(AddVocabularyEntryInput input) {
+        return ofNullable(input.getLanguageId())
+                .orElseGet(() -> {
+                    try {
+                        SettingsDto settingsDto = settingsServiceClient.findOne();
+                        Long defaultLanguageId = settingsDto.getDefaultLanguageId();
+                        if (defaultLanguageId == null) {
+                            throw new NotFoundException("Language id not specified and settings do not have a default language id");
+                        }
+                        return defaultLanguageId;
+                    } catch (FeignException.FeignClientException ex) {
+                        if (ex.status() == HttpStatus.NOT_FOUND.value()) {
+                            throw new NotFoundException("Language id not specified and custom settings do not exist");
+                        }
+                        throw ex;
+                    }
+                });
     }
 
     public VocabularyEntryDto findById(Long id) {
