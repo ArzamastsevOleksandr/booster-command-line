@@ -3,6 +3,7 @@ package cliclient.postprocessor;
 import api.settings.SettingsDto;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
+import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.config.PropertyHolder;
 import cliclient.feign.settings.SettingsServiceClient;
 import feign.FeignException;
@@ -28,21 +29,33 @@ public class CommandWithArgsPostProcessor {
             Command.LIST_TAGS
     );
 
-    public CommandWithArgs process(CommandWithArgs commandWithArgs) {
-        Command command = commandWithArgs.getCommand();
+    public CommandWithArgs process(CommandWithArgs cwa) {
+        Command command = cwa.getCommand();
         if (isPageableCommand(command)) {
-            Integer pagination = commandWithArgs.getPagination();
+            Integer pagination = cwa.getPagination();
             if (pagination == null) {
-                commandWithArgs = switch (command) {
-                    case LIST_VOCABULARY_ENTRIES -> resolvePagination(commandWithArgs, SettingsDto::getVocabularyPagination);
-                    case LIST_NOTES -> resolvePagination(commandWithArgs, SettingsDto::getNotesPagination);
-                    case LIST_LANGUAGES -> resolvePagination(commandWithArgs, SettingsDto::getLanguagesPagination);
-                    case LIST_TAGS -> resolvePagination(commandWithArgs, SettingsDto::getTagsPagination);
-                    default -> commandWithArgs;
+                cwa = switch (command) {
+                    case LIST_VOCABULARY_ENTRIES -> resolvePagination(cwa, SettingsDto::getVocabularyPagination);
+                    case LIST_NOTES -> resolvePagination(cwa, SettingsDto::getNotesPagination);
+                    case LIST_LANGUAGES -> resolvePagination(cwa, SettingsDto::getLanguagesPagination);
+                    case LIST_TAGS -> resolvePagination(cwa, SettingsDto::getTagsPagination);
+                    default -> cwa;
                 };
             }
+        } else if (command == Command.START_VOCABULARY_TRAINING_SESSION) {
+            if (cwa.getMode() == null) {
+                cwa = cwa.toBuilder().mode(VocabularyTrainingSessionMode.getDefaultMode()).build();
+            }
+        } else if (command == Command.DOWNLOAD) {
+            if (cwa.getFilename() == null) {
+                cwa = cwa.toBuilder().filename(propertyHolder.getDownloadFilename()).build();
+            }
+        } else if (command == Command.UPLOAD) {
+            if (cwa.getFilename() == null) {
+                cwa = cwa.toBuilder().filename(propertyHolder.getUploadFilename()).build();
+            }
         }
-        return commandWithArgs;
+        return cwa;
     }
 
     private CommandWithArgs resolvePagination(CommandWithArgs commandWithArgs, Function<SettingsDto, Integer> extractor) {
