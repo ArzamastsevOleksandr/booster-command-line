@@ -7,10 +7,7 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
-import cliclient.config.PropertyHolder;
 import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
-import cliclient.service.SettingsService;
-import cliclient.service.VocabularyEntryService;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,17 +27,14 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 
     private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
-    private final SettingsService settingsService;
-    private final VocabularyEntryService vocabularyEntryService;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
-    private final PropertyHolder propertyHolder;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         stats.reset();
         var args = (StartVocabularyTrainingSessionCommandArgs) commandArgs;
-        executeTrainingSession(args.mode());
+        executeTrainingSession(args);
     }
 
     @Override
@@ -117,23 +111,20 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         }
     }
 
-    private void executeTrainingSession(VocabularyTrainingSessionMode mode) {
-        List<VocabularyEntryDto> entries = findForMode(mode);
+    private void executeTrainingSession(StartVocabularyTrainingSessionCommandArgs args) {
+        List<VocabularyEntryDto> entries = findEntries(args);
         if (entries.size() == 0) {
             adapter.error("No records");
         } else {
             adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
-            executeTrainingSessionBasedOnMode(mode, entries);
+            executeTrainingSessionBasedOnMode(args.mode(), entries);
             stats.showAnswers();
             adapter.writeLine(ColorCodes.yellow("Training session finished!"));
         }
     }
 
-    private List<VocabularyEntryDto> findForMode(VocabularyTrainingSessionMode mode) {
-        return settingsService.findOne()
-                .map(settingsDto -> vocabularyEntryControllerApiClient.findWithSynonyms(settingsDto.getEntriesPerVocabularyTrainingSession()))
-                .map(ArrayList::new)
-                .orElseGet(() -> new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(propertyHolder.getEntriesPerVocabularyTrainingSession())));
+    private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCommandArgs args) {
+        return new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(args.sessionSize()));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
