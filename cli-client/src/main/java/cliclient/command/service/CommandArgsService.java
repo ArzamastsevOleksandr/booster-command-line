@@ -51,33 +51,29 @@ class CommandArgsService {
     }
 
     private CommandArgsResult addTag(CommandWithArgs cwa) {
-        if (cwa.getName() == null) {
-            return CommandArgsResult.withErrors("Name is missing", Command.ADD_TAG);
-        }
-        return CommandArgsResult.success(new AddTagCommandArgs(cwa.getName()));
+        return cwa.getName() == null
+                ? CommandArgsResult.withErrors("Name is missing", Command.ADD_TAG)
+                : CommandArgsResult.success(new AddTagCommandArgs(cwa.getName()));
     }
 
     private CommandArgsResult deleteNote(CommandWithArgs cwa) {
-        if (cwa.getId() == null) {
-            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_NOTE);
-        }
-        return CommandArgsResult.success(new DeleteNoteCommandArgs(cwa.getId()));
+        return cwa.getId() == null
+                ? CommandArgsResult.withErrors("Id is missing", Command.DELETE_NOTE)
+                : CommandArgsResult.success(new DeleteNoteCommandArgs(cwa.getId()));
     }
 
     private CommandArgsResult addNote(CommandWithArgs cwa) {
-        if (cwa.getContent() == null) {
-            return CommandArgsResult.withErrors("Content is missing", Command.ADD_NOTE);
-        }
-        return CommandArgsResult.success(new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag())
+        return cwa.getContent() == null
+                ? CommandArgsResult.withErrors("Content is missing", Command.ADD_NOTE)
+                : CommandArgsResult.success(new AddNoteCommandArgs(cwa.getContent(), ofNullable(cwa.getTag())
                 .map(Set::of)
                 .orElse(Set.of())));
     }
 
     private CommandArgsResult updateVocabularyEntry(CommandWithArgs cwa) {
-        if (cwa.getId() == null) {
-            return CommandArgsResult.withErrors("Id is missing", Command.UPDATE_VOCABULARY_ENTRY);
-        }
-        var commandArgs = UpdateVocabularyEntryCommandArgs.builder()
+        return cwa.getId() == null
+                ? CommandArgsResult.withErrors("Id is missing", Command.UPDATE_VOCABULARY_ENTRY)
+                : CommandArgsResult.success(UpdateVocabularyEntryCommandArgs.builder()
                 .id(cwa.getId())
                 .name(cwa.getName())
                 .definition(cwa.getDefinition())
@@ -88,15 +84,13 @@ class CommandArgsService {
                 .removeAntonyms(cwa.getRemoveAntonyms())
                 .addSynonyms(cwa.getAddSynonyms())
                 .removeSynonyms(cwa.getRemoveSynonyms())
-                .build();
-        return CommandArgsResult.success(commandArgs);
+                .build());
     }
 
     private CommandArgsResult addVocabularyEntry(CommandWithArgs cwa) {
-        if (cwa.getName() == null) {
-            return CommandArgsResult.withErrors("Name is missing", Command.ADD_VOCABULARY_ENTRY);
-        }
-        var commandArgs = AddVocabularyEntryCommandArgs.builder()
+        return cwa.getName() == null
+                ? CommandArgsResult.withErrors("Name is missing", Command.ADD_VOCABULARY_ENTRY)
+                : CommandArgsResult.success(AddVocabularyEntryCommandArgs.builder()
                 .name(cwa.getName())
                 .languageId(cwa.getLanguageId())
                 .definition(cwa.getDefinition())
@@ -104,36 +98,31 @@ class CommandArgsService {
                 .antonyms(cwa.getAntonyms())
                 .synonyms(cwa.getSynonyms())
                 .contexts(cwa.getContexts())
-                .build();
-        return CommandArgsResult.success(commandArgs);
+                .build());
     }
 
     private CommandArgsResult deleteVocabularyEntry(CommandWithArgs cwa) {
-        if (cwa.getId() == null) {
-            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_VOCABULARY_ENTRY);
-        }
-        return CommandArgsResult.success(new DeleteVocabularyEntryCommandArgs(cwa.getId()));
+        return cwa.getId() == null
+                ? CommandArgsResult.withErrors("Id is missing", Command.DELETE_VOCABULARY_ENTRY)
+                : CommandArgsResult.success(new DeleteVocabularyEntryCommandArgs(cwa.getId()));
     }
 
     private CommandArgsResult addLanguage(CommandWithArgs cwa) {
-        if (cwa.getName() == null) {
-            return CommandArgsResult.withErrors("Name is missing", Command.ADD_LANGUAGE);
-        }
-        return CommandArgsResult.success(new AddLanguageCommandArgs(cwa.getName()));
+        return cwa.getName() == null
+                ? CommandArgsResult.withErrors("Name is missing", Command.ADD_LANGUAGE)
+                : CommandArgsResult.success(new AddLanguageCommandArgs(cwa.getName()));
     }
 
     private CommandArgsResult deleteLanguage(CommandWithArgs cwa) {
-        if (cwa.getId() == null) {
-            return CommandArgsResult.withErrors("Id is missing", Command.DELETE_LANGUAGE);
-        }
-        return CommandArgsResult.success(new DeleteLanguageCommandArgs(cwa.getId()));
+        return cwa.getId() == null
+                ? CommandArgsResult.withErrors("Id is missing", Command.DELETE_LANGUAGE)
+                : CommandArgsResult.success(new DeleteLanguageCommandArgs(cwa.getId()));
     }
 
     private CommandArgsResult useTag(CommandWithArgs cwa) {
-        if (cwa.getNoteId() == null) {
-            return CommandArgsResult.withErrors("Note id is missing", Command.USE_TAG);
-        }
-        return CommandArgsResult.success(new UseTagCommandArgs(cwa.getTag(), cwa.getNoteId()));
+        return cwa.getNoteId() == null
+                ? CommandArgsResult.withErrors("Note id is missing", Command.USE_TAG)
+                : CommandArgsResult.success(new UseTagCommandArgs(cwa.getTag(), cwa.getNoteId()));
     }
 
     private record CommandArgsResult(Command command, CommandArgs commandArgs, String error) {

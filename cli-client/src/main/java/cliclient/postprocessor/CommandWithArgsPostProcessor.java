@@ -12,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 @RequiredArgsConstructor
@@ -22,49 +22,39 @@ public class CommandWithArgsPostProcessor {
     private final SettingsServiceClient settingsServiceClient;
     private final PropertyHolder propertyHolder;
 
-    private static final Set<Command> PAGEABLE_COMMANDS = Set.of(
-            Command.LIST_VOCABULARY_ENTRIES,
-            Command.LIST_LANGUAGES,
-            Command.LIST_NOTES,
-            Command.LIST_TAGS
-    );
-
     public CommandWithArgs process(CommandWithArgs cwa) {
         Command command = cwa.getCommand();
-        if (isPageableCommand(command)) {
-            Integer pagination = cwa.getPagination();
-            if (pagination == null) {
-                cwa = switch (command) {
-                    case LIST_VOCABULARY_ENTRIES -> resolvePagination(cwa, SettingsDto::getVocabularyPagination);
-                    case LIST_NOTES -> resolvePagination(cwa, SettingsDto::getNotesPagination);
-                    case LIST_LANGUAGES -> resolvePagination(cwa, SettingsDto::getLanguagesPagination);
-                    case LIST_TAGS -> resolvePagination(cwa, SettingsDto::getTagsPagination);
-                    default -> cwa;
-                };
-            }
-        } else if (command == Command.START_VOCABULARY_TRAINING_SESSION) {
-            var mode = cwa.getMode() == null
-                    ? VocabularyTrainingSessionMode.getDefaultMode()
-                    : cwa.getMode();
+        return switch (command) {
+            case LIST_VOCABULARY_ENTRIES -> resolvePagination(cwa, SettingsDto::getVocabularyPagination);
+            case LIST_NOTES -> resolvePagination(cwa, SettingsDto::getNotesPagination);
+            case LIST_LANGUAGES -> resolvePagination(cwa, SettingsDto::getLanguagesPagination);
+            case LIST_TAGS -> resolvePagination(cwa, SettingsDto::getTagsPagination);
+            case START_VOCABULARY_TRAINING_SESSION -> startVocabularyTrainingSession(cwa);
+            case DOWNLOAD -> resolveFileName(cwa, propertyHolder::getDownloadFilename);
+            case UPLOAD -> resolveFileName(cwa, propertyHolder::getUploadFilename);
+            default -> cwa;
+        };
+    }
 
-            var sessionSize = cwa.getEntriesPerVocabularyTrainingSession() == null
-                    ? resolveVocabularyTrainingSessionSize()
-                    : cwa.getEntriesPerVocabularyTrainingSession();
+    private CommandWithArgs resolveFileName(CommandWithArgs cwa, Supplier<String> filenameSupplier) {
+        return cwa.getFilename() == null
+                ? cwa.toBuilder().filename(filenameSupplier.get()).build()
+                : cwa;
+    }
 
-            cwa = cwa.toBuilder()
-                    .mode(mode)
-                    .entriesPerVocabularyTrainingSession(sessionSize)
-                    .build();
-        } else if (command == Command.DOWNLOAD) {
-            if (cwa.getFilename() == null) {
-                cwa = cwa.toBuilder().filename(propertyHolder.getDownloadFilename()).build();
-            }
-        } else if (command == Command.UPLOAD) {
-            if (cwa.getFilename() == null) {
-                cwa = cwa.toBuilder().filename(propertyHolder.getUploadFilename()).build();
-            }
-        }
-        return cwa;
+    private CommandWithArgs startVocabularyTrainingSession(CommandWithArgs cwa) {
+        var mode = cwa.getMode() == null
+                ? VocabularyTrainingSessionMode.getDefaultMode()
+                : cwa.getMode();
+
+        var sessionSize = cwa.getEntriesPerVocabularyTrainingSession() == null
+                ? resolveVocabularyTrainingSessionSize()
+                : cwa.getEntriesPerVocabularyTrainingSession();
+
+        return cwa.toBuilder()
+                .mode(mode)
+                .entriesPerVocabularyTrainingSession(sessionSize)
+                .build();
     }
 
     private Integer resolveVocabularyTrainingSessionSize() {
@@ -73,11 +63,12 @@ public class CommandWithArgsPostProcessor {
                 .orElse(propertyHolder.getEntriesPerVocabularyTrainingSession());
     }
 
-    private CommandWithArgs resolvePagination(CommandWithArgs commandWithArgs, Function<SettingsDto, Integer> extractor) {
-        Integer pagination = findSettingsIgnoringNotFound()
+    private CommandWithArgs resolvePagination(CommandWithArgs cwa, Function<SettingsDto, Integer> extractor) {
+        return cwa.getPagination() == null
+                ? cwa.toBuilder().pagination(findSettingsIgnoringNotFound()
                 .map(extractor)
-                .orElse(propertyHolder.getDefaultPagination());
-        return commandWithArgs.toBuilder().pagination(pagination).build();
+                .orElse(propertyHolder.getDefaultPagination())).build()
+                : cwa;
     }
 
     private Optional<SettingsDto> findSettingsIgnoringNotFound() {
@@ -89,10 +80,6 @@ public class CommandWithArgsPostProcessor {
             }
             throw ex;
         }
-    }
-
-    private boolean isPageableCommand(Command command) {
-        return PAGEABLE_COMMANDS.contains(command);
     }
 
 }
