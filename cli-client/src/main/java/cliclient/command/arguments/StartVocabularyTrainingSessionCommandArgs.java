@@ -1,4 +1,5 @@
 package cliclient.command.arguments;
 
-public record StartVocabularyTrainingSessionCommandArgs(VocabularyTrainingSessionMode mode) implements CommandArgs {
+public record StartVocabularyTrainingSessionCommandArgs(VocabularyTrainingSessionMode mode,
+                                                        Integer sessionSize) implements CommandArgs {
 }

@@ -24,7 +24,7 @@ class CommandArgsService {
             case DELETE_VOCABULARY_ENTRY -> deleteVocabularyEntry(cwa);
             case ADD_VOCABULARY_ENTRY -> addVocabularyEntry(cwa);
             case UPDATE_VOCABULARY_ENTRY -> updateVocabularyEntry(cwa);
-            case START_VOCABULARY_TRAINING_SESSION -> CommandArgsResult.success(new StartVocabularyTrainingSessionCommandArgs(cwa.getMode()));
+            case START_VOCABULARY_TRAINING_SESSION -> CommandArgsResult.success(new StartVocabularyTrainingSessionCommandArgs(cwa.getMode(), cwa.getEntriesPerVocabularyTrainingSession()));
             case DOWNLOAD -> CommandArgsResult.success(new DownloadCommandArgs(cwa.getFilename()));
             case UPLOAD -> CommandArgsResult.success(new UploadCommandArgs(cwa.getFilename()));
             case ADD_SETTINGS -> CommandArgsResult.success(AddSettingsCommandArgs.builder()

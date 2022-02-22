@@ -43,9 +43,18 @@ public class CommandWithArgsPostProcessor {
                 };
             }
         } else if (command == Command.START_VOCABULARY_TRAINING_SESSION) {
-            if (cwa.getMode() == null) {
-                cwa = cwa.toBuilder().mode(VocabularyTrainingSessionMode.getDefaultMode()).build();
-            }
+            var mode = cwa.getMode() == null
+                    ? VocabularyTrainingSessionMode.getDefaultMode()
+                    : cwa.getMode();
+
+            var sessionSize = cwa.getEntriesPerVocabularyTrainingSession() == null
+                    ? resolveVocabularyTrainingSessionSize()
+                    : cwa.getEntriesPerVocabularyTrainingSession();
+
+            cwa = cwa.toBuilder()
+                    .mode(mode)
+                    .entriesPerVocabularyTrainingSession(sessionSize)
+                    .build();
         } else if (command == Command.DOWNLOAD) {
             if (cwa.getFilename() == null) {
                 cwa = cwa.toBuilder().filename(propertyHolder.getDownloadFilename()).build();
@@ -56,6 +65,12 @@ public class CommandWithArgsPostProcessor {
             }
         }
         return cwa;
+    }
+
+    private Integer resolveVocabularyTrainingSessionSize() {
+        return findSettingsIgnoringNotFound()
+                .map(SettingsDto::getEntriesPerVocabularyTrainingSession)
+                .orElse(propertyHolder.getEntriesPerVocabularyTrainingSession());
     }
 
     private CommandWithArgs resolvePagination(CommandWithArgs commandWithArgs, Function<SettingsDto, Integer> extractor) {

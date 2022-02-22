@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 public class PropertyHolder {
 
-    @Value("${session.vocabulary.size:10}")
+    @Value("${session.vocabulary.size:5}")
     private int entriesPerVocabularyTrainingSession;
 
     @Value("${upload.filename:upload.xlsx}")
