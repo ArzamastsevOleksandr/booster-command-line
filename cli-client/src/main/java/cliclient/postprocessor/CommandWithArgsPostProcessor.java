@@ -1,11 +1,11 @@
 package cliclient.postprocessor;
 
+import api.settings.SettingsApi;
 import api.settings.SettingsDto;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.config.PropertyHolder;
-import cliclient.feign.settings.SettingsServiceClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class CommandWithArgsPostProcessor {
 
-    private final SettingsServiceClient settingsServiceClient;
+    private final SettingsApi settingsApi;
     private final PropertyHolder propertyHolder;
 
     public CommandWithArgs process(CommandWithArgs cwa) {
@@ -73,7 +73,7 @@ public class CommandWithArgsPostProcessor {
 
     private Optional<SettingsDto> findSettingsIgnoringNotFound() {
         try {
-            return Optional.of(settingsServiceClient.findOne());
+            return Optional.of(settingsApi.findOne());
         } catch (FeignException.FeignClientException ex) {
             if (ex.status() == HttpStatus.NOT_FOUND.value()) {
                 return Optional.empty();

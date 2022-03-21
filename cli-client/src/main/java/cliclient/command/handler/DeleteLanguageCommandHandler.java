@@ -1,10 +1,10 @@
 package cliclient.command.handler;
 
+import api.vocabulary.LanguageApi;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.DeleteLanguageCommandArgs;
-import cliclient.feign.vocabulary.LanguageControllerApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class DeleteLanguageCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
-    private final LanguageControllerApiClient languageControllerApiClient;
+    private final LanguageApi languageControllerApiClient;
 
     @Override
     public void handle(CommandArgs commandArgs) {

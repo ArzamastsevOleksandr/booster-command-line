@@ -1,10 +1,12 @@
 package api.settings;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
-public interface SettingsServiceApi {
+@FeignClient(value = "settings", url = "http://localhost:8084/settings/")
+public interface SettingsApi {
 
     @GetMapping(value = "/")
     @ResponseStatus(OK)

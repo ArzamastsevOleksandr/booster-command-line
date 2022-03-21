@@ -1,10 +1,10 @@
 package cliclient.command.handler;
 
+import api.vocabulary.LanguageApi;
 import api.vocabulary.LanguageDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
-import cliclient.feign.vocabulary.LanguageControllerApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class ListLanguagesCommandHandler implements CommandHandler {
 
-    private final LanguageControllerApiClient languageControllerApiClient;
+    private final LanguageApi languageControllerApiClient;
     private final CommandLineAdapter adapter;
 
     @Override

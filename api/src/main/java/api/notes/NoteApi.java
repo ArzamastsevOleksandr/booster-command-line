@@ -1,5 +1,6 @@
 package api.notes;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +9,8 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
-public interface NoteServiceApi {
+@FeignClient(value = "notes", url = "http://localhost:8081/notes/")
+public interface NoteApi {
 
     @Deprecated
     @GetMapping(value = "/")

@@ -6,9 +6,9 @@ import api.notes.AddTagsToNoteInput;
 import api.notes.NoteDto;
 import api.notes.PatchNoteLastSeenAtInput;
 import api.tags.TagDto;
+import api.tags.TagsApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import notesservice.feign.TagServiceClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +27,7 @@ class NoteService {
 
     private final NoteRepository noteRepository;
     private final TagIdRepository tagIdRepository;
-    private final TagServiceClient tagServiceClient;
+    private final TagsApi tagsApi;
 
     @Deprecated
     public Collection<NoteDto> findAll() {
@@ -44,7 +44,7 @@ class NoteService {
                 .lastSeenAt(noteEntity.getLastSeenAt())
                 .tags(noteEntity.getTagIds()
                         .stream()
-                        .map(tagIdEntity -> tagServiceClient.findById(tagIdEntity.id))
+                        .map(tagIdEntity -> tagsApi.findById(tagIdEntity.id))
                         .collect(toSet()))
                 .build();
     }
@@ -62,7 +62,7 @@ class NoteService {
         noteEntity.setLastSeenAt(input.getLastSeenAt());
         Set<TagIdEntity> tagIdEntities = input.getTags()
                 .stream()
-                .map(tagServiceClient::findByName)
+                .map(tagsApi::findByName)
                 .map(tagDto -> tagIdRepository.findById(tagDto.getId())
                         .orElseGet(() -> {
                             var tagIdEntity = new TagIdEntity();
@@ -89,7 +89,7 @@ class NoteService {
         // todo: an optimization to make 1 http call
         Set<TagIdEntity> tagIdEntities = input.getTagNames()
                 .stream()
-                .map(tagServiceClient::findByName)
+                .map(tagsApi::findByName)
                 .map(TagDto::getId)
                 .map(tagId -> {
                     var tagIdEntity = new TagIdEntity();

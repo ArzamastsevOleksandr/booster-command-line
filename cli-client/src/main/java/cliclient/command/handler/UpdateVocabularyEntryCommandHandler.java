@@ -1,12 +1,12 @@
 package cliclient.command.handler;
 
 import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.UpdateVocabularyEntryCommandArgs;
-import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
-    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
+    private final VocabularyEntryApi vocabularyEntryApi;
     private final CommandLineAdapter adapter;
 
     // todo: update contexts
@@ -30,7 +30,7 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
         args.getCorrectAnswersCount().ifPresent(input::setCorrectAnswersCount);
 
         // todo: support updating synonyms
-        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApiClient.patchEntry(input);
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.patchEntry(input);
         adapter.writeLine(vocabularyEntryDto);
     }
 

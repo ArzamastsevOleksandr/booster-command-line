@@ -5,8 +5,8 @@ import api.notes.AddNoteInput;
 import api.notes.AddTagsToNoteInput;
 import api.notes.NoteDto;
 import api.tags.TagDto;
+import api.tags.TagsApi;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
-import notesservice.feign.TagServiceClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,7 +35,7 @@ class NotesServiceApplicationTest {
     static final String TAG_NAME_2 = "passion";
 
     @MockBean
-    TagServiceClient tagServiceClient;
+    TagsApi tagsApi;
 
     @Autowired
     TagIdRepository tagIdRepository;
@@ -179,9 +179,9 @@ class NotesServiceApplicationTest {
                 .content(CONTENT_1)
                 .build());
 
-        when(tagServiceClient.findByName(TAG_NAME_1))
+        when(tagsApi.findByName(TAG_NAME_1))
                 .thenReturn(TagDto.builder().id(tagId1).name(TAG_NAME_1).build());
-        when(tagServiceClient.findByName(TAG_NAME_2))
+        when(tagsApi.findByName(TAG_NAME_2))
                 .thenReturn(TagDto.builder().id(tagId2).name(TAG_NAME_2).build());
         // when
         webTestClient.post()
@@ -223,7 +223,7 @@ class NotesServiceApplicationTest {
                 .content(CONTENT_1)
                 .build());
 
-        when(tagServiceClient.findByName(TAG_NAME_1))
+        when(tagsApi.findByName(TAG_NAME_1))
                 .thenThrow(new NotFoundException("Tag not found by name: " + TAG_NAME_1));
         // when
         webTestClient.post()

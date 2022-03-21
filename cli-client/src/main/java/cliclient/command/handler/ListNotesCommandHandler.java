@@ -1,12 +1,12 @@
 package cliclient.command.handler;
 
+import api.notes.NoteApi;
 import api.notes.NoteDto;
 import api.notes.PatchNoteLastSeenAtInput;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.ListNotesCommandArgs;
-import cliclient.feign.notes.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ListNotesCommandHandler implements CommandHandler {
 
-    private final NotesServiceClient notesServiceClient;
+    private final NoteApi noteApi;
     private final CommandLineAdapter adapter;
 
     @Override
@@ -27,7 +27,7 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     private void displayNoteById(Long id) {
-        NoteDto noteDto = notesServiceClient.getById(id);
+        NoteDto noteDto = noteApi.getById(id);
         showAndUpdateLastSeenAt(noteDto);
     }
 
@@ -37,10 +37,10 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     private void displayNotes(ListNotesCommandArgs args) {
-        var paginator = new Paginator<NoteDto>(args.pagination(), notesServiceClient.countAll()) {
+        var paginator = new Paginator<NoteDto>(args.pagination(), noteApi.countAll()) {
             @Override
             List<NoteDto> nextBatch() {
-                return notesServiceClient.findFirst(limit());
+                return noteApi.findFirst(limit());
             }
         };
         display(paginator);
@@ -73,7 +73,7 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     private void updateLastSeenAt(List<Long> noteIds) {
-        notesServiceClient.patchLastSeenAt(PatchNoteLastSeenAtInput.builder()
+        noteApi.patchLastSeenAt(PatchNoteLastSeenAtInput.builder()
                 .ids(noteIds)
                 .lastSeenAt(new Timestamp(System.currentTimeMillis()))
                 .build());

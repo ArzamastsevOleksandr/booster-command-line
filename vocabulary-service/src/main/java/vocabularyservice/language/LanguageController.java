@@ -1,7 +1,7 @@
 package vocabularyservice.language;
 
 import api.vocabulary.AddLanguageInput;
-import api.vocabulary.LanguageControllerApi;
+import api.vocabulary.LanguageApi;
 import api.vocabulary.LanguageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +12,7 @@ import java.util.Collection;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/languages/")
-class LanguageController implements LanguageControllerApi {
+class LanguageController implements LanguageApi {
 
     final LanguageService languageService;
 

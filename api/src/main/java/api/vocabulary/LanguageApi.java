@@ -1,12 +1,14 @@
 package api.vocabulary;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
 import static org.springframework.http.HttpStatus.*;
 
-public interface LanguageControllerApi {
+@FeignClient(value = "language", url = "http://localhost:8082/languages")
+public interface LanguageApi {
 
     @GetMapping(value = "/")
     @ResponseStatus(OK)

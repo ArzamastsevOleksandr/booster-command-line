@@ -2,13 +2,14 @@ package uploadservice;
 
 import api.exception.XlsxStructureUnsupportedException;
 import api.notes.AddNoteInput;
+import api.notes.NoteApi;
 import api.settings.CreateSettingsInput;
+import api.settings.SettingsApi;
 import api.tags.CreateTagInput;
-import api.upload.UploadControllerApi;
+import api.tags.TagsApi;
+import api.upload.UploadApi;
 import api.upload.UploadResponse;
-import api.vocabulary.AddLanguageInput;
-import api.vocabulary.AddVocabularyEntryInput;
-import api.vocabulary.LanguageDto;
+import api.vocabulary.*;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,6 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import uploadservice.feign.SettingsServiceClient;
-import uploadservice.feign.notes.NotesServiceClient;
-import uploadservice.feign.tags.TagServiceClient;
-import uploadservice.feign.vocabulary.LanguageControllerApiClient;
-import uploadservice.feign.vocabulary.VocabularyEntryControllerApiClient;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -42,15 +38,15 @@ import static java.util.stream.Collectors.toSet;
 @RestController
 @RequestMapping(value = "/upload/")
 @RequiredArgsConstructor
-class UploadController implements UploadControllerApi {
+class UploadController implements UploadApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
-    private final SettingsServiceClient settingsServiceClient;
-    private final TagServiceClient tagServiceClient;
-    private final NotesServiceClient notesServiceClient;
-    private final LanguageControllerApiClient languageControllerApiClient;
-    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
+    private final SettingsApi settingsApi;
+    private final TagsApi tagsApi;
+    private final NoteApi noteApi;
+    private final LanguageApi languageControllerApi;
+    private final VocabularyEntryApi vocabularyEntryApi;
 
     // todo: validation
     // todo: reliable way to get number of rows in xlsx
@@ -131,7 +127,7 @@ class UploadController implements UploadControllerApi {
                 .map(Double::intValue)
                 .ifPresent(input::setVocabularyPagination);
 
-        settingsServiceClient.create(input);
+        settingsApi.create(input);
 
         tracker.settingsUploadFinished();
     }
@@ -166,7 +162,7 @@ class UploadController implements UploadControllerApi {
                     .map(String::strip)
                     .filter(this::isNotBlank)
                     .ifPresent(name -> {
-                        tagServiceClient.create(CreateTagInput.builder()
+                        tagsApi.create(CreateTagInput.builder()
                                 .name(name)
                                 .build());
                         tracker.incTagsUploadCount();
@@ -194,10 +190,10 @@ class UploadController implements UploadControllerApi {
 
     private LanguageDto findLanguageByNameOrCreateIfNotExists(String sheetName) {
         try {
-            return languageControllerApiClient.findByName(sheetName);
+            return languageControllerApi.findByName(sheetName);
         } catch (FeignException.FeignClientException e) {
             if (e.status() == 404) {
-                return languageControllerApiClient.add(new AddLanguageInput(sheetName));
+                return languageControllerApi.add(new AddLanguageInput(sheetName));
             } else {
                 throw e;
             }
@@ -228,7 +224,7 @@ class UploadController implements UploadControllerApi {
 
 //                        tagService.createIfNotExist(tags);
 
-                        vocabularyEntryControllerApiClient.add(AddVocabularyEntryInput.builder()
+                        vocabularyEntryApi.add(AddVocabularyEntryInput.builder()
                                 .name(vocabularyEntryName)
                                 .correctAnswersCount(correctAnswersCount)
                                 .definition(definition)
@@ -297,7 +293,7 @@ class UploadController implements UploadControllerApi {
                     .ifPresent(content -> {
                         Timestamp lastSeenAt = getLastSeenAt(row, XlsxNoteColumn.LAST_SEEN_AT.position);
                         Set<String> tags = getStringValues(row.getCell(XlsxNoteColumn.TAGS.position), ";");
-                        notesServiceClient.add(AddNoteInput.builder()
+                        noteApi.add(AddNoteInput.builder()
                                 .content(content)
                                 .lastSeenAt(lastSeenAt)
                                 .tags(tags)

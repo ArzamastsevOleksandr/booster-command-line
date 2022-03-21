@@ -3,14 +3,14 @@ package settingsservice
 import api.settings.CreateSettingsInput
 import api.settings.PatchSettingsInput
 import api.settings.SettingsDto
-import api.settings.SettingsServiceApi
+import api.settings.SettingsApi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/settings/")
-class SettingsController : SettingsServiceApi {
+class SettingsController : SettingsApi {
 
     @Autowired
     lateinit var settingsService: SettingsService

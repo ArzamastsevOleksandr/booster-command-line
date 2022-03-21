@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @ComponentScan(basePackages = ["settingsservice", "api"])
-@EnableFeignClients
+@EnableFeignClients(basePackages = ["api"])
 class SettingsServiceApplication
 
 fun main(args: Array<String>) {

@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/notes/")
 @RequiredArgsConstructor
-class NoteController implements NoteServiceApi {
+class NoteController implements NoteApi {
 
     private final NoteService noteService;
 

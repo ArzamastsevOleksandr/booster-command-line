@@ -1,7 +1,7 @@
 package cliclient.service;
 
+import api.settings.SettingsApi;
 import api.settings.SettingsDto;
-import cliclient.feign.settings.SettingsServiceClient;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,11 +13,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SettingsService {
 
-    private final SettingsServiceClient settingsServiceClient;
+    private final SettingsApi settingsApi;
 
     public Optional<SettingsDto> findOne() {
         try {
-            return Optional.ofNullable(settingsServiceClient.findOne());
+            return Optional.ofNullable(settingsApi.findOne());
         } catch (FeignException.FeignClientException e) {
             if (e.status() == HttpStatus.NOT_FOUND.value()) {
                 return Optional.empty();
