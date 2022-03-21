@@ -1,10 +1,10 @@
 package cliclient.command.handler;
 
+import api.notes.NoteApi;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.DeleteNoteCommandArgs;
-import cliclient.feign.notes.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 public class DeleteNoteCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
-    private final NotesServiceClient notesServiceClient;
+    private final NoteApi noteApi;
 
     @Override
     public void handle(CommandArgs commandArgs) {
         var args = (DeleteNoteCommandArgs) commandArgs;
-        notesServiceClient.deleteById(args.id());
+        noteApi.deleteById(args.id());
         adapter.writeLine("Done");
     }
 

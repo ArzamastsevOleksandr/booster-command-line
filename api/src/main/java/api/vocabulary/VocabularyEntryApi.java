@@ -1,5 +1,6 @@
 package api.vocabulary;
 
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,8 +10,8 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-// todo: shorter name
-public interface VocabularyEntryControllerApi {
+@FeignClient(value = "vocabulary-entry", url = "http://localhost:8082/vocabulary-entries")
+public interface VocabularyEntryApi {
 
     @GetMapping(value = "/", params = {"limit"})
     @ResponseStatus(OK)

@@ -4,12 +4,12 @@ import api.exception.NotFoundException
 import api.settings.CreateSettingsInput
 import api.settings.PatchSettingsInput
 import api.settings.SettingsDto
+import api.vocabulary.LanguageApi
 import api.vocabulary.LanguageDto
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import settingsservice.feign.LanguageClient
 import java.util.Optional.ofNullable
 
 @Slf4j
@@ -20,7 +20,7 @@ class SettingsService {
     @Autowired
     lateinit var settingsRepository: SettingsRepository
     @Autowired
-    lateinit var languageClient: LanguageClient
+    lateinit var languageApi: LanguageApi
 
     fun findOne(): SettingsDto {
         return settingsRepository.findFirstBy()?.let { toDto(it) }
@@ -50,10 +50,10 @@ class SettingsService {
         // todo: feign exceptions policy
         // todo: test
         input.defaultLanguageId
-            ?.let { languageClient.findById(it) }
+            ?.let { languageApi.findById(it) }
             ?.let { setLanguageDetails(settingsEntity, it) }
             ?: input.defaultLanguageName
-            ?. let { languageClient.findByName(it) }
+            ?. let { languageApi.findByName(it) }
             ?. let { setLanguageDetails(settingsEntity, it) }
 
         settingsEntity.entriesPerVocabularyTrainingSession = input.entriesPerVocabularyTrainingSession

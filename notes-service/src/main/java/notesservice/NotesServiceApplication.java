@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 @Slf4j
 @SpringBootApplication
 @ComponentScan(basePackages = {"notesservice", "api"})
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"api"})
 class NotesServiceApplication {
 
     public static void main(String[] args) {

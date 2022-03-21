@@ -1,6 +1,7 @@
 package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
+import api.settings.SettingsApi;
 import api.settings.SettingsDto;
 import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.PatchVocabularyEntryInput;
@@ -12,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vocabularyservice.feign.SettingsServiceClient;
 import vocabularyservice.language.LanguageEntity;
 import vocabularyservice.language.LanguageService;
 
@@ -32,7 +32,7 @@ public class VocabularyEntryService {
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;
     private final LanguageService languageService;
-    private final SettingsServiceClient settingsServiceClient;
+    private final SettingsApi settingsApi;
 
     public List<VocabularyEntryDto> findFirst(Integer limit) {
         return vocabularyEntryRepository.findFirst(limit)
@@ -79,7 +79,7 @@ public class VocabularyEntryService {
         return ofNullable(input.getLanguageId())
                 .orElseGet(() -> {
                     try {
-                        SettingsDto settingsDto = settingsServiceClient.findOne();
+                        SettingsDto settingsDto = settingsApi.findOne();
                         Long defaultLanguageId = settingsDto.getDefaultLanguageId();
                         if (defaultLanguageId == null) {
                             throw new NotFoundException("Language id not specified and settings do not have a default language id");

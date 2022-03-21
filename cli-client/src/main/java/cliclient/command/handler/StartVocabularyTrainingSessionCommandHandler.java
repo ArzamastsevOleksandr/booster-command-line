@@ -1,13 +1,13 @@
 package cliclient.command.handler;
 
 import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
-import cliclient.feign.vocabulary.VocabularyEntryControllerApiClient;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     private static final int MIN_CORRECT_ANSWERS_COUNT = 0;
 
-    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
+    private final VocabularyEntryApi vocabularyEntryApi;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
 
@@ -124,7 +124,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     }
 
     private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCommandArgs args) {
-        return new ArrayList<>(vocabularyEntryControllerApiClient.findWithSynonyms(args.sessionSize()));
+        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.sessionSize()));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
@@ -271,7 +271,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         int change = correct ? 1 : -1;
         int newValue = entry.getCorrectAnswersCount() + change;
         if (isValidCorrectAnswersCount(newValue)) {
-            vocabularyEntryControllerApiClient.patchEntry(PatchVocabularyEntryInput.builder()
+            vocabularyEntryApi.patchEntry(PatchVocabularyEntryInput.builder()
                     .id(entry.getId())
                     .correctAnswersCount(newValue)
                     .build());

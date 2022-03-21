@@ -5,13 +5,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableFeignClients
+@ComponentScan(basePackages = {"cliclient", "api"})
+@EnableFeignClients(basePackages = {"api", "cliclient"})
 public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: replace LanguageEntity with enum
         // todo: ve returns ALL ves, regardless of the language. Differentiate ves from different ls
         // todo: fix: h j => Sequence must start with a command
         // todo: fetch settings once and use the cached version

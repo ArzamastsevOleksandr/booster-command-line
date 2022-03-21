@@ -14,7 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @RequiredArgsConstructor
 @ComponentScan(basePackages = {"vocabularyservice", "api"})
-@EnableFeignClients
+@EnableFeignClients(basePackages = {"api"})
 public class VocabularyServiceApplication {
 
     public static void main(String[] args) {

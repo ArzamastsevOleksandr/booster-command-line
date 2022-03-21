@@ -1,7 +1,7 @@
 package cliclient.command.handler;
 
 import api.vocabulary.AddVocabularyEntryInput;
-import api.vocabulary.VocabularyEntryControllerApi;
+import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
@@ -17,7 +17,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
     private final SessionTrackerService sessionTrackerService;
-    private final VocabularyEntryControllerApi vocabularyEntryControllerApi;
+    private final VocabularyEntryApi vocabularyEntryApi;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -29,7 +29,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         args.definition().ifPresent(input::setDefinition);
         input.setSynonyms(args.getSynonyms());
 
-        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryControllerApi.add(input);
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.add(input);
         adapter.writeLine(vocabularyEntryDto);
         adapter.writeLine("Entries added so far: " + sessionTrackerService.vocabularyEntriesAddedCount);
     }

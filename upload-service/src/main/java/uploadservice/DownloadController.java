@@ -1,10 +1,15 @@
 package uploadservice;
 
 import api.notes.NoteDto;
+import api.notes.NoteApi;
 import api.settings.SettingsDto;
+import api.settings.SettingsApi;
 import api.tags.TagDto;
-import api.upload.DownloadControllerApi;
+import api.tags.TagsApi;
+import api.upload.DownloadApi;
+import api.vocabulary.LanguageApi;
 import api.vocabulary.LanguageDto;
+import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +18,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uploadservice.feign.SettingsServiceClient;
-import uploadservice.feign.notes.NotesServiceClient;
-import uploadservice.feign.tags.TagServiceClient;
-import uploadservice.feign.vocabulary.LanguageControllerApiClient;
-import uploadservice.feign.vocabulary.VocabularyEntryControllerApiClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,22 +31,22 @@ import static java.util.stream.Collectors.joining;
 @RestController
 @RequestMapping(value = "/download/")
 @RequiredArgsConstructor
-class DownloadController implements DownloadControllerApi {
+class DownloadController implements DownloadApi {
 
     private static final int HEADER_ROW_NUMBER = 0;
 
-    private final SettingsServiceClient settingsServiceClient;
-    private final TagServiceClient tagServiceClient;
-    private final NotesServiceClient notesServiceClient;
-    private final LanguageControllerApiClient languageControllerApiClient;
-    private final VocabularyEntryControllerApiClient vocabularyEntryControllerApiClient;
+    private final SettingsApi settingsApi;
+    private final TagsApi tagsApi;
+    private final NoteApi noteApi;
+    private final LanguageApi languageControllerApi;
+    private final VocabularyEntryApi vocabularyEntryApi;
 
     @Override
     public byte[] download() {
         try (var workbook = new XSSFWorkbook()) {
             exportTags(workbook);
             exportNotes(workbook);
-            languageControllerApiClient.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
+            languageControllerApi.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
             exportSettings(workbook);
             try (var out = new ByteArrayOutputStream()) {
                 workbook.write(out);
@@ -59,7 +59,7 @@ class DownloadController implements DownloadControllerApi {
     }
 
     private void exportSettings(XSSFWorkbook workbook) {
-        SettingsDto settingsDto = settingsServiceClient.findOne();
+        SettingsDto settingsDto = settingsApi.findOne();
 
         XSSFSheet sheet = workbook.createSheet(XlsxSheetName.SETTINGS);
         createSettingsHeaderRow(sheet);
@@ -109,7 +109,7 @@ class DownloadController implements DownloadControllerApi {
     }
 
     private void exportTags(XSSFWorkbook workbook) {
-        List<TagDto> tagDtos = new ArrayList<>(tagServiceClient.findAll());
+        List<TagDto> tagDtos = new ArrayList<>(tagsApi.findAll());
         if (!tagDtos.isEmpty()) {
             log.info("Exporting tags");
             XSSFSheet sheet = workbook.createSheet(XlsxSheetName.TAGS);
@@ -135,7 +135,7 @@ class DownloadController implements DownloadControllerApi {
 
     private void exportNotes(XSSFWorkbook workbook) {
         // todo: execute in batches
-        List<NoteDto> notes = new ArrayList<>(notesServiceClient.getAll());
+        List<NoteDto> notes = new ArrayList<>(noteApi.getAll());
         if (!notes.isEmpty()) {
             log.info("Exporting notes");
             XSSFSheet sheet = workbook.createSheet(XlsxSheetName.NOTES);
@@ -184,7 +184,7 @@ class DownloadController implements DownloadControllerApi {
     }
 
     private void createVocabularyEntryRows(LanguageDto languageDto, XSSFSheet sheet) {
-        List<VocabularyEntryDto> vocabularyEntries = new ArrayList<>(vocabularyEntryControllerApiClient.findAllByLanguageId(languageDto.id()));
+        List<VocabularyEntryDto> vocabularyEntries = new ArrayList<>(vocabularyEntryApi.findAllByLanguageId(languageDto.id()));
 
         for (int rowNumber = 0; rowNumber < vocabularyEntries.size(); ++rowNumber) {
             VocabularyEntryDto vocabularyEntryDto = vocabularyEntries.get(rowNumber);

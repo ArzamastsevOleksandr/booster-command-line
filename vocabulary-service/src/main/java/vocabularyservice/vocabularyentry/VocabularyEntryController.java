@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/vocabulary-entries/")
-class VocabularyEntryController implements VocabularyEntryControllerApi {
+class VocabularyEntryController implements VocabularyEntryApi {
 
     private final VocabularyEntryService vocabularyEntryService;
 

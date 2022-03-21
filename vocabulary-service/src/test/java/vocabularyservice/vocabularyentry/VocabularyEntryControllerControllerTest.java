@@ -18,7 +18,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-class VocabularyEntryControllerTest extends BaseIntegrationTest {
+class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
 
     @Autowired
     VocabularyEntryService vocabularyEntryService;

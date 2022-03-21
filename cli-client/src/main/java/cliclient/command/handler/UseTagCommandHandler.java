@@ -1,12 +1,12 @@
 package cliclient.command.handler;
 
 import api.notes.AddTagsToNoteInput;
+import api.notes.NoteApi;
 import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.UseTagCommandArgs;
-import cliclient.feign.notes.NotesServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import java.util.Set;
 public class UseTagCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
-    private final NotesServiceClient notesServiceClient;
+    private final NoteApi noteApi;
 
     @Override
     public void handle(CommandArgs commandArgs) {
@@ -29,7 +29,7 @@ public class UseTagCommandHandler implements CommandHandler {
     private NoteDto addTagsToNote(UseTagCommandArgs args, Long id) {
         String tag = args.tag();
 
-        return notesServiceClient.addTags(AddTagsToNoteInput.builder()
+        return noteApi.addTags(AddTagsToNoteInput.builder()
                 .noteId(id)
                 .tagNames(Set.of(tag))
                 .build());
