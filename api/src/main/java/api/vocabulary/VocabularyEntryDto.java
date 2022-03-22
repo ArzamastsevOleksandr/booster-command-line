@@ -16,11 +16,10 @@ public class VocabularyEntryDto {
 
     Long id;
     String name;
+    String language;
     String definition;
     Integer correctAnswersCount;
     Timestamp lastSeenAt;
-
-    LanguageDto language;
 
     @Builder.Default
     Set<String> synonyms = Set.of();

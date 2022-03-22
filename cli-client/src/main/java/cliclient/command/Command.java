@@ -15,9 +15,8 @@ public enum Command {
 
     HELP(Set.of("h")),
 
-    LIST_LANGUAGES(Set.of("l")),
-    ADD_LANGUAGE(Set.of("al")),
-    DELETE_LANGUAGE(Set.of("dl")),
+    LIST_AVAILABLE_LANGUAGES(Set.of("lal")),
+    // todo: my langs
 
     LIST_VOCABULARY_ENTRIES(Set.of("ve")),
     DELETE_VOCABULARY_ENTRY(Set.of("dve")),

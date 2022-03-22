@@ -20,7 +20,7 @@ public class AddVocabularyEntryInput {
 
     Timestamp lastSeenAt;
 
-    private Long languageId;
+    private String language;
 
     @Builder.Default
     private Set<String> synonyms = Set.of();

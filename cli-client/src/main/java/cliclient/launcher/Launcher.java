@@ -66,9 +66,13 @@ public class Launcher {
             } else if (t instanceof IncorrectCommandFormatException e) {
                 adapter.error(e.getMessage());
                 adapter.newLine();
-                helpCommandHandler.handle(new HelpCommandArgs(e.getCommand()));
+                this.handleCommandWithArgs(CommandWithArgs.builder()
+                                .command(Command.HELP)
+                                .helpTarget(e.getCommand())
+                        .build());
             } else {
                 adapter.error(t.getMessage());
+                adapter.newLine();
             }
         }
     }

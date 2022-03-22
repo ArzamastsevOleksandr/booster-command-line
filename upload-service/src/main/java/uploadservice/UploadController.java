@@ -9,8 +9,9 @@ import api.tags.CreateTagInput;
 import api.tags.TagsApi;
 import api.upload.UploadApi;
 import api.upload.UploadResponse;
-import api.vocabulary.*;
-import feign.FeignException;
+import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.LanguageApi;
+import api.vocabulary.VocabularyEntryApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
@@ -45,7 +46,7 @@ class UploadController implements UploadApi {
     private final SettingsApi settingsApi;
     private final TagsApi tagsApi;
     private final NoteApi noteApi;
-    private final LanguageApi languageControllerApi;
+    private final LanguageApi languageApi;
     private final VocabularyEntryApi vocabularyEntryApi;
 
     // todo: validation
@@ -184,23 +185,11 @@ class UploadController implements UploadApi {
     }
 
     private void importLanguage(XSSFSheet sheet, UploadProgressTracker tracker) {
-        LanguageDto languageDto = findLanguageByNameOrCreateIfNotExists(sheet.getSheetName().substring(XlsxSheetName.LANGUAGE.length()));
-        importLanguage(sheet, languageDto.id(), tracker);
+        String language = languageApi.findByLanguageName(sheet.getSheetName().substring(XlsxSheetName.LANGUAGE.length()));
+        importLanguage(sheet, language, tracker);
     }
 
-    private LanguageDto findLanguageByNameOrCreateIfNotExists(String sheetName) {
-        try {
-            return languageControllerApi.findByName(sheetName);
-        } catch (FeignException.FeignClientException e) {
-            if (e.status() == 404) {
-                return languageControllerApi.add(new AddLanguageInput(sheetName));
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    private void importLanguage(XSSFSheet sheet, Long id, UploadProgressTracker tracker) {
+    private void importLanguage(XSSFSheet sheet, String language, UploadProgressTracker tracker) {
         validateLanguageHeaderRow(sheet.getRow(HEADER_ROW_NUMBER));
         for (int rowNumber = 1; rowNumber <= sheet.getPhysicalNumberOfRows(); ++rowNumber) {
             XSSFRow row = sheet.getRow(rowNumber);
@@ -229,7 +218,7 @@ class UploadController implements UploadApi {
                                 .correctAnswersCount(correctAnswersCount)
                                 .definition(definition)
                                 .lastSeenAt(lastSeenAt)
-                                .languageId(id)
+                                .language(language)
                                 .synonyms(synonyms)
                                 .build());
                         tracker.incVocabularyEntriesUploadCount();

@@ -10,7 +10,6 @@ open class SettingsEntity(
     @GeneratedValue(strategy = GenerationType.AUTO)
     open var id: Long? = null,
 
-    open var defaultLanguageId: Long? = null,
     open var defaultLanguageName: String? = null,
 
     open var entriesPerVocabularyTrainingSession: Int? = null,

@@ -31,8 +31,8 @@ class VocabularyEntryController implements VocabularyEntryApi {
     }
 
     @Override
-    public Collection<VocabularyEntryDto> findAllByLanguageId(Long id) {
-        return vocabularyEntryService.findAllByLanguageId(id);
+    public List<VocabularyEntryDto> findAllByLanguage(String language) {
+        return vocabularyEntryService.findAllByLanguage(language);
     }
 
     @Override

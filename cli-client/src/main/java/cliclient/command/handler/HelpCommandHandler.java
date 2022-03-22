@@ -46,31 +46,9 @@ public class HelpCommandHandler implements CommandHandler {
                     ColorCodes.green(Command.HELP.firstEquivalent()),
                     ColorCodes.green(Command.ADD_VOCABULARY_ENTRY.firstEquivalent()),
                     colorProcessor.coloredCommand(Command.ADD_VOCABULARY_ENTRY));
-            case LIST_LANGUAGES -> """
-                    %s: Display languages being learned
-                    """.formatted(colorProcessor.coloredCommand(Command.LIST_LANGUAGES));
-            case ADD_LANGUAGE -> """
-                    %s: Add a new language to be learned
-                    Mandatory flags:
-                    * %s
-                    Example:
-                            %s \\%s=English
-                    """.formatted(
-                    colorProcessor.coloredCommand(Command.ADD_LANGUAGE),
-                    ColorCodes.green(FlagType.NAME.value),
-                    ColorCodes.green(Command.ADD_LANGUAGE.firstEquivalent()),
-                    ColorCodes.green(FlagType.NAME.value));
-            case DELETE_LANGUAGE -> """
-                    %s: Delete a language
-                    Mandatory flags:
-                    * %s
-                    Example:
-                            %s \\%s=123
-                    """.formatted(
-                    colorProcessor.coloredCommand(Command.DELETE_LANGUAGE),
-                    ColorCodes.green(FlagType.ID.value),
-                    ColorCodes.green(Command.DELETE_LANGUAGE.firstEquivalent()),
-                    ColorCodes.green(FlagType.ID.value));
+            case LIST_AVAILABLE_LANGUAGES -> """
+                    %s: Display available languages
+                    """.formatted(colorProcessor.coloredCommand(Command.LIST_AVAILABLE_LANGUAGES));
             case LIST_VOCABULARY_ENTRIES -> """
                     %s: Display vocabulary entries
                     Optional flags:
@@ -161,7 +139,7 @@ public class HelpCommandHandler implements CommandHandler {
                         * pagination parameter for the %s command
                     """.formatted(
                     colorProcessor.coloredCommand(Command.SHOW_SETTINGS),
-                    colorProcessor.coloredCommand(Command.LIST_LANGUAGES),
+                    colorProcessor.coloredCommand(Command.LIST_AVAILABLE_LANGUAGES),
                     colorProcessor.coloredCommand(Command.LIST_NOTES),
                     colorProcessor.coloredCommand(Command.LIST_TAGS),
                     colorProcessor.coloredCommand(Command.LIST_VOCABULARY_ENTRIES));
@@ -174,12 +152,10 @@ public class HelpCommandHandler implements CommandHandler {
                     * %s
                     * %s
                     * %s
-                    * %s
                     Examples:
-                             %s \\%s=1 \\%s=5: will create settings with default language id 1 and vocabulary training session size of 5
+                             %s \\%s=ENG \\%s=5: will create settings with default language name ENG and vocabulary training session size of 5
                     """.formatted(
                     colorProcessor.coloredCommand(Command.ADD_SETTINGS),
-                    colorProcessor.coloredFlagType(FlagType.LANGUAGE_ID),
                     colorProcessor.coloredFlagType(FlagType.LANGUAGE_NAME),
                     colorProcessor.coloredFlagType(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION),
                     colorProcessor.coloredFlagType(FlagType.LANGUAGES_PAGINATION),
@@ -187,7 +163,7 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredFlagType(FlagType.TAGS_PAGINATION),
                     colorProcessor.coloredFlagType(FlagType.VOCABULARY_PAGINATION),
                     ColorCodes.green(Command.ADD_SETTINGS.firstEquivalent()),
-                    ColorCodes.green(FlagType.LANGUAGE_ID.value),
+                    ColorCodes.green(FlagType.LANGUAGE_NAME.value),
                     ColorCodes.green(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.value));
             case DELETE_SETTINGS -> """
                     %s: Delete custom settings

@@ -3,7 +3,9 @@ package vocabularyservice.vocabularyentry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import vocabularyservice.language.Language;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
@@ -28,8 +30,6 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
             """, nativeQuery = true)
     Stream<VocabularyEntryEntity> findFirstWithSubstring(Integer limit, String substring);
 
-    Stream<VocabularyEntryEntity> findAllByLanguageId(Long id);
-
     @Query(value = """
             select *
             from vocabulary_entries
@@ -42,5 +42,15 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
     Integer countAllBy();
 
     Integer countAllByWordNameContaining(String substring);
+
+    // todo: prevent null from being set at all
+    @Query(value = """
+            select distinct(ve.language)
+            from VocabularyEntryEntity ve
+            where ve.language is not null
+    """)
+    List<String> myLanguages();
+
+    Stream<VocabularyEntryEntity> findAllByLanguage(Language language);
 
 }

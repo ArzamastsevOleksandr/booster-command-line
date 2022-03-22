@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PatchSettingsInput {
 
-    Long defaultLanguageId;
     Integer entriesPerVocabularyTrainingSession;
 
 }

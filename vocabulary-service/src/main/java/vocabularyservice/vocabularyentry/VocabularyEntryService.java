@@ -13,8 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vocabularyservice.language.LanguageEntity;
-import vocabularyservice.language.LanguageService;
+import vocabularyservice.language.Language;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +30,6 @@ public class VocabularyEntryService {
 
     private final VocabularyEntryRepository vocabularyEntryRepository;
     private final WordService wordService;
-    private final LanguageService languageService;
     private final SettingsApi settingsApi;
 
     public List<VocabularyEntryDto> findFirst(Integer limit) {
@@ -44,10 +42,10 @@ public class VocabularyEntryService {
         return VocabularyEntryDto.builder()
                 .id(entity.getId())
                 .name(entity.getWord().getName())
+                .language(entity.getLanguage().getName())
                 .correctAnswersCount(entity.getCorrectAnswersCount())
                 .definition(entity.getDefinition())
                 .lastSeenAt(entity.getLastSeenAt())
-                .language(languageService.toDto(entity.getLanguage()))
                 .synonyms(entity.getSynonyms().stream().map(WordEntity::getName).collect(toSet()))
                 .build();
     }
@@ -56,11 +54,11 @@ public class VocabularyEntryService {
     public VocabularyEntryDto add(AddVocabularyEntryInput input) {
         var entity = new VocabularyEntryEntity();
 
-        LanguageEntity languageEntity = languageService.findEntityById(resolveLanguageId(input));
+        Language language = resolveLanguage(input);
         WordEntity wordEntity = wordService.findByNameOrCreateAndGet(input.getName());
 
         entity.setWord(wordEntity);
-        entity.setLanguage(languageEntity);
+        entity.setLanguage(language);
         entity.setDefinition(input.getDefinition());
         entity.setCorrectAnswersCount(input.getCorrectAnswersCount());
         // todo: test
@@ -75,19 +73,21 @@ public class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(entity));
     }
 
-    private Long resolveLanguageId(AddVocabularyEntryInput input) {
-        return ofNullable(input.getLanguageId())
+    private Language resolveLanguage(AddVocabularyEntryInput input) {
+        return ofNullable(input.getLanguage())
+                .map(String::toUpperCase)
+                .map(Language::fromString)
                 .orElseGet(() -> {
                     try {
                         SettingsDto settingsDto = settingsApi.findOne();
-                        Long defaultLanguageId = settingsDto.getDefaultLanguageId();
-                        if (defaultLanguageId == null) {
-                            throw new NotFoundException("Language id not specified and settings do not have a default language id");
+                        String defaultLanguageName = settingsDto.getDefaultLanguageName();
+                        if (defaultLanguageName == null) {
+                            throw new NotFoundException("Language not specified and settings do not have a default language");
                         }
-                        return defaultLanguageId;
+                        return Language.fromString(defaultLanguageName);
                     } catch (FeignException.FeignClientException ex) {
                         if (ex.status() == HttpStatus.NOT_FOUND.value()) {
-                            throw new NotFoundException("Language id not specified and custom settings do not exist");
+                            throw new NotFoundException("Language not specified and custom settings do not exist");
                         }
                         throw ex;
                     }
@@ -121,12 +121,6 @@ public class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
 
-    public Collection<VocabularyEntryDto> findAllByLanguageId(Long id) {
-        return vocabularyEntryRepository.findAllByLanguageId(id)
-                .map(this::toDto)
-                .toList();
-    }
-
     public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
         return vocabularyEntryRepository.findWithSynonyms(limit)
                 .map(this::toDto)
@@ -156,6 +150,16 @@ public class VocabularyEntryService {
                 .toList();
         return vocabularyEntryRepository.saveAll(vocabularyEntryEntities)
                 .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    public List<String> myLanguages() {
+        return vocabularyEntryRepository.myLanguages();
+    }
+
+    public List<VocabularyEntryDto> findAllByLanguage(String language) {
+        return vocabularyEntryRepository.findAllByLanguage(Language.fromString(language))
                 .map(this::toDto)
                 .toList();
     }

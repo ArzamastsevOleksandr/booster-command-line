@@ -5,7 +5,6 @@ import api.settings.CreateSettingsInput
 import api.settings.PatchSettingsInput
 import api.settings.SettingsDto
 import api.vocabulary.LanguageApi
-import api.vocabulary.LanguageDto
 import lombok.extern.slf4j.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -31,7 +30,6 @@ class SettingsService {
         return SettingsDto.builder()
             .id(settingsEntity.id)
 
-            .defaultLanguageId(settingsEntity.defaultLanguageId)
             .defaultLanguageName(settingsEntity.defaultLanguageName)
 
             .entriesPerVocabularyTrainingSession(settingsEntity.entriesPerVocabularyTrainingSession)
@@ -49,12 +47,9 @@ class SettingsService {
         val settingsEntity = SettingsEntity()
         // todo: feign exceptions policy
         // todo: test
-        input.defaultLanguageId
-            ?.let { languageApi.findById(it) }
-            ?.let { setLanguageDetails(settingsEntity, it) }
-            ?: input.defaultLanguageName
-            ?. let { languageApi.findByName(it) }
-            ?. let { setLanguageDetails(settingsEntity, it) }
+        input.defaultLanguageName
+            ?.let { languageApi.findByLanguageName(it) }
+            ?.let { settingsEntity.defaultLanguageName = it }
 
         settingsEntity.entriesPerVocabularyTrainingSession = input.entriesPerVocabularyTrainingSession
 
@@ -64,11 +59,6 @@ class SettingsService {
         settingsEntity.tagsPagination = input.tagsPagination
 
         return toDto(settingsRepository.save(settingsEntity))
-    }
-
-    private fun setLanguageDetails(settingsEntity: SettingsEntity, it: LanguageDto) {
-        settingsEntity.defaultLanguageId = it.id
-        settingsEntity.defaultLanguageName = it.name
     }
 
     @Transactional
@@ -82,7 +72,6 @@ class SettingsService {
     fun patch(input: PatchSettingsInput): SettingsDto {
         val settingsEntity = settingsRepository.findFirstBy() ?: throw NotFoundException("Settings not found")
 
-        ofNullable(input.defaultLanguageId).ifPresent { id -> settingsEntity.defaultLanguageId = id }
         ofNullable(input.entriesPerVocabularyTrainingSession).ifPresent { count ->
             settingsEntity.entriesPerVocabularyTrainingSession = count
         }

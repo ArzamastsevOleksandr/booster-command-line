@@ -22,7 +22,6 @@ public class AddSettingsCommandHandler implements CommandHandler {
         var args = (AddSettingsCommandArgs) commandArgs;
         SettingsDto settingsDto = settingsApi.create(CreateSettingsInput.builder()
 
-                .defaultLanguageId(args.getDefaultLanguageId())
                 .defaultLanguageName(args.getDefaultLanguageName())
 
                 .entriesPerVocabularyTrainingSession(args.getEntriesPerVocabularyTrainingSession())

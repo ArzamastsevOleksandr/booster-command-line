@@ -1,7 +1,9 @@
 package vocabularyservice.vocabularyentry;
 
 import api.exception.NotFoundException;
-import api.vocabulary.*;
+import api.vocabulary.AddVocabularyEntryInput;
+import api.vocabulary.PatchVocabularyEntryInput;
+import api.vocabulary.VocabularyEntryDto;
 import net.minidev.json.JSONArray;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -31,10 +33,9 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         var synonyms = Set.of("ford", "paddle");
         var english = "English";
 
-        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
+//        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name)
-                .languageId(languageDto.id())
                 .definition(definition)
                 .synonyms(synonyms)
                 .build());
@@ -64,7 +65,7 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                         return new HashSet<>(jsonArray).equals(synonyms);
                     }
                 })
-                .jsonPath("$[0].language.id").isEqualTo(languageDto.id())
+//                .jsonPath("$[0].language.id").isEqualTo(languageDto.id())
                 .jsonPath("$[0].language.name").isEqualTo(english);
     }
 
@@ -81,25 +82,23 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         var english = "English";
         var german = "German";
 
-        LanguageDto languageDto1 = languageService.add(new AddLanguageInput(english));
-        LanguageDto languageDto2 = languageService.add(new AddLanguageInput(german));
+//        LanguageDto languageDto1 = languageService.add(new AddLanguageInput(english));
+//        LanguageDto languageDto2 = languageService.add(new AddLanguageInput(german));
 
         VocabularyEntryDto vocabularyEntryDto1 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name1)
-                .languageId(languageDto1.id())
                 .definition(definition1)
                 .synonyms(synonyms1)
                 .build());
         VocabularyEntryDto vocabularyEntryDto2 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name2)
-                .languageId(languageDto2.id())
                 .definition(definition2)
                 .synonyms(synonyms2)
                 .build());
 
         // then
         webTestClient.get()
-                .uri("/vocabulary-entries/languageId/" + languageDto1.id())
+//                .uri("/vocabulary-entries/languageId/" + languageDto1.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -122,12 +121,12 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                         JSONArray jsonArray = (JSONArray) actual;
                         return new HashSet<>(jsonArray).equals(synonyms1);
                     }
-                })
-                .jsonPath("$[0].language.id").isEqualTo(languageDto1.id())
-                .jsonPath("$[0].language.name").isEqualTo(languageDto1.name());
+                });
+//                .jsonPath("$[0].language.id").isEqualTo(languageDto1.id())
+//                .jsonPath("$[0].language.name").isEqualTo(languageDto1.name());
 
         webTestClient.get()
-                .uri("/vocabulary-entries/languageId/" + languageDto2.id())
+//                .uri("/vocabulary-entries/languageId/" + languageDto2.id())
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -150,9 +149,9 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                         JSONArray jsonArray = (JSONArray) actual;
                         return new HashSet<>(jsonArray).equals(synonyms2);
                     }
-                })
-                .jsonPath("$[0].language.id").isEqualTo(languageDto2.id())
-                .jsonPath("$[0].language.name").isEqualTo(languageDto2.name());
+                });
+//                .jsonPath("$[0].language.id").isEqualTo(languageDto2.id())
+//                .jsonPath("$[0].language.name").isEqualTo(languageDto2.name());
     }
 
     @Test
@@ -160,7 +159,7 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         // given
         assertThat(vocabularyEntryService.findFirst(10)).isEmpty();
         var english = "English";
-        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
+//        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         // when
         var name = "wade";
         var definition = "walk with effort";
@@ -171,7 +170,6 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .accept(APPLICATION_JSON)
                 .bodyValue(AddVocabularyEntryInput.builder()
                         .name(name)
-                        .languageId(languageDto.id())
                         .definition(definition)
                         .synonyms(synonyms)
                         .build())
@@ -185,7 +183,7 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
                 .jsonPath("$.lastSeenAt").isNotEmpty()
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
-                .jsonPath("$.language.id").isEqualTo(languageDto.id())
+//                .jsonPath("$.language.id").isEqualTo(languageDto.id())
                 .jsonPath("$.language.name").isEqualTo(english)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
@@ -211,10 +209,9 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         var synonyms = Set.of(name);
         var english = "English";
 
-        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
+//        LanguageDto languageDto = languageService.add(new AddLanguageInput(english));
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name)
-                .languageId(languageDto.id())
                 .definition(definition)
                 .synonyms(synonyms)
                 .build());
@@ -232,7 +229,7 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
                 .jsonPath("$.lastSeenAt").isEqualTo(vocabularyEntryDto.getLastSeenAt().getTime())
                 .jsonPath("$.synonyms.length()").isEqualTo(synonyms.size())
-                .jsonPath("$.language.id").isEqualTo(languageDto.id())
+//                .jsonPath("$.language.id").isEqualTo(languageDto.id())
                 .jsonPath("$.language.name").isEqualTo(english)
                 .jsonPath("$.synonyms").value(new BaseMatcher<HashSet<String>>() {
                     @Override
@@ -252,10 +249,8 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
     @Test
     void shouldDeleteVocabularyEntryById() {
         // given
-        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name("wade")
-                .languageId(languageDto.id())
                 .definition("walk with effort")
                 .synonyms(Set.of("ford", "paddle"))
                 .build());
@@ -282,10 +277,9 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         var synonyms = Set.of("ford", "paddle");
         int correctAnswersCount = 10;
 
-        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
+//        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name("wad")
-                .languageId(languageDto.id())
                 .definition("wal wit effor")
                 .synonyms(synonyms)
                 .build());
@@ -342,10 +336,8 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         var definition1 = "walk with effort";
         var synonyms1 = Set.of("ford", "paddle");
 
-        LanguageDto languageDto = languageService.add(new AddLanguageInput("English"));
         VocabularyEntryDto vocabularyEntryDto1 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name1)
-                .languageId(languageDto.id())
                 .definition(definition1)
                 .synonyms(synonyms1)
                 .build());
@@ -355,7 +347,6 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
         VocabularyEntryDto vocabularyEntryDto2 = vocabularyEntryService.add(AddVocabularyEntryInput.builder()
                 .name(name2)
                 .definition(definition2)
-                .languageId(languageDto.id())
                 .build());
         // when
         webTestClient.get()

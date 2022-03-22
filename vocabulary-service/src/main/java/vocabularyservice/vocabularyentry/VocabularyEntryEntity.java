@@ -1,8 +1,11 @@
 package vocabularyservice.vocabularyentry;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
-import vocabularyservice.language.LanguageEntity;
+import vocabularyservice.language.Language;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -20,7 +23,6 @@ class VocabularyEntryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @EqualsAndHashCode.Include
     private Long id;
 
     private Timestamp lastSeenAt = new Timestamp(System.currentTimeMillis());
@@ -30,8 +32,8 @@ class VocabularyEntryEntity {
     @ManyToOne
     private WordEntity word;
 
-    @ManyToOne
-    private LanguageEntity language;
+    @Enumerated(EnumType.STRING)
+    private Language language;
 
     private String definition;
     private Integer correctAnswersCount = 0;

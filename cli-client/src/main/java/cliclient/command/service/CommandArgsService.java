@@ -16,10 +16,8 @@ class CommandArgsService {
 
     CommandArgs getCommandArgs(CommandWithArgs cwa) {
         CommandArgsResult commandArgsResult = switch (cwa.getCommand()) {
-            case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> CommandArgsResult.empty();
+            case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_AVAILABLE_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> CommandArgsResult.empty();
             case HELP -> CommandArgsResult.success(new HelpCommandArgs(cwa.getHelpTarget()));
-            case ADD_LANGUAGE -> addLanguage(cwa);
-            case DELETE_LANGUAGE -> deleteLanguage(cwa);
             case LIST_VOCABULARY_ENTRIES -> CommandArgsResult.success(new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring())));
             case DELETE_VOCABULARY_ENTRY -> deleteVocabularyEntry(cwa);
             case ADD_VOCABULARY_ENTRY -> addVocabularyEntry(cwa);
@@ -29,7 +27,6 @@ class CommandArgsService {
             case UPLOAD -> CommandArgsResult.success(new UploadCommandArgs(cwa.getFilename()));
             case ADD_SETTINGS -> CommandArgsResult.success(AddSettingsCommandArgs.builder()
 
-                    .defaultLanguageId(cwa.getLanguageId())
                     .defaultLanguageName(cwa.getLanguageName())
 
                     .entriesPerVocabularyTrainingSession(cwa.getEntriesPerVocabularyTrainingSession())
@@ -92,7 +89,7 @@ class CommandArgsService {
                 ? CommandArgsResult.withErrors("Name is missing", Command.ADD_VOCABULARY_ENTRY)
                 : CommandArgsResult.success(AddVocabularyEntryCommandArgs.builder()
                 .name(cwa.getName())
-                .languageId(cwa.getLanguageId())
+                .language(cwa.getLanguageName())
                 .definition(cwa.getDefinition())
                 .tag(cwa.getTag())
                 .antonyms(cwa.getAntonyms())
@@ -105,18 +102,6 @@ class CommandArgsService {
         return cwa.getId() == null
                 ? CommandArgsResult.withErrors("Id is missing", Command.DELETE_VOCABULARY_ENTRY)
                 : CommandArgsResult.success(new DeleteVocabularyEntryCommandArgs(cwa.getId()));
-    }
-
-    private CommandArgsResult addLanguage(CommandWithArgs cwa) {
-        return cwa.getName() == null
-                ? CommandArgsResult.withErrors("Name is missing", Command.ADD_LANGUAGE)
-                : CommandArgsResult.success(new AddLanguageCommandArgs(cwa.getName()));
-    }
-
-    private CommandArgsResult deleteLanguage(CommandWithArgs cwa) {
-        return cwa.getId() == null
-                ? CommandArgsResult.withErrors("Id is missing", Command.DELETE_LANGUAGE)
-                : CommandArgsResult.success(new DeleteLanguageCommandArgs(cwa.getId()));
     }
 
     private CommandArgsResult useTag(CommandWithArgs cwa) {

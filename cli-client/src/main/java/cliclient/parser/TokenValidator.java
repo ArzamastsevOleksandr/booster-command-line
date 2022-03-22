@@ -108,7 +108,7 @@ class TokenValidator {
         String flagTypeName = flagType.name();
         String value = expectedValue.value();
         switch (flagType) {
-            case ID, LANGUAGE_ID, NOTE_ID, VOCABULARY_ENTRY_ID -> checkIdIsPositiveLong(flagTypeName, value);
+            case ID, NOTE_ID, VOCABULARY_ENTRY_ID -> checkIdIsPositiveLong(flagTypeName, value);
             case CORRECT_ANSWERS_COUNT, ENTRIES_PER_VOCABULARY_TRAINING_SESSION,
                     PAGINATION, NOTES_PAGINATION, LANGUAGES_PAGINATION, TAGS_PAGINATION, VOCABULARY_PAGINATION -> checkValueIsPositiveInteger(flagTypeName, value);
             case MODE_VOCABULARY -> checkVocabularyTrainingSessionModeIsCorrect(value);

@@ -1,33 +1,28 @@
 package api.vocabulary;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Collection;
+import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @FeignClient(value = "language", url = "http://localhost:8082/languages")
 public interface LanguageApi {
 
     @GetMapping(value = "/")
     @ResponseStatus(OK)
-    Collection<LanguageDto> getAll();
+    List<String> availableLanguages();
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/my")
     @ResponseStatus(OK)
-    LanguageDto findById(@PathVariable("id") Long id);
+    List<String> myLanguages();
 
-    @GetMapping(value = "/name/{name}")
+    // todo: change mapping
+    @GetMapping(value = "/name/{language}")
     @ResponseStatus(OK)
-    LanguageDto findByName(@PathVariable("name") String name);
-
-    @PostMapping(value = "/")
-    @ResponseStatus(CREATED)
-    LanguageDto add(@RequestBody AddLanguageInput input);
-
-    @DeleteMapping(value = "/{id}")
-    @ResponseStatus(NO_CONTENT)
-    void deleteById(@PathVariable("id") Long id);
+    String findByLanguageName(@PathVariable("language") String language);
 
 }
