@@ -44,7 +44,6 @@ class TokenSequenceTransformer {
             String flagValue = value.value();
             argumentsBuilder = switch (flagType) {
                 case ID -> argumentsBuilder.id(Long.parseLong(flagValue));
-                case LANGUAGE_ID -> argumentsBuilder.languageId(Long.parseLong(flagValue));
                 case NOTE_ID -> argumentsBuilder.noteId(Long.parseLong(flagValue));
                 case VOCABULARY_ENTRY_ID -> argumentsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
                 case NAME -> argumentsBuilder.name(flagValue);

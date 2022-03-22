@@ -27,7 +27,7 @@ public class CommandWithArgsPostProcessor {
         return switch (command) {
             case LIST_VOCABULARY_ENTRIES -> resolvePagination(cwa, SettingsDto::getVocabularyPagination);
             case LIST_NOTES -> resolvePagination(cwa, SettingsDto::getNotesPagination);
-            case LIST_LANGUAGES -> resolvePagination(cwa, SettingsDto::getLanguagesPagination);
+            case LIST_AVAILABLE_LANGUAGES -> resolvePagination(cwa, SettingsDto::getLanguagesPagination);
             case LIST_TAGS -> resolvePagination(cwa, SettingsDto::getTagsPagination);
             case START_VOCABULARY_TRAINING_SESSION -> startVocabularyTrainingSession(cwa);
             case DOWNLOAD -> resolveFileName(cwa, propertyHolder::getDownloadFilename);

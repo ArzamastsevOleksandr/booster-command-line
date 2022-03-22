@@ -195,19 +195,21 @@ class TokenValidatorTest {
                 .containsOnly("Pagination argument must be a positive integer number, got: " + text.value());
     }
 
-    @Test
-    void successPath() {
-        Token command = Token.command("h");
-        Token flag = Token.flag(FlagType.LANGUAGE_ID.value);
-        Token separator = Token.separator();
-        Token number = Token.number("1");
-
-        List<Token> tokens = List.of(command, flag, separator, number);
-        TokenValidationResult validationResult = validator.validate(tokens);
-
-        assertThat(validationResult.errors()).hasSize(0);
-        assertThat(validationResult.tokens()).containsExactly(command, flag, separator, number);
-    }
+    // WHAT DOES IT DO?
+    // WRITE BETTER TESTS
+//    @Test
+//    void successPath() {
+//        Token command = Token.command("h");
+//        Token flag = Token.flag(FlagType.LANGUAGE_ID.value);
+//        Token separator = Token.separator();
+//        Token number = Token.number("1");
+//
+//        List<Token> tokens = List.of(command, flag, separator, number);
+//        TokenValidationResult validationResult = validator.validate(tokens);
+//
+//        assertThat(validationResult.errors()).hasSize(0);
+//        assertThat(validationResult.tokens()).containsExactly(command, flag, separator, number);
+//    }
 
     private String tokenTypeToLowerCaseString(Token token) {
         return token.type().toString().toLowerCase();

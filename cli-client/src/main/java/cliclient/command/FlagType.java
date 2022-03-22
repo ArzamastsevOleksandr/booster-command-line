@@ -15,7 +15,6 @@ public enum FlagType {
     NAME("n"),
     LANGUAGE_NAME("ln"),
     ID("id"),
-    LANGUAGE_ID("lid"),
     VOCABULARY_ENTRY_ID("vid"),
     NOTE_ID("nid"),
     TAG("t"),

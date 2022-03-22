@@ -25,12 +25,13 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         var input = new AddVocabularyEntryInput();
 
         input.setName(args.getName());
-        args.languageId().ifPresent(input::setLanguageId);
+        args.language().ifPresent(input::setLanguage);
         args.definition().ifPresent(input::setDefinition);
         input.setSynonyms(args.getSynonyms());
 
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.add(input);
         adapter.writeLine(vocabularyEntryDto);
+        // todo: update tracker
         adapter.writeLine("Entries added so far: " + sessionTrackerService.vocabularyEntriesAddedCount);
     }
 

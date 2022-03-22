@@ -6,7 +6,6 @@ import lombok.Value;
 @Value
 @Builder
 public class AddSettingsCommandArgs implements CommandArgs {
-    Long defaultLanguageId;
     String defaultLanguageName;
 
     Integer entriesPerVocabularyTrainingSession;

@@ -11,7 +11,7 @@ import java.util.Set;
 public class AddVocabularyEntryCommandArgs implements CommandArgs {
 
     String name;
-    Long languageId;
+    String language;
     String definition;
     String tag;
 
@@ -22,8 +22,8 @@ public class AddVocabularyEntryCommandArgs implements CommandArgs {
     @Builder.Default
     Set<String> contexts = Set.of();
 
-    public Optional<Long> languageId() {
-        return Optional.ofNullable(languageId);
+    public Optional<String> language() {
+        return Optional.ofNullable(language);
     }
 
     public Optional<String> definition() {

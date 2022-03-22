@@ -1,14 +1,13 @@
 package uploadservice;
 
-import api.notes.NoteDto;
 import api.notes.NoteApi;
-import api.settings.SettingsDto;
+import api.notes.NoteDto;
 import api.settings.SettingsApi;
+import api.settings.SettingsDto;
 import api.tags.TagDto;
 import api.tags.TagsApi;
 import api.upload.DownloadApi;
 import api.vocabulary.LanguageApi;
-import api.vocabulary.LanguageDto;
 import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +37,7 @@ class DownloadController implements DownloadApi {
     private final SettingsApi settingsApi;
     private final TagsApi tagsApi;
     private final NoteApi noteApi;
-    private final LanguageApi languageControllerApi;
+    private final LanguageApi languageApi;
     private final VocabularyEntryApi vocabularyEntryApi;
 
     @Override
@@ -46,7 +45,7 @@ class DownloadController implements DownloadApi {
         try (var workbook = new XSSFWorkbook()) {
             exportTags(workbook);
             exportNotes(workbook);
-            languageControllerApi.getAll().forEach(languageDto -> downloadLanguage(workbook, languageDto));
+            languageApi.availableLanguages().forEach(language -> downloadLanguage(workbook, language));
             exportSettings(workbook);
             try (var out = new ByteArrayOutputStream()) {
                 workbook.write(out);
@@ -163,12 +162,12 @@ class DownloadController implements DownloadApi {
         row.createCell(XlsxNoteColumn.LAST_SEEN_AT.position).setCellValue(XlsxNoteColumn.LAST_SEEN_AT.name);
     }
 
-    private void downloadLanguage(XSSFWorkbook workbook, LanguageDto languageDto) {
-        log.info("Exporting language: {}", languageDto.name());
-        XSSFSheet sheet = workbook.createSheet(XlsxSheetName.LANGUAGE + languageDto.name());
+    private void downloadLanguage(XSSFWorkbook workbook, String language) {
+        log.info("Exporting language: {}", language);
+        XSSFSheet sheet = workbook.createSheet(XlsxSheetName.LANGUAGE + language);
 
         createLanguageHeaderRow(sheet);
-        createVocabularyEntryRows(languageDto, sheet);
+        createVocabularyEntryRows(language, sheet);
     }
 
     private void createLanguageHeaderRow(XSSFSheet sheet) {
@@ -183,8 +182,8 @@ class DownloadController implements DownloadApi {
         row.createCell(XlsxVocabularyColumn.LAST_SEEN_AT.position).setCellValue(XlsxVocabularyColumn.LAST_SEEN_AT.name);
     }
 
-    private void createVocabularyEntryRows(LanguageDto languageDto, XSSFSheet sheet) {
-        List<VocabularyEntryDto> vocabularyEntries = new ArrayList<>(vocabularyEntryApi.findAllByLanguageId(languageDto.id()));
+    private void createVocabularyEntryRows(String language, XSSFSheet sheet) {
+        List<VocabularyEntryDto> vocabularyEntries = new ArrayList<>(vocabularyEntryApi.findAllByLanguage(language));
 
         for (int rowNumber = 0; rowNumber < vocabularyEntries.size(); ++rowNumber) {
             VocabularyEntryDto vocabularyEntryDto = vocabularyEntries.get(rowNumber);

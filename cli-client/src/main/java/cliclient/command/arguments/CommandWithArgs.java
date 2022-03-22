@@ -15,7 +15,6 @@ public class CommandWithArgs {
     Command helpTarget;
 
     Long id;
-    Long languageId;
     Long noteId;
     Long vocabularyEntryId;
 

@@ -55,7 +55,6 @@ class SettingsServiceApplicationTests {
         val settingsDto =
             settingsService.create(
                 CreateSettingsInput.builder()
-                    .defaultLanguageId(defaultLanguageId)
                     .entriesPerVocabularyTrainingSession(entriesPerVocabularyTrainingSession)
                     .build()
             )
@@ -74,14 +73,12 @@ class SettingsServiceApplicationTests {
 
     @Test
     fun shouldCreateSettings() {
-        val defaultLanguageId: Long = 1
         val entriesPerVocabularyTrainingSession = 5
         // when
         webTestClient.post()
             .uri("/settings/")
             .bodyValue(
                 CreateSettingsInput.builder()
-                    .defaultLanguageId(defaultLanguageId)
                     .entriesPerVocabularyTrainingSession(entriesPerVocabularyTrainingSession)
                     .build()
             )
@@ -90,11 +87,9 @@ class SettingsServiceApplicationTests {
             .isCreated
             .expectBody()
             .jsonPath("$.id").isNotEmpty
-            .jsonPath("$.defaultLanguageId").isEqualTo(defaultLanguageId)
             .jsonPath("$.entriesPerVocabularyTrainingSession").isEqualTo(entriesPerVocabularyTrainingSession)
         // then
         val settingsDto = settingsService.findOne()
-        assertThat(settingsDto.defaultLanguageId).isEqualTo(defaultLanguageId)
         assertThat(settingsDto.entriesPerVocabularyTrainingSession).isEqualTo(entriesPerVocabularyTrainingSession)
     }
 
@@ -117,7 +112,6 @@ class SettingsServiceApplicationTests {
         // given
         val settingsDto = settingsService.create(
             CreateSettingsInput.builder()
-                .defaultLanguageId(1)
                 .entriesPerVocabularyTrainingSession(5)
                 .build()
         )
@@ -139,7 +133,6 @@ class SettingsServiceApplicationTests {
         // given
         val settingsDto = settingsService.create(
             CreateSettingsInput.builder()
-                .defaultLanguageId(1)
                 .entriesPerVocabularyTrainingSession(2)
                 .build()
         )
@@ -149,7 +142,6 @@ class SettingsServiceApplicationTests {
             .uri("/settings/")
             .bodyValue(
                 PatchSettingsInput.builder()
-                    .defaultLanguageId(settingsDto.defaultLanguageId * factor)
                     .entriesPerVocabularyTrainingSession(settingsDto.entriesPerVocabularyTrainingSession * factor)
                     .build()
             )
@@ -158,12 +150,10 @@ class SettingsServiceApplicationTests {
             .isOk
             .expectBody()
             .jsonPath("$.id").isEqualTo(settingsDto.id)
-            .jsonPath("$.defaultLanguageId").isEqualTo(settingsDto.defaultLanguageId * factor)
             .jsonPath("$.entriesPerVocabularyTrainingSession")
             .isEqualTo(settingsDto.entriesPerVocabularyTrainingSession * factor)
         // then
         val patched = settingsService.findOne()
-        assertThat(patched.defaultLanguageId).isEqualTo(settingsDto.defaultLanguageId * factor)
         assertThat(patched.entriesPerVocabularyTrainingSession).isEqualTo(settingsDto.entriesPerVocabularyTrainingSession * factor)
     }
 
@@ -171,7 +161,7 @@ class SettingsServiceApplicationTests {
     fun returns404WhenPatchCalledAndSettingsDoNotExist() {
         webTestClient.patch()
             .uri("/settings/")
-            .bodyValue(PatchSettingsInput(1, 2))
+            .bodyValue(PatchSettingsInput(2))
             .exchange()
             .expectStatus()
             .isNotFound

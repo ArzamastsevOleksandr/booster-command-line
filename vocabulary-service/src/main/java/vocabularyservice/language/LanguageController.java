@@ -1,13 +1,12 @@
 package vocabularyservice.language;
 
-import api.vocabulary.AddLanguageInput;
 import api.vocabulary.LanguageApi;
-import api.vocabulary.LanguageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vocabularyservice.vocabularyentry.VocabularyEntryService;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,30 +14,21 @@ import java.util.Collection;
 class LanguageController implements LanguageApi {
 
     final LanguageService languageService;
+    final VocabularyEntryService vocabularyEntryService;
 
     @Override
-    public Collection<LanguageDto> getAll() {
-        return languageService.getAll();
+    public List<String> availableLanguages() {
+        return languageService.getAllAvailable();
     }
 
     @Override
-    public LanguageDto findById(Long id) {
-        return languageService.findById(id);
+    public List<String> myLanguages() {
+        return vocabularyEntryService.myLanguages();
     }
 
     @Override
-    public LanguageDto findByName(String name) {
-        return languageService.findByName(name);
-    }
-
-    @Override
-    public LanguageDto add(AddLanguageInput input) {
-        return languageService.add(input);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        languageService.deleteById(id);
+    public String findByLanguageName(String language) {
+        return languageService.findByLanguageName(language);
     }
 
 }

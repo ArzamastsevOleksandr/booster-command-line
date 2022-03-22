@@ -1,35 +1,34 @@
 package cliclient.command.handler;
 
 import api.vocabulary.LanguageApi;
-import api.vocabulary.LanguageDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ListLanguagesCommandHandler implements CommandHandler {
+public class ListAvailableLanguagesCommandHandler implements CommandHandler {
 
-    private final LanguageApi languageControllerApiClient;
+    private final LanguageApi languageApi;
     private final CommandLineAdapter adapter;
 
     @Override
     public void handle(CommandArgs commandArgs) {
-        Collection<LanguageDto> languageDtos = languageControllerApiClient.getAll();
-        if (languageDtos.isEmpty()) {
+        List<String> languageNames = languageApi.availableLanguages();
+        if (languageNames.isEmpty()) {
             adapter.error("No records");
         } else {
-            languageDtos.forEach(adapter::writeLine);
+            languageNames.forEach(adapter::writeLine);
         }
     }
 
     @Override
     public Command getCommand() {
-        return Command.LIST_LANGUAGES;
+        return Command.LIST_AVAILABLE_LANGUAGES;
     }
 
 }
