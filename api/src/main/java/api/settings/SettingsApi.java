@@ -20,6 +20,7 @@ public interface SettingsApi {
     @ResponseStatus(NO_CONTENT)
     void delete();
 
+    @Deprecated
     @PatchMapping(value = "/")
     @ResponseStatus(OK)
     SettingsDto patch(@RequestBody PatchSettingsInput input);
