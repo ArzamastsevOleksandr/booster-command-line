@@ -16,7 +16,7 @@ class TagController : TagsApi {
     @Autowired
     lateinit var tagService: TagService
 
-    override fun findAll(): MutableCollection<TagDto> {
+    override fun findAll(): MutableList<TagDto> {
         return tagService.findAll()
     }
 

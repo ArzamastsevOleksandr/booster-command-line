@@ -16,7 +16,7 @@ class TagService {
     @Autowired
     lateinit var tagRepository: TagRepository
 
-    fun findAll(): MutableCollection<TagDto> {
+    fun findAll(): MutableList<TagDto> {
         return tagRepository.findAll()
             .map { toDto(it) }
             .toMutableList()
