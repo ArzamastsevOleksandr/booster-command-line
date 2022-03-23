@@ -3,7 +3,7 @@ package api.tags;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -13,7 +13,7 @@ public interface TagsApi {
 
     @GetMapping(value = "/")
     @ResponseStatus(OK)
-    Collection<TagDto> findAll();
+    List<TagDto> findAll();
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
