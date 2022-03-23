@@ -1,5 +1,6 @@
 package notesservice;
 
+import api.exception.HttpErrorResponse;
 import api.exception.NotFoundException;
 import api.notes.AddNoteInput;
 import api.notes.AddTagsToNoteInput;
@@ -7,11 +8,15 @@ import api.notes.NoteDto;
 import api.notes.PatchNoteLastSeenAtInput;
 import api.tags.TagDto;
 import api.tags.TagsApi;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +33,7 @@ class NoteService {
     private final NoteRepository noteRepository;
     private final TagIdRepository tagIdRepository;
     private final TagsApi tagsApi;
+    private final ObjectMapper objectMapper;
 
     @Deprecated
     public Collection<NoteDto> findAll() {
@@ -89,7 +95,7 @@ class NoteService {
         // todo: an optimization to make 1 http call
         Set<TagIdEntity> tagIdEntities = input.getTagNames()
                 .stream()
-                .map(tagsApi::findByName)
+                .map(this::findTagByNameOrThrowNotFoundException)
                 .map(TagDto::getId)
                 .map(tagId -> {
                     var tagIdEntity = new TagIdEntity();
@@ -106,8 +112,8 @@ class NoteService {
         return noteRepository.countAllBy();
     }
 
-    public List<NoteDto> findFirst(Integer limit) {
-        return noteRepository.findFirst(limit)
+    public List<NoteDto> findFirstWithSmallestLastSeenAt(Integer limit) {
+        return noteRepository.findFirstWithSmallestLastSeenAt(limit)
                 .map(this::toDto)
                 .toList();
     }
@@ -123,6 +129,22 @@ class NoteService {
                 .stream()
                 .map(this::toDto)
                 .toList();
+    }
+
+    private TagDto findTagByNameOrThrowNotFoundException(String tag) {
+        try {
+            return tagsApi.findByName(tag);
+        } catch (FeignException.FeignClientException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                try {
+                    var httpErrorResponse = objectMapper.readValue(e.contentUTF8().getBytes(), HttpErrorResponse.class);
+                    throw new NotFoundException(httpErrorResponse.getMessage());
+                } catch (IOException ioe) {
+                    throw e;
+                }
+            }
+            throw e;
+        }
     }
 
 }

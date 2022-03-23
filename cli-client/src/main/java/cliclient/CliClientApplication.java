@@ -14,6 +14,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: log request/response in tests
         // todo: test cases
         // todo: do not create an empty sheet when downloading data
         // todo: unique tags in db

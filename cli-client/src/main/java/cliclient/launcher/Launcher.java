@@ -77,6 +77,7 @@ public class Launcher {
         }
     }
 
+    // todo: if settings service is down, process exception
     private CommandWithArgs readInputAndParseToCommandWithArgs() {
         adapter.write(ColorCodes.purple(">> "));
         String input = adapter.readLine();

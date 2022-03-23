@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.OK;
 @FeignClient(value = "notes", url = "http://localhost:8081/notes/")
 public interface NoteApi {
 
+    // todo: pagination
     @Deprecated
     @GetMapping(value = "/")
     @ResponseStatus(OK)
@@ -19,7 +20,7 @@ public interface NoteApi {
 
     @GetMapping(value = "/", params = {"limit"})
     @ResponseStatus(OK)
-    List<NoteDto> findFirst(@RequestParam(name = "limit") Integer limit);
+    List<NoteDto> findFirstWithSmallestLastSeenAt(@RequestParam(name = "limit") Integer limit);
 
     @GetMapping("{id}")
     @ResponseStatus(OK)

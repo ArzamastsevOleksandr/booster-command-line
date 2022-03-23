@@ -1,13 +1,18 @@
 package notesservice;
 
-import api.exception.NotFoundException;
+import api.exception.HttpErrorResponse;
 import api.notes.AddNoteInput;
 import api.notes.AddTagsToNoteInput;
 import api.notes.NoteDto;
+import api.notes.PatchNoteLastSeenAtInput;
 import api.tags.TagDto;
 import api.tags.TagsApi;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,11 +20,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -44,51 +50,34 @@ class NotesServiceApplicationTest {
     @Autowired
     WebTestClient webTestClient;
 
+    String baseUrl = "/notes/";
+
     @Test
-    void shouldReturn404WhenNoteByIdNotFound() {
-        long id = 1000;
-        webTestClient.get()
-                .uri("/notes/" + id)
-                .accept(APPLICATION_JSON)
-                .exchange()
-                .expectStatus()
-                .isNotFound()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.timestamp").isNotEmpty()
-                .jsonPath("$.path").isEqualTo("/notes/" + id)
-                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
-                .jsonPath("$.message").isEqualTo("Note not found by id: " + id);
+    void returns404WhenNoteNotFoundById() {
+        assertThatNoteIsNotFoundById(1000);
     }
 
     @Test
-    void shouldFindNoteByIdIfItExists() {
-        // given
-        var content = "Test Note";
+    void findsNoteById() {
         // when
-        NoteDto noteDto = noteService.add(AddNoteInput.builder()
-                .content(content)
-                .build());
+        NoteDto noteDto = createNoteAndSave(CONTENT_1);
         // then
         webTestClient.get()
-                .uri("/notes/" + noteDto.getId())
-                .accept(APPLICATION_JSON)
+                .uri(baseUrl + noteDto.getId())
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(noteDto.getId())
-                .jsonPath("$.content").isEqualTo(content);
+                .jsonPath("$.content").isEqualTo(CONTENT_1)
+                .jsonPath("$.lastSeenAt").isNotEmpty();
     }
 
     @Test
-    void shouldCreateNote() {
+    void createsNote() {
         // when
         NoteDto note = webTestClient.post()
-                .uri("/notes/")
+                .uri(baseUrl)
                 .bodyValue(AddNoteInput.builder().content(CONTENT_1).build())
                 .accept(APPLICATION_JSON)
                 .exchange()
@@ -105,17 +94,15 @@ class NotesServiceApplicationTest {
     }
 
     @Test
-    void shouldReturnAllNotes() {
+    void returnsAllNotes() {
         // given
-        NoteDto noteDto1 = noteService.add(AddNoteInput.builder()
-                .content(CONTENT_1)
-                .build());
-        NoteDto noteDto2 = noteService.add(AddNoteInput.builder()
-                .content(CONTENT_2)
-                .build());
+        NoteDto noteDto1 = createNoteAndSave(CONTENT_1);
+        NoteDto noteDto2 = createNoteAndSave(CONTENT_2);
+
+        List<NoteDto> expectedNotes = List.of(noteDto1, noteDto2);
         // when
-        NoteDto[] notes = webTestClient.get()
-                .uri("/notes/")
+        NoteDto[] responseNotes = webTestClient.get()
+                .uri(baseUrl)
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
@@ -126,66 +113,59 @@ class NotesServiceApplicationTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(List.of(noteDto1, noteDto2)).containsExactlyInAnyOrder(notes);
+        assertThat(responseNotes).containsExactlyElementsOf(expectedNotes);
         // then
-        List<NoteDto> notesFromDb = Arrays.stream(notes)
+        List<NoteDto> notesFromDb = Arrays.stream(responseNotes)
                 .map(NoteDto::getId)
                 .map(noteService::findById)
                 .toList();
-        assertThat(notesFromDb).containsExactlyInAnyOrder(noteDto1, noteDto2);
+        assertThat(notesFromDb).containsExactlyElementsOf(expectedNotes);
     }
 
     @Test
-    void shouldReturnEmptyListWhenThereAreNoNotes() {
+    void returnsEmptyListWhenThereAreNoNotes() {
         webTestClient.get()
-                .uri("/notes/")
-                .accept(APPLICATION_JSON)
+                .uri(baseUrl)
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(0);
     }
 
     @Test
-    void shouldDeleteNoteById() {
+    void deletesNoteById() {
         // given
-        NoteDto noteDto = noteService.add(AddNoteInput.builder()
-                .content(CONTENT_1)
-                .build());
+        NoteDto noteDto = createNoteAndSave(CONTENT_1);
         // when
         webTestClient.delete()
-                .uri("/notes/" + noteDto.getId())
-                .accept(APPLICATION_JSON)
+                .uri(baseUrl + noteDto.getId())
                 .exchange()
                 .expectStatus()
                 .isNoContent()
                 .expectBody(Void.class);
         // then
-        assertThatThrownBy(() -> noteService.findById(noteDto.getId()))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage("Note not found by id: " + noteDto.getId());
+        assertThatNoteIsNotFoundById(noteDto.getId());
     }
 
     @Test
-    void shouldAddTagsToNote() {
+    void addsTagsToNote() {
         // given
         long tagId1 = 1L;
         long tagId2 = 2L;
 
-        NoteDto noteDto = noteService.add(AddNoteInput.builder()
-                .content(CONTENT_1)
-                .build());
+        NoteDto noteDto = createNoteAndSave(CONTENT_1);
 
-        when(tagsApi.findByName(TAG_NAME_1))
-                .thenReturn(TagDto.builder().id(tagId1).name(TAG_NAME_1).build());
-        when(tagsApi.findByName(TAG_NAME_2))
-                .thenReturn(TagDto.builder().id(tagId2).name(TAG_NAME_2).build());
+        TagDto tag1 = createTag(tagId1, TAG_NAME_1);
+        when(tagsApi.findByName(TAG_NAME_1)).thenReturn(tag1);
+        when(tagsApi.findById(tagId1)).thenReturn(tag1);
+
+        TagDto tag2 = createTag(tagId2, TAG_NAME_2);
+        when(tagsApi.findByName(TAG_NAME_2)).thenReturn(tag2);
+        when(tagsApi.findById(tagId2)).thenReturn(tag2);
         // when
         webTestClient.post()
-                .uri("/notes/add-tags/")
+                .uri(baseUrl + "/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
                         .noteId(noteDto.getId())
                         .tagNames(Set.of(TAG_NAME_1, TAG_NAME_2))
@@ -195,39 +175,44 @@ class NotesServiceApplicationTest {
                 .isOk()
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(noteDto.getId())
-                .jsonPath("$.content").isEqualTo(noteDto.getContent());
+                .jsonPath("$.content").isEqualTo(noteDto.getContent())
+                .jsonPath("$.tags.length()").isEqualTo(2);
         // then
         assertThat(tagIdRepository.findAllById(Set.of(tagId1, tagId2))).hasSize(2);
     }
 
     @Test
-    void shouldThrowExceptionIfNoteNotFound() {
-        long id = 1000L;
+    void returns404IfNoteNotFoundWhenAddingTags() {
         webTestClient.post()
-                .uri("/notes/add-tags/")
-                .bodyValue(AddTagsToNoteInput.builder().noteId(id).build())
+                .uri(baseUrl + "/add-tags/")
+                .bodyValue(AddTagsToNoteInput.builder().noteId(Long.MAX_VALUE).build())
                 .exchange()
                 .expectStatus()
                 .isNotFound()
                 .expectBody()
-                .jsonPath("$.timestamp").isNotEmpty()
                 .jsonPath("$.path").isEqualTo("/notes/add-tags/")
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
-                .jsonPath("$.message").isEqualTo("Note not found by id: " + id);
+                .jsonPath("$.message").isEqualTo("Note not found by id: " + Long.MAX_VALUE);
     }
 
-    @Test
-    void shouldThrowExceptionIfTagsNotFound() {
-        // given
-        NoteDto noteDto = noteService.add(AddNoteInput.builder()
-                .content(CONTENT_1)
-                .build());
+    @Mock
+    FeignException.NotFound notFound;
 
-        when(tagsApi.findByName(TAG_NAME_1))
-                .thenThrow(new NotFoundException("Tag not found by name: " + TAG_NAME_1));
+    @Test
+    void returns404IfTagsNotFound() throws JsonProcessingException {
+        // given
+        NoteDto noteDto = createNoteAndSave(CONTENT_1);
+        when(tagsApi.findByName(TAG_NAME_1)).thenThrow(notFound);
+        when(notFound.status()).thenReturn(HttpStatus.NOT_FOUND.value());
+        var httpErrorResponse = HttpErrorResponse.builder()
+                .httpStatus(HttpStatus.NOT_FOUND)
+                .path(baseUrl + "/add-tags/")
+                .message("Tag not found by name: " + TAG_NAME_1)
+                .build();
+        when(notFound.contentUTF8()).thenReturn(new ObjectMapper().writeValueAsString(httpErrorResponse));
         // when
         webTestClient.post()
-                .uri("/notes/add-tags/")
+                .uri(baseUrl + "/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder()
                         .noteId(noteDto.getId())
                         .tagNames(Set.of(TAG_NAME_1))
@@ -237,10 +222,110 @@ class NotesServiceApplicationTest {
                 .expectStatus()
                 .isNotFound()
                 .expectBody()
-                .jsonPath("$.timestamp").isNotEmpty()
                 .jsonPath("$.path").isEqualTo("/notes/add-tags/")
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
                 .jsonPath("$.message").isEqualTo("Tag not found by name: " + TAG_NAME_1);
+    }
+
+    @Test
+    void returnsNotesWithSmallestLastSeenAt() {
+        // given
+        NoteDto noteDto1 = createNoteAndSave(CONTENT_1);
+        NoteDto noteDto2 = createNoteAndSave(CONTENT_2);
+
+        webTestClient.get()
+                .uri(baseUrl + "?limit=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(noteDto1.getId())
+                .jsonPath("$[0].content").isEqualTo(noteDto1.getContent())
+                .jsonPath("$[0].lastSeenAt").isNotEmpty();
+        // when
+        webTestClient.patch()
+                .uri(baseUrl + "/patch/last-seen-at/")
+                .bodyValue(PatchNoteLastSeenAtInput.builder()
+                        .lastSeenAt(Timestamp.from(Instant.now()))
+                        .ids(List.of(noteDto1.getId()))
+                        .build())
+                .exchange()
+                .expectStatus().isOk();
+        // then
+        webTestClient.get()
+                .uri(baseUrl + "?limit=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(noteDto2.getId())
+                .jsonPath("$[0].content").isEqualTo(noteDto2.getContent())
+                .jsonPath("$[0].lastSeenAt").isNotEmpty();
+    }
+
+    @Test
+    void countsAllNotes() {
+        // given
+        createNoteAndSave(CONTENT_1);
+        createNoteAndSave(CONTENT_2);
+        // when
+        webTestClient.get()
+                .uri(baseUrl + "/count-all/")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Integer.class)
+                .isEqualTo(2);
+    }
+
+    @Test
+    void updatesLastSeenAt() {
+        // given
+        NoteDto noteDto = createNoteAndSave(CONTENT_1);
+        // when
+        var lastSeenAt = Timestamp.from(Instant.now());
+        webTestClient.patch()
+                .uri(baseUrl + "/patch/last-seen-at/")
+                .bodyValue(PatchNoteLastSeenAtInput.builder()
+                        .lastSeenAt(lastSeenAt)
+                        .ids(List.of(noteDto.getId()))
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(noteDto.getId())
+                .jsonPath("$[0].content").isEqualTo(noteDto.getContent())
+                .jsonPath("$[0].lastSeenAt").isNotEmpty();
+        // then
+        NoteDto responseBody = webTestClient.get()
+                .uri(baseUrl + noteDto.getId())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(NoteDto.class)
+                .returnResult().getResponseBody();
+
+        assertThat(responseBody.getLastSeenAt()).isCloseTo(lastSeenAt, 0);
+    }
+
+    private void assertThatNoteIsNotFoundById(long id) {
+        webTestClient.get()
+                .uri(baseUrl + id)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("/notes/" + id)
+                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
+                .jsonPath("$.message").isEqualTo("Note not found by id: " + id);
+    }
+
+    private NoteDto createNoteAndSave(String content1) {
+        return noteService.add(AddNoteInput.builder()
+                .content(content1)
+                .build());
+    }
+
+    private TagDto createTag(long id, String tagName) {
+        return TagDto.builder().id(id).name(tagName).build();
     }
 
 }

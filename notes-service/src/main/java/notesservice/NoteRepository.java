@@ -15,6 +15,6 @@ interface NoteRepository extends JpaRepository<NoteEntity, Long> {
             order by last_seen_at
             limit ?1
             """, nativeQuery = true)
-    Stream<NoteEntity> findFirst(Integer limit);
+    Stream<NoteEntity> findFirstWithSmallestLastSeenAt(Integer limit);
 
 }

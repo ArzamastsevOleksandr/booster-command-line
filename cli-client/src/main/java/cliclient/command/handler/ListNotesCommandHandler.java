@@ -40,7 +40,7 @@ public class ListNotesCommandHandler implements CommandHandler {
         var paginator = new Paginator<NoteDto>(args.pagination(), noteApi.countAll()) {
             @Override
             List<NoteDto> nextBatch() {
-                return noteApi.findFirst(limit());
+                return noteApi.findFirstWithSmallestLastSeenAt(limit());
             }
         };
         display(paginator);
