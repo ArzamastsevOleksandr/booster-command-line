@@ -22,8 +22,8 @@ class NoteController implements NoteApi {
     }
 
     @Override
-    public List<NoteDto> findFirst(Integer limit) {
-        return noteService.findFirst(limit);
+    public List<NoteDto> findFirstWithSmallestLastSeenAt(Integer limit) {
+        return noteService.findFirstWithSmallestLastSeenAt(limit);
     }
 
     @Override
