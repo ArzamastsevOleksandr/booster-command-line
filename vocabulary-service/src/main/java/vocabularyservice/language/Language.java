@@ -1,5 +1,6 @@
 package vocabularyservice.language;
 
+import api.exception.NotFoundException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +18,7 @@ public enum Language {
         return Arrays.stream(values())
                 .filter(language -> language.name.equals(name))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No Language found by name: " + name));
+                .orElseThrow(() -> new NotFoundException("No language found by name: " + name));
     }
 
 }

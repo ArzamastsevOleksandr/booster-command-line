@@ -25,13 +25,14 @@ public interface VocabularyEntryApi {
     @GetMapping(value = "/with-synonyms/", params = {"limit"})
     Collection<VocabularyEntryDto> findWithSynonyms(@RequestParam("limit") Integer limit);
 
+    // todo: pagination
     @GetMapping(value = "/language/{language}")
     @ResponseStatus(OK)
     List<VocabularyEntryDto> findAllByLanguage(@PathVariable("language") String language);
 
     @PostMapping(value = "/")
     @ResponseStatus(CREATED)
-    VocabularyEntryDto add(@RequestBody AddVocabularyEntryInput input);
+    VocabularyEntryDto create(@RequestBody AddVocabularyEntryInput input);
 
     @GetMapping(value = "/{id}")
     @ResponseStatus(OK)
