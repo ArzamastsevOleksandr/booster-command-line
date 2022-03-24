@@ -36,8 +36,8 @@ class VocabularyEntryController implements VocabularyEntryApi {
     }
 
     @Override
-    public VocabularyEntryDto add(AddVocabularyEntryInput input) {
-        return vocabularyEntryService.add(input);
+    public VocabularyEntryDto create(AddVocabularyEntryInput input) {
+        return vocabularyEntryService.create(input);
     }
 
     @Override

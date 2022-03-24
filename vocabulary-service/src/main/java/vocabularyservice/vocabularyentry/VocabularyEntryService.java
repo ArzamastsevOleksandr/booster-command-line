@@ -50,8 +50,9 @@ public class VocabularyEntryService {
                 .build();
     }
 
+    // todo: unique constraint on name
     @Transactional
-    public VocabularyEntryDto add(AddVocabularyEntryInput input) {
+    public VocabularyEntryDto create(AddVocabularyEntryInput input) {
         var entity = new VocabularyEntryEntity();
 
         Language language = resolveLanguage(input);
@@ -102,7 +103,9 @@ public class VocabularyEntryService {
 
     @Transactional
     public void deleteById(Long id) {
-        vocabularyEntryRepository.deleteById(id);
+        vocabularyEntryRepository.findById(id).ifPresentOrElse(vocabularyEntryRepository::delete, () -> {
+            throw new NotFoundException("Vocabulary entry not found by id: " + id);
+        });
     }
 
     @Transactional

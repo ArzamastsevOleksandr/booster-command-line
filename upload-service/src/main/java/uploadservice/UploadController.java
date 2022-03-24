@@ -213,7 +213,7 @@ class UploadController implements UploadApi {
 
 //                        tagService.createIfNotExist(tags);
 
-                        vocabularyEntryApi.add(AddVocabularyEntryInput.builder()
+                        vocabularyEntryApi.create(AddVocabularyEntryInput.builder()
                                 .name(vocabularyEntryName)
                                 .correctAnswersCount(correctAnswersCount)
                                 .definition(definition)

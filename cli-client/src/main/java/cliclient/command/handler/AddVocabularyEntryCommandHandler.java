@@ -29,7 +29,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         args.definition().ifPresent(input::setDefinition);
         input.setSynonyms(args.getSynonyms());
 
-        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.add(input);
+        VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.create(input);
         adapter.writeLine(vocabularyEntryDto);
         // todo: update tracker
         adapter.writeLine("Entries added so far: " + sessionTrackerService.vocabularyEntriesAddedCount);

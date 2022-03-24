@@ -1,128 +1,69 @@
 package vocabularyservice.language;
 
-import api.vocabulary.LanguageDto;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import vocabularyservice.BaseIntegrationTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class LanguageControllerTest extends BaseIntegrationTest {
 
+    String baseUrl = "/languages/";
+
     @Test
-    void shouldReturnAllLanguages() {
-        // given
-        var name1 = "English";
-        var name2 = "German";
-        // when
-//        LanguageDto languageDto1 = languageService.add(new AddLanguageInput(name1));
-//        LanguageDto languageDto2 = languageService.add(new AddLanguageInput(name2));
-        // then
+    void returnsAllLanguages() {
         webTestClient.get()
-                .uri("/languages/")
-                .accept(APPLICATION_JSON)
+                .uri(baseUrl)
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus().isOk()
+                // for some reason expectBodyList returns a single result of concatenated languages
                 .expectBody(Object[].class)
-                .consumeWith(response -> {
-                    List<LanguageDto> languageDtos = Arrays.stream(response.getResponseBody())
-                            .map(obj -> new ObjectMapper().convertValue(obj, LanguageDto.class))
+                .consumeWith(entityExchangeResult -> {
+                    List<String> expectedLanguages = Arrays.stream(Language.values())
+                            .map(Language::getName)
                             .toList();
 
-//                    assertThat(languageDtos).containsExactlyInAnyOrder(
-//                            new LanguageDto(languageDto1.id(), languageDto1.name()),
-//                            new LanguageDto(languageDto2.id(), languageDto2.name())
-//                    );
+                    List<String> actualLanguages = Arrays.stream(entityExchangeResult.getResponseBody())
+                            .map(Object::toString)
+                            .toList();
+
+                    assertThat(expectedLanguages).containsAll(actualLanguages);
                 });
     }
 
     @Test
-    void shouldReturnEmptyListWhenThereAreNoLanguages() {
+    @Disabled("implement when this command is ready")
+    void returnsMyLanguages() {
+    }
+
+    @Test
+    void findsLanguageByName() {
+        Arrays.stream(Language.values())
+                .map(Language::getName)
+                .forEach(language -> webTestClient.get()
+                        .uri(baseUrl + "name/" + language)
+                        .exchange()
+                        .expectStatus().isOk()
+                        .expectBody()
+                        .jsonPath("$").isEqualTo(language));
+    }
+
+    @Test
+    void returns404WhenLanguageByNameNotFound() {
+        var randomUUID = UUID.randomUUID();
         webTestClient.get()
-                .uri("/languages/")
-                .accept(APPLICATION_JSON)
+                .uri(baseUrl + "name/" + randomUUID)
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.length()").isEqualTo(0);
-    }
-
-    @Test
-    void shouldFindLanguageById() {
-        // given
-        var name = "English";
-        // when
-//        LanguageDto languageDto = languageService.add(new AddLanguageInput(name));
-        // then
-//        webTestClient.get()
-//                .uri("/languages/" + languageDto.id())
-//                .accept(APPLICATION_JSON)
-//                .exchange()
-//                .expectStatus()
-//                .isOk()
-//                .expectBody()
-//                .jsonPath("$.id").isEqualTo(languageDto.id())
-//                .jsonPath("$.name").isEqualTo(name);
-    }
-
-    @Test
-    void shouldFindLanguageByName() {
-        // given
-        var name = "English";
-        // when
-//        LanguageDto languageDto = languageService.add(new AddLanguageInput(name));
-        // then
-//        webTestClient.get()
-//                .uri("/languages/name/" + languageDto.name())
-//                .accept(APPLICATION_JSON)
-//                .exchange()
-//                .expectStatus()
-//                .isOk()
-//                .expectBody()
-//                .jsonPath("$.id").isEqualTo(languageDto.id())
-//                .jsonPath("$.name").isEqualTo(languageDto.name());
-    }
-
-    @Test
-    void shouldReturn404WhenLanguageByIdNotFound() {
-        long id = 1000;
-        webTestClient.get()
-                .uri("/languages/" + id)
-                .accept(APPLICATION_JSON)
-                .exchange()
-                .expectStatus()
-                .isNotFound()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.timestamp").isNotEmpty()
-                .jsonPath("$.path").isEqualTo("/languages/" + id)
+                .jsonPath("$.path").isEqualTo(baseUrl + "name/" + randomUUID)
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
-                .jsonPath("$.message").isEqualTo("Language not found by id: " + id);
-    }
-
-    @Test
-    void shouldReturn404WhenLanguageByNameNotFound() {
-        var name = "English";
-        webTestClient.get()
-                .uri("/languages/name/" + name)
-                .accept(APPLICATION_JSON)
-                .exchange()
-                .expectStatus()
-                .isNotFound()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.timestamp").isNotEmpty()
-                .jsonPath("$.path").isEqualTo("/languages/name/" + name)
-                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
-                .jsonPath("$.message").isEqualTo("Language not found by name: " + name);
+                .jsonPath("$.message").isEqualTo("No language found by name: " + randomUUID);
     }
 
 }
