@@ -22,13 +22,11 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +40,8 @@ class NotesServiceApplicationTest {
 
     @MockBean
     TagsApi tagsApi;
+    @Mock
+    FeignException.NotFound notFound;
 
     @Autowired
     TagIdRepository tagIdRepository;
@@ -65,8 +65,7 @@ class NotesServiceApplicationTest {
         webTestClient.get()
                 .uri(baseUrl + noteDto.getId())
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(noteDto.getId())
                 .jsonPath("$.content").isEqualTo(CONTENT_1)
@@ -79,12 +78,8 @@ class NotesServiceApplicationTest {
         NoteDto note = webTestClient.post()
                 .uri(baseUrl)
                 .bodyValue(AddNoteInput.builder().content(CONTENT_1).build())
-                .accept(APPLICATION_JSON)
                 .exchange()
-                .expectStatus()
-                .isCreated()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
+                .expectStatus().isCreated()
                 .expectBody(NoteDto.class)
                 .returnResult()
                 .getResponseBody();
@@ -101,21 +96,17 @@ class NotesServiceApplicationTest {
 
         List<NoteDto> expectedNotes = List.of(noteDto1, noteDto2);
         // when
-        NoteDto[] responseNotes = webTestClient.get()
+        List<NoteDto> responseNotes = webTestClient.get()
                 .uri(baseUrl)
-                .accept(APPLICATION_JSON)
                 .exchange()
-                .expectStatus()
-                .isOk()
-                .expectHeader()
-                .contentType(APPLICATION_JSON)
-                .expectBody(NoteDto[].class)
+                .expectStatus().isOk()
+                .expectBodyList(NoteDto.class)
                 .returnResult()
                 .getResponseBody();
 
         assertThat(responseNotes).containsExactlyElementsOf(expectedNotes);
         // then
-        List<NoteDto> notesFromDb = Arrays.stream(responseNotes)
+        List<NoteDto> notesFromDb = responseNotes.stream()
                 .map(NoteDto::getId)
                 .map(noteService::findById)
                 .toList();
@@ -127,8 +118,7 @@ class NotesServiceApplicationTest {
         webTestClient.get()
                 .uri(baseUrl)
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.length()").isEqualTo(0);
     }
@@ -141,8 +131,7 @@ class NotesServiceApplicationTest {
         webTestClient.delete()
                 .uri(baseUrl + noteDto.getId())
                 .exchange()
-                .expectStatus()
-                .isNoContent()
+                .expectStatus().isNoContent()
                 .expectBody(Void.class);
         // then
         assertThatNoteIsNotFoundById(noteDto.getId());
@@ -171,8 +160,7 @@ class NotesServiceApplicationTest {
                         .tagNames(Set.of(TAG_NAME_1, TAG_NAME_2))
                         .build())
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.id").isEqualTo(noteDto.getId())
                 .jsonPath("$.content").isEqualTo(noteDto.getContent())
@@ -187,16 +175,12 @@ class NotesServiceApplicationTest {
                 .uri(baseUrl + "/add-tags/")
                 .bodyValue(AddTagsToNoteInput.builder().noteId(Long.MAX_VALUE).build())
                 .exchange()
-                .expectStatus()
-                .isNotFound()
+                .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("/notes/add-tags/")
+                .jsonPath("$.path").isEqualTo(baseUrl + "add-tags/")
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
                 .jsonPath("$.message").isEqualTo("Note not found by id: " + Long.MAX_VALUE);
     }
-
-    @Mock
-    FeignException.NotFound notFound;
 
     @Test
     void returns404IfTagsNotFound() throws JsonProcessingException {
@@ -219,10 +203,9 @@ class NotesServiceApplicationTest {
                         .build())
                 .exchange()
                 // then
-                .expectStatus()
-                .isNotFound()
+                .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("/notes/add-tags/")
+                .jsonPath("$.path").isEqualTo(baseUrl + "add-tags/")
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
                 .jsonPath("$.message").isEqualTo("Tag not found by name: " + TAG_NAME_1);
     }
@@ -313,7 +296,7 @@ class NotesServiceApplicationTest {
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody()
-                .jsonPath("$.path").isEqualTo("/notes/" + id)
+                .jsonPath("$.path").isEqualTo(baseUrl + id)
                 .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
                 .jsonPath("$.message").isEqualTo("Note not found by id: " + id);
     }
