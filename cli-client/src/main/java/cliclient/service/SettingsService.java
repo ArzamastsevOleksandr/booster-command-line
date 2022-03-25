@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Deprecated
 @Service
 @RequiredArgsConstructor
 public class SettingsService {

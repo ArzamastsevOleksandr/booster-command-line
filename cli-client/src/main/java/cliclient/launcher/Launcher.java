@@ -4,8 +4,6 @@ import api.exception.HttpErrorResponse;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
-import cliclient.command.arguments.HelpCommandArgs;
-import cliclient.command.handler.HelpCommandHandler;
 import cliclient.command.service.CommandHandlerCollectionService;
 import cliclient.config.PropertyHolder;
 import cliclient.exception.IncorrectCommandFormatException;
@@ -31,7 +29,6 @@ public class Launcher {
     private final CommandLineInputTransformer transformer;
     private final ObjectMapper objectMapper;
     private final PropertyHolder propertyHolder;
-    private final HelpCommandHandler helpCommandHandler;
 
     public void launch() {
         adapter.writeLine(ColorCodes.cyan("Welcome to the " + propertyHolder.getAppName() + "!"));
@@ -67,8 +64,8 @@ public class Launcher {
                 adapter.error(e.getMessage());
                 adapter.newLine();
                 this.handleCommandWithArgs(CommandWithArgs.builder()
-                                .command(Command.HELP)
-                                .helpTarget(e.getCommand())
+                        .command(Command.HELP)
+                        .helpTarget(e.getCommand())
                         .build());
             } else {
                 adapter.error(t.getMessage());

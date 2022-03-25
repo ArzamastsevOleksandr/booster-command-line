@@ -3,12 +3,16 @@ package cliclient.parser;
 import cliclient.command.Command;
 import cliclient.command.FlagType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.LongStream;
 
+import static cliclient.command.FlagType.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class TokenizerTest {
@@ -58,7 +62,7 @@ class TokenizerTest {
     @Test
     void stripsWhitespacesAndParsesPositiveLongNumbers() {
         // todo: add negative numbers parsing
-        LongStream.iterate(1, i -> i <= 1001, i -> i + 10)
+        LongStream.iterate(1, i -> i <= 1001, i -> i + ThreadLocalRandom.current().nextInt(10))
                 .mapToObj(this::padWithSpaces)
                 .forEach(this::assertThatPositiveLongNumberWrappedWithSpacesIsParsed);
     }
@@ -85,31 +89,34 @@ class TokenizerTest {
     }
 
     @Test
-    void parsesInputStringIntoCorrectTokenSequence() {
-        String input = "  ave \\id  =1 \\n = one \\syn=one1;one2 \\ant=one1;one2 \\def=very long description ";
+    void addVocabularyEntryTokenSequence() {
+        String input = """
+                %s \\%s=name23 \\%s=one;two \\%s = h lal svts n
+                """.formatted(Command.ADD_VOCABULARY_ENTRY.firstEquivalent(), NAME.value, SYNONYMS.value, DEFINITION.value);
+
         List<Token> tokens = tokenizer.parseIntoTokens(input);
 
-        assertThat(tokens).hasSize(16);
+        assertThat(tokens).hasSize(10);
 
         assertThat(tokens.get(0))
                 .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
-                .hasFieldOrPropertyWithValue("value", "ave");
+                .hasFieldOrPropertyWithValue("value", Command.ADD_VOCABULARY_ENTRY.firstEquivalent());
 
         assertThat(tokens.get(1))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "id");
+                .hasFieldOrPropertyWithValue("value", NAME.value);
 
         assertThat(tokens.get(2))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
                 .hasFieldOrPropertyWithValue("value", "=");
 
         assertThat(tokens.get(3))
-                .hasFieldOrPropertyWithValue("type", TokenType.NUMBER)
-                .hasFieldOrPropertyWithValue("value", "1");
+                .hasFieldOrPropertyWithValue("type", TokenType.TEXT)
+                .hasFieldOrPropertyWithValue("value", "name23");
 
         assertThat(tokens.get(4))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "n");
+                .hasFieldOrPropertyWithValue("value", SYNONYMS.value);
 
         assertThat(tokens.get(5))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
@@ -117,11 +124,11 @@ class TokenizerTest {
 
         assertThat(tokens.get(6))
                 .hasFieldOrPropertyWithValue("type", TokenType.TEXT)
-                .hasFieldOrPropertyWithValue("value", "one");
+                .hasFieldOrPropertyWithValue("value", "one;two");
 
         assertThat(tokens.get(7))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "syn");
+                .hasFieldOrPropertyWithValue("value", DEFINITION.value);
 
         assertThat(tokens.get(8))
                 .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
@@ -129,31 +136,27 @@ class TokenizerTest {
 
         assertThat(tokens.get(9))
                 .hasFieldOrPropertyWithValue("type", TokenType.TEXT)
-                .hasFieldOrPropertyWithValue("value", "one1;one2");
+                .hasFieldOrPropertyWithValue("value", "h lal svts n");
+    }
 
-        assertThat(tokens.get(10))
-                .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "ant");
+    @ParameterizedTest
+    @EnumSource(value = Command.class, mode = EnumSource.Mode.EXCLUDE, names = {"NO_INPUT", "UNRECOGNIZED"})
+    void helpTokenSequence(Command helpTarget) {
+        String input = """
+                %s %s
+                """.formatted(Command.HELP.firstEquivalent(), helpTarget.firstEquivalent());
 
-        assertThat(tokens.get(11))
-                .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
-                .hasFieldOrPropertyWithValue("value", "=");
+        List<Token> tokens = tokenizer.parseIntoTokens(input);
 
-        assertThat(tokens.get(12))
-                .hasFieldOrPropertyWithValue("type", TokenType.TEXT)
-                .hasFieldOrPropertyWithValue("value", "one1;one2");
+        assertThat(tokens).hasSize(2);
 
-        assertThat(tokens.get(13))
-                .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
-                .hasFieldOrPropertyWithValue("value", "def");
+        assertThat(tokens.get(0))
+                .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
+                .hasFieldOrPropertyWithValue("value", Command.HELP.firstEquivalent());
 
-        assertThat(tokens.get(14))
-                .hasFieldOrPropertyWithValue("type", TokenType.SEPARATOR)
-                .hasFieldOrPropertyWithValue("value", "=");
-
-        assertThat(tokens.get(15))
-                .hasFieldOrPropertyWithValue("type", TokenType.TEXT)
-                .hasFieldOrPropertyWithValue("value", "very long description");
+        assertThat(tokens.get(1))
+                .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
+                .hasFieldOrPropertyWithValue("value", helpTarget.firstEquivalent());
     }
 
     private void assertThatTextWrappedWithSpacesIsParsed(String text) {

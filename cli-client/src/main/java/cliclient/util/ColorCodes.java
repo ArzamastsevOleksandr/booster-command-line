@@ -1,5 +1,7 @@
 package cliclient.util;
 
+@Deprecated
+// todo: a separate service
 public interface ColorCodes {
 
     String ANSI_RESET = "\u001B[0m";

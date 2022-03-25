@@ -2,6 +2,7 @@ package cliclient.util;
 
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Component
 public class NumberUtil {
 
