@@ -116,8 +116,11 @@ class CommandWithArgsService {
 
     private void checkSequenceIsHelpOnCommand(List<Token> tokens) {
         var help = Command.fromString(tokens.get(0).value());
-        if (help != Command.HELP && Token.isNotCommand(tokens.get(1))) {
-            throw new TokenValidationException("Allowed format for 2 tokens is: " + Command.HELP + " [command]");
+        if (help != Command.HELP) {
+            throw new TokenValidationException("Only " + Command.HELP + " command can consist of 2 arguments");
+        }
+        if (Token.isNotCommand(tokens.get(1))) {
+            throw new TokenValidationException("Help works with commands, got: " + tokens.get(1).value());
         }
     }
 
