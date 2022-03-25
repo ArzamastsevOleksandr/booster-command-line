@@ -3,6 +3,7 @@ package cliclient.util;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public interface CollectionUtils {
 
     static <T> List<T> sublist(List<T> list, int start) {

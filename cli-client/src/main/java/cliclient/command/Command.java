@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
+// todo: a single equivalent
 @RequiredArgsConstructor
 public enum Command {
 

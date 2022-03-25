@@ -19,14 +19,18 @@ public enum FlagType {
     NOTE_ID("nid"),
     TAG("t"),
     SYNONYMS("syn"),
+    @Deprecated
     ANTONYMS("ant"),
     DEFINITION("def"),
+    @Deprecated
     MODE_VOCABULARY("mv"),
     FILE("f"),
     CONTENT("con"),
     CORRECT_ANSWERS_COUNT("cac"),
+    @Deprecated
     ADD_ANTONYMS("aant"),
     ADD_SYNONYMS("asyn"),
+    @Deprecated
     REMOVE_ANTONYMS("rant"),
     REMOVE_SYNONYMS("rsyn"),
     PAGINATION("pg"),

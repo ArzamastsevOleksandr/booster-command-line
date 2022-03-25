@@ -11,13 +11,11 @@ import java.util.List;
 public class CommandLineInputTransformer {
 
     private final Tokenizer tokenizer;
-    private final TokenValidator tokenValidator;
-    private final TokenSequenceTransformer tokenSequenceTransformer; // todo: a better name
+    private final CommandWithArgsService commandWithArgsService;
 
     public CommandWithArgs toCommandWithArgs(String input) {
         List<Token> tokens = tokenizer.parseIntoTokens(input);
-        TokenValidationResult tokenValidationResult = tokenValidator.validate(tokens);
-        return tokenSequenceTransformer.transform(tokenValidationResult);
+        return commandWithArgsService.toCommandWithArgs(tokens);
     }
 
 }

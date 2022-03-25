@@ -2,41 +2,85 @@ package cliclient.parser;
 
 import cliclient.command.Command;
 import cliclient.command.FlagType;
+import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.arguments.VocabularyTrainingSessionMode;
 import cliclient.util.CollectionUtils;
 import cliclient.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 @Component
 @RequiredArgsConstructor
-class TokenValidator {
+class CommandWithArgsService {
 
     private final NumberUtil numberUtil;
 
-    TokenValidationResult validate(List<Token> tokens) {
+    CommandWithArgs toCommandWithArgs(List<Token> tokens) {
         try {
             if (tokens.isEmpty()) {
-                return TokenValidationResult.empty();
+                return CommandWithArgs.builder().command(Command.NO_INPUT).build();
             }
             validateFirstToken(tokens);
+            var commandWithArgsBuilder = CommandWithArgs.builder()
+                    .command(Command.fromString(tokens.get(0).value()));
             if (tokens.size() == 1) {
-                return TokenValidationResult.success(tokens);
+                return commandWithArgsBuilder.build();
             }
             if (tokens.size() == 2) {
                 checkSequenceIsHelpOnCommand(tokens);
-                return TokenValidationResult.success(tokens);
+                return commandWithArgsBuilder
+                        .helpTarget(Command.fromString(tokens.get(1).value()))
+                        .build();
             }
             List<Token> commandArguments = CollectionUtils.sublist(tokens, 1);
             checkCommandArgumentsSize(commandArguments);
 
             validateCommandArguments(commandArguments);
 
-            return TokenValidationResult.success(tokens);
+            for (int i = 0; i < commandArguments.size(); i += 3) {
+                Token flag = commandArguments.get(i);
+                Token value = commandArguments.get(i + 2);
+
+                FlagType flagType = FlagType.fromString(flag.value());
+                String flagValue = value.value();
+                commandWithArgsBuilder = switch (flagType) {
+                    case ID -> commandWithArgsBuilder.id(Long.parseLong(flagValue));
+                    case NOTE_ID -> commandWithArgsBuilder.noteId(Long.parseLong(flagValue));
+                    case VOCABULARY_ENTRY_ID -> commandWithArgsBuilder.vocabularyEntryId(Long.parseLong(flagValue));
+                    case NAME -> commandWithArgsBuilder.name(flagValue);
+                    case LANGUAGE_NAME -> commandWithArgsBuilder.languageName(flagValue);
+                    case TAG -> commandWithArgsBuilder.tag(flagValue);
+                    case DEFINITION -> commandWithArgsBuilder.definition(flagValue);
+                    case FILE -> commandWithArgsBuilder.filename(flagValue);
+                    case MODE_VOCABULARY -> commandWithArgsBuilder.mode(VocabularyTrainingSessionMode.fromString(flagValue));
+                    case SYNONYMS -> commandWithArgsBuilder.synonyms(getWordEquivalentNames(flagValue));
+                    case ANTONYMS -> commandWithArgsBuilder.antonyms(getWordEquivalentNames(flagValue));
+                    case CONTENT -> commandWithArgsBuilder.content(flagValue);
+                    case CORRECT_ANSWERS_COUNT -> commandWithArgsBuilder.correctAnswersCount(Integer.parseInt(flagValue));
+                    case ADD_ANTONYMS -> commandWithArgsBuilder.addAntonyms(getWordEquivalentNames(flagValue));
+                    case ADD_SYNONYMS -> commandWithArgsBuilder.addSynonyms(getWordEquivalentNames(flagValue));
+                    case REMOVE_ANTONYMS -> commandWithArgsBuilder.removeAntonyms(getWordEquivalentNames(flagValue));
+                    case REMOVE_SYNONYMS -> commandWithArgsBuilder.removeSynonyms(getWordEquivalentNames(flagValue));
+                    case PAGINATION -> commandWithArgsBuilder.pagination(Integer.parseInt(flagValue));
+                    case LANGUAGES_PAGINATION -> commandWithArgsBuilder.languagesPagination(Integer.parseInt(flagValue));
+                    case NOTES_PAGINATION -> commandWithArgsBuilder.notesPagination(Integer.parseInt(flagValue));
+                    case TAGS_PAGINATION -> commandWithArgsBuilder.tagsPagination(Integer.parseInt(flagValue));
+                    case VOCABULARY_PAGINATION -> commandWithArgsBuilder.vocabularyPagination(Integer.parseInt(flagValue));
+                    case SUBSTRING -> commandWithArgsBuilder.substring(flagValue);
+                    case CONTEXTS -> commandWithArgsBuilder.contexts(getContexts(flagValue));
+                    case ENTRIES_PER_VOCABULARY_TRAINING_SESSION -> commandWithArgsBuilder.entriesPerVocabularyTrainingSession(Integer.parseInt(flagValue));
+                    default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
+                };
+            }
+            return commandWithArgsBuilder.build();
         } catch (TokenValidationException e) {
-            return TokenValidationResult.withErrors(e.errors);
+            return CommandWithArgs.withErrors(e.errors);
         }
     }
 
@@ -146,6 +190,24 @@ class TokenValidator {
         TokenValidationException(String... errors) {
             this.errors = List.of(errors);
         }
+    }
+
+    private Set<String> getContexts(String value) {
+        return Arrays.stream(value.split(Token.CONTEXT_DELIMITER))
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .collect(toSet());
+    }
+
+    private Set<String> getWordEquivalentNames(String value) {
+        return Arrays.stream(value.split(Token.WORD_EQUIVALENT_DELIMITER))
+                .map(String::strip)
+                .filter(this::isNotBlank)
+                .collect(toSet());
+    }
+
+    private boolean isNotBlank(String s) {
+        return s != null && !s.isBlank();
     }
 
 }
