@@ -133,13 +133,19 @@ class Tokenizer {
         while (i < chars.length && (!FLAG_MARKER.equals(Character.toString(chars[i])))) {
             sb.append(chars[i++]);
             // if the next chunk is command, then we have a [c] [c] sequence
-            if (Character.isWhitespace(chars[i - 1]) && isNextChunkCommand(Arrays.copyOfRange(chars, i, chars.length))) {
+            if (Character.isWhitespace(chars[i - 1]) && isNextChunkCommand(Arrays.copyOfRange(chars, i, chars.length)) && isNotDefinitionPart(tokens)) {
                 addCommandOrText(tokens, sb);
                 return Arrays.copyOfRange(chars, i, chars.length);
             }
         }
         addCommandOrText(tokens, sb);
         return Arrays.copyOfRange(chars, i, chars.length);
+    }
+
+    private boolean isNotDefinitionPart(List<Token> tokens) {
+        return !(tokens.size() > 2
+                && tokens.get(tokens.size() - 1).type() == TokenType.SEPARATOR
+                && tokens.get(tokens.size() - 2).type() == TokenType.FLAG);
     }
 
     private boolean isNextChunkCommand(char[] chars) {
