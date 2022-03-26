@@ -19,12 +19,9 @@ public class CliClientApplication {
         // todo: do not create an empty sheet when downloading data
         // todo: when svts finished, cac is not correct
         // todo: pretty print [500 ] during [POST] to [http://localhost:8082/vocabulary-entries/] [VocabularyEntryApi#add(AddVocabularyEntryInput)]: [{"timestamp":1647956001046,"status":500,"error":"Internal Server Error","path":"/vocabulary-entries/"}]
-        // todo: replace LanguageEntity with enum
         // todo: ve returns ALL ves, regardless of the language. Differentiate ves from different ls
-        // todo: fix: h j => Sequence must start with a command
         // todo: fetch settings once and use the cached version
         // todo: amount of hints per session to settings
-        // todo: use @Value in 1 shared properties placeholder
         // todo: colored output everywhere
         // todo: help with pagination + help --all
         // todo: lal, t: paginated output

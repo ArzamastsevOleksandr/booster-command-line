@@ -12,6 +12,7 @@ import cliclient.service.SessionTrackerService;
 import cliclient.util.ColorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +60,8 @@ public class Launcher {
                     adapter.error(t.getMessage());
                     adapter.error(ioe.getMessage());
                 }
+            } else if (t instanceof RetryableException) {
+                adapter.error(t.getCause().getMessage());
             } else {
                 adapter.error(t.getMessage());
                 adapter.newLine();
