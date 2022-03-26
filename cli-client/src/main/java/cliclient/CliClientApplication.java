@@ -14,11 +14,9 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
-        // todo: refactor tokenizer
+        // todo: fix: dwn => no settings => 404 error
         // todo: log request/response in tests
-        // todo: test cases
         // todo: do not create an empty sheet when downloading data
-        // todo: unique tags in db
         // todo: when svts finished, cac is not correct
         // todo: pretty print [500 ] during [POST] to [http://localhost:8082/vocabulary-entries/] [VocabularyEntryApi#add(AddVocabularyEntryInput)]: [{"timestamp":1647956001046,"status":500,"error":"Internal Server Error","path":"/vocabulary-entries/"}]
         // todo: replace LanguageEntity with enum

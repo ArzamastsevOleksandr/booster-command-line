@@ -3,7 +3,7 @@ package tagservice
 import javax.persistence.*
 
 @Entity
-@Table(name = "tags")
+@Table(name = "tags", uniqueConstraints = [UniqueConstraint(name = "uc_name", columnNames = ["name"])])
 open class TagEntity {
 
     @Id
