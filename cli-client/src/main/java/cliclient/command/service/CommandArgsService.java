@@ -2,7 +2,6 @@ package cliclient.command.service;
 
 import cliclient.command.Command;
 import cliclient.command.arguments.*;
-import cliclient.exception.IncorrectCommandFormatException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +13,8 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 class CommandArgsService {
 
-    CommandArgs getCommandArgs(CommandWithArgs cwa) {
-        CommandArgsResult commandArgsResult = switch (cwa.getCommand()) {
+    CommandArgsResult getCommandArgsResult(CommandWithArgs cwa) {
+        return switch (cwa.getCommand()) {
             case EXIT, NO_INPUT, LIST_FLAG_TYPES, LIST_AVAILABLE_LANGUAGES, DELETE_SETTINGS, LIST_TAGS, SHOW_SETTINGS, UNRECOGNIZED -> CommandArgsResult.empty();
             case HELP -> CommandArgsResult.success(new HelpCommandArgs(cwa.getHelpTarget()));
             case LIST_VOCABULARY_ENTRIES -> CommandArgsResult.success(new ListVocabularyEntriesCommandArgs(ofNullable(cwa.getId()), cwa.getPagination(), ofNullable(cwa.getSubstring())));
@@ -43,8 +42,6 @@ class CommandArgsService {
             case ADD_TAG -> addTag(cwa);
             case USE_TAG -> useTag(cwa);
         };
-        commandArgsResult.validate();
-        return commandArgsResult.commandArgs;
     }
 
     private CommandArgsResult addTag(CommandWithArgs cwa) {
@@ -108,27 +105,6 @@ class CommandArgsService {
         return cwa.getNoteId() == null
                 ? CommandArgsResult.withErrors("Note id is missing", Command.USE_TAG)
                 : CommandArgsResult.success(new UseTagCommandArgs(cwa.getTag(), cwa.getNoteId()));
-    }
-
-    private record CommandArgsResult(Command command, CommandArgs commandArgs, String error) {
-
-        static CommandArgsResult success(CommandArgs commandArgs) {
-            return new CommandArgsResult(null, commandArgs, null);
-        }
-
-        static CommandArgsResult withErrors(String error, Command command) {
-            return new CommandArgsResult(command, null, error);
-        }
-
-        static CommandArgsResult empty() {
-            return new CommandArgsResult(null, new EmptyCommandArgs(), null);
-        }
-
-        void validate() {
-            if (error != null) {
-                throw new IncorrectCommandFormatException(error, command);
-            }
-        }
     }
 
 }
