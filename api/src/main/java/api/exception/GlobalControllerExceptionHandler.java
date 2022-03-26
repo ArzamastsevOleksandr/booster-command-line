@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -17,7 +16,7 @@ public class GlobalControllerExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public HttpErrorResponse handleNoteByIdNotFound(HttpServletRequest req, NotFoundException ex) {
+    public HttpErrorResponse handleNotFound(HttpServletRequest req, NotFoundException ex) {
         return buildHttpErrorResponse(NOT_FOUND, req, ex);
     }
 
@@ -25,6 +24,12 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(XlsxStructureUnsupportedException.class)
     public HttpErrorResponse handleXlsxStructureUnsupported(HttpServletRequest req, XlsxStructureUnsupportedException ex) {
         return buildHttpErrorResponse(NOT_ACCEPTABLE, req, ex);
+    }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(IllegalStateException.class)
+    public HttpErrorResponse handleIllegalState(HttpServletRequest req, IllegalStateException ex) {
+        return buildHttpErrorResponse(CONFLICT, req, ex);
     }
 
     private HttpErrorResponse buildHttpErrorResponse(HttpStatus status, HttpServletRequest req, RuntimeException ex) {

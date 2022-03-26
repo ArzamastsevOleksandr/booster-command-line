@@ -3,6 +3,7 @@ package tagservice
 import api.tags.CreateTagInput
 import api.tags.TagDto
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase
+import lombok.Data
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -114,6 +115,27 @@ class TagServiceApplicationTests {
     @Test
     fun createsTag() {
         // when
+        val jsonPathValueRecorder = JsonPathValueRecorder<Int>()
+        webTestClient.post()
+            .uri(baseUrl)
+            .bodyValue(CreateTagInput(EDUCATION))
+            .exchange()
+            .expectStatus().isCreated
+            .expectBody()
+            .jsonPath("$.id").value<Int> { i -> jsonPathValueRecorder.id = i }
+            .jsonPath("$.name").isEqualTo(EDUCATION)
+        // then
+        webTestClient.get()
+            .uri("$baseUrl/${jsonPathValueRecorder.id}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.name").isEqualTo(EDUCATION)
+            .jsonPath("$.id").isEqualTo(jsonPathValueRecorder.id!!.toInt())
+    }
+
+    @Test
+    fun returns409WhenCreatingDuplicateTag() {
         webTestClient.post()
             .uri(baseUrl)
             .bodyValue(CreateTagInput(EDUCATION))
@@ -122,24 +144,22 @@ class TagServiceApplicationTests {
             .expectBody()
             .jsonPath("$.id").isNotEmpty
             .jsonPath("$.name").isEqualTo(EDUCATION)
-        // then
-        val tagDtoByName = webTestClient.get()
-            .uri("$baseUrl/name/$EDUCATION")
-            .exchange()
-            .expectStatus().isOk
-            .expectBody(TagDto::class.java)
-            .returnResult()
-            .responseBody
 
-        val tagDtoById = webTestClient.get()
-            .uri("$baseUrl/${tagDtoByName?.id}")
+        webTestClient.post()
+            .uri(baseUrl)
+            .bodyValue(CreateTagInput(EDUCATION))
             .exchange()
-            .expectStatus().isOk
-            .expectBody(TagDto::class.java)
-            .returnResult()
-            .responseBody
+            .expectStatus().is4xxClientError
+            .expectBody()
+            .jsonPath("$.path").isEqualTo(baseUrl)
+            .jsonPath("$.httpStatus").isEqualTo(HttpStatus.CONFLICT.name)
+            .jsonPath("$.message").isEqualTo("Tag already exists with name: $EDUCATION")
+    }
 
-        assertThat(tagDtoById).isEqualTo(tagDtoByName)
+    @Data
+    private class JsonPathValueRecorder<T> {
+        var id: T? = null
+        var time: Long? = null
     }
 
 }
