@@ -2,7 +2,6 @@ package cliclient.command.service;
 
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.handler.CommandHandler;
 import cliclient.service.ColorProcessor;
@@ -48,12 +47,21 @@ public class CommandHandlerCollectionService {
     }
 
     private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
-        CommandArgs commandArgs = commandArgsService.getCommandArgs(commandWithArgs);
-        Command command = commandWithArgs.getCommand();
-        ofNullable(command2Handler.get(command)).ifPresentOrElse(
-                commandHandler -> commandHandler.handle(commandArgs),
-                () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
-        );
+        var commandArgsResult = commandArgsService.getCommandArgsResult(commandWithArgs);
+        if (commandArgsResult.hasErrors()) {
+            adapter.error(commandArgsResult.error());
+            adapter.newLine();
+            this.handleCommandWithArgs(CommandWithArgs.builder()
+                    .command(Command.HELP)
+                    .helpTarget(commandArgsResult.command())
+                    .build());
+        } else {
+            Command command = commandWithArgs.getCommand();
+            ofNullable(command2Handler.get(command)).ifPresentOrElse(
+                    commandHandler -> commandHandler.handle(commandArgsResult.commandArgs()),
+                    () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
+            );
+        }
     }
 
 }

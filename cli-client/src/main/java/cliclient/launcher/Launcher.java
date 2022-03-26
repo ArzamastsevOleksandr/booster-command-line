@@ -6,7 +6,6 @@ import cliclient.command.Command;
 import cliclient.command.arguments.CommandWithArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
 import cliclient.config.PropertyHolder;
-import cliclient.exception.IncorrectCommandFormatException;
 import cliclient.parser.CommandLineInputTransformer;
 import cliclient.postprocessor.CommandWithArgsPostProcessor;
 import cliclient.service.SessionTrackerService;
@@ -60,13 +59,6 @@ public class Launcher {
                     adapter.error(t.getMessage());
                     adapter.error(ioe.getMessage());
                 }
-            } else if (t instanceof IncorrectCommandFormatException e) {
-                adapter.error(e.getMessage());
-                adapter.newLine();
-                this.handleCommandWithArgs(CommandWithArgs.builder()
-                        .command(Command.HELP)
-                        .helpTarget(e.getCommand())
-                        .build());
             } else {
                 adapter.error(t.getMessage());
                 adapter.newLine();
