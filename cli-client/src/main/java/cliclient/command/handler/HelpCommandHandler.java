@@ -3,8 +3,8 @@ package cliclient.command.handler;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.FlagType;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.HelpCommandArgs;
+import cliclient.command.args.CmdArgs;
+import cliclient.command.args.HelpCmdArgs;
 import cliclient.config.PropertyHolder;
 import cliclient.service.ColorProcessor;
 import cliclient.util.ColorCodes;
@@ -22,8 +22,8 @@ public class HelpCommandHandler implements CommandHandler {
     private final ColorProcessor colorProcessor;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (HelpCommandArgs) commandArgs;
+    public void handle(CmdArgs cwa) {
+        var args = (HelpCmdArgs) cwa;
         args.getHelpTarget().ifPresentOrElse(this::helpForTarget, () -> Arrays.stream(Command.values())
                 .filter(Command::isRecognizable)
                 .map(colorProcessor::coloredCommand)

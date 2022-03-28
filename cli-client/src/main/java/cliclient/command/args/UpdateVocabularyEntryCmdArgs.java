@@ -1,14 +1,19 @@
-package cliclient.command.arguments;
+package cliclient.command.args;
 
+import cliclient.command.Command;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 import java.util.Set;
 
-@Value
+@Data
 @Builder
-public class UpdateVocabularyEntryCommandArgs implements CommandArgs {
+@AllArgsConstructor
+@NoArgsConstructor
+public class UpdateVocabularyEntryCmdArgs implements CmdArgs {
 
     Long id;
     String name;
@@ -40,4 +45,8 @@ public class UpdateVocabularyEntryCommandArgs implements CommandArgs {
         return Optional.ofNullable(name);
     }
 
+    @Override
+    public Command getCommand() {
+        return Command.UPDATE_VOCABULARY_ENTRY;
+    }
 }

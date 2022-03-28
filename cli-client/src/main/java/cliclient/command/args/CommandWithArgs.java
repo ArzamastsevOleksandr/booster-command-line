@@ -1,4 +1,4 @@
-package cliclient.command.arguments;
+package cliclient.command.args;
 
 import cliclient.command.Command;
 import lombok.Builder;

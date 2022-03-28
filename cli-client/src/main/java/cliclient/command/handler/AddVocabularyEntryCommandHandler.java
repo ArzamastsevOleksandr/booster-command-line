@@ -5,8 +5,8 @@ import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.AddVocabularyEntryCommandArgs;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.AddVocabularyEntryCmdArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,13 +20,13 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     private final VocabularyEntryApi vocabularyEntryApi;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (AddVocabularyEntryCommandArgs) commandArgs;
+    public void handle(CmdArgs cmdArgs) {
+        var args = (AddVocabularyEntryCmdArgs) cmdArgs;
         var input = new AddVocabularyEntryInput();
 
         input.setName(args.getName());
-        args.language().ifPresent(input::setLanguage);
-        args.definition().ifPresent(input::setDefinition);
+        args.getLanguage().ifPresent(input::setLanguage);
+        args.getDefinition().ifPresent(input::setDefinition);
         input.setSynonyms(args.getSynonyms());
 
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.create(input);

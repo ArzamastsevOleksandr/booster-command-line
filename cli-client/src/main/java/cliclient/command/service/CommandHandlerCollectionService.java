@@ -2,7 +2,9 @@ package cliclient.command.service;
 
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandWithArgs;
+import cliclient.command.args.ErroneousCmdArgs;
+import cliclient.command.args.HelpCmdArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.command.handler.CommandHandler;
 import cliclient.service.ColorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,54 +22,38 @@ public class CommandHandlerCollectionService {
     private final ColorProcessor colorProcessor;
     private final Map<Command, CommandHandler> command2Handler;
     private final CommandLineAdapter adapter;
-    private final CommandArgsService commandArgsService;
 
     @Autowired
     public CommandHandlerCollectionService(ColorProcessor colorProcessor,
                                            List<CommandHandler> commandHandlers,
-                                           CommandLineAdapter adapter,
-                                           CommandArgsService commandArgsService) {
+                                           CommandLineAdapter adapter) {
         this.colorProcessor = colorProcessor;
         this.adapter = adapter;
-        this.commandArgsService = commandArgsService;
         this.command2Handler = commandHandlers.stream()
                 .map(ch -> Map.entry(ch.getCommand(), ch))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public void handle(CommandWithArgs commandWithArgs) {
-        if (commandWithArgs.hasNoErrors()) {
-            handleCommandWithArgs(commandWithArgs);
-        } else if (commandWithArgs.isNoInput()) {
+    public void handle(CmdArgs cmdArgs) {
+        if (cmdArgs.getCommand() == Command.NO_INPUT) {
             return;
+        } else if (cmdArgs.hasNoErrors()) {
+            handleCommandWithArgs(cmdArgs);
         } else {
-            commandWithArgs.getErrors().forEach(adapter::error);
-            if (commandWithArgs.getCommand() != null) {
-                this.handleCommandWithArgs(CommandWithArgs.builder()
-                        .command(Command.HELP)
-                        .helpTarget(commandWithArgs.getCommand())
-                        .build());
+            adapter.error(((ErroneousCmdArgs) cmdArgs).getError());
+            if (cmdArgs.getCommand() != null) {
+                this.handleCommandWithArgs(new HelpCmdArgs(cmdArgs.getCommand()));
             }
         }
         adapter.newLine();
     }
 
-    private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
-        var commandArgsResult = commandArgsService.getCommandArgsResult(commandWithArgs);
-        if (commandArgsResult.hasErrors()) {
-            adapter.error(commandArgsResult.error());
-            adapter.newLine();
-            this.handleCommandWithArgs(CommandWithArgs.builder()
-                    .command(Command.HELP)
-                    .helpTarget(commandArgsResult.command())
-                    .build());
-        } else {
-            Command command = commandWithArgs.getCommand();
-            ofNullable(command2Handler.get(command)).ifPresentOrElse(
-                    commandHandler -> commandHandler.handle(commandArgsResult.commandArgs()),
-                    () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
-            );
-        }
+    private void handleCommandWithArgs(CmdArgs cmdArgs) {
+        Command command = cmdArgs.getCommand();
+        ofNullable(command2Handler.get(command)).ifPresentOrElse(
+                commandHandler -> commandHandler.handle(cmdArgs),
+                () -> adapter.error("No handler is present for the " + colorProcessor.coloredCommand(command) + " command.")
+        );
     }
 
 }

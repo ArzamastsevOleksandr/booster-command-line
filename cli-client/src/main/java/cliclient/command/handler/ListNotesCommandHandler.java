@@ -5,8 +5,8 @@ import api.notes.NoteDto;
 import api.notes.PatchNoteLastSeenAtInput;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.ListNotesCommandArgs;
+import cliclient.command.args.ListNotesCmdArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,8 @@ public class ListNotesCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (ListNotesCommandArgs) commandArgs;
+    public void handle(CmdArgs cwa) {
+        var args = (ListNotesCmdArgs) cwa;
         args.id().ifPresentOrElse(this::displayNoteById, () -> displayNotes(args));
     }
 
@@ -36,8 +36,8 @@ public class ListNotesCommandHandler implements CommandHandler {
         updateLastSeenAt(List.of(noteDto.getId()));
     }
 
-    private void displayNotes(ListNotesCommandArgs args) {
-        var paginator = new Paginator<NoteDto>(args.pagination(), noteApi.countAll()) {
+    private void displayNotes(ListNotesCmdArgs args) {
+        var paginator = new Paginator<NoteDto>(args.getPagination(), noteApi.countAll()) {
             @Override
             List<NoteDto> nextBatch() {
                 return noteApi.findFirstWithSmallestLastSeenAt(limit());

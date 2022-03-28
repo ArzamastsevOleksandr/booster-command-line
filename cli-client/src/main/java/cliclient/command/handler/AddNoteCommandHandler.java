@@ -5,8 +5,8 @@ import api.notes.NoteApi;
 import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.AddNoteCommandArgs;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.AddNoteCmdArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.service.SessionTrackerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,10 +20,10 @@ public class AddNoteCommandHandler implements CommandHandler {
     private final NoteApi noteApi;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (AddNoteCommandArgs) commandArgs;
+    public void handle(CmdArgs cmdArgs) {
+        var args = (AddNoteCmdArgs) cmdArgs;
         NoteDto noteDto = noteApi.add(AddNoteInput.builder()
-                .content(args.content())
+                .content(args.getContent())
                 .build());
         sessionTrackerService.notesAddedCount++;
         adapter.writeLine(noteDto);

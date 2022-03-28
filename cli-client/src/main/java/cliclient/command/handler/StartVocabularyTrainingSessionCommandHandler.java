@@ -5,9 +5,7 @@ import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.StartVocabularyTrainingSessionCommandArgs;
-import cliclient.command.arguments.VocabularyTrainingSessionMode;
+import cliclient.command.args.*;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +29,9 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private final VocabularyTrainingSessionStats stats;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         stats.reset();
-        var args = (StartVocabularyTrainingSessionCommandArgs) commandArgs;
+        var args = (StartVocabularyTrainingSessionCmdArgs) cwa;
         executeTrainingSession(args);
     }
 
@@ -111,20 +109,20 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         }
     }
 
-    private void executeTrainingSession(StartVocabularyTrainingSessionCommandArgs args) {
+    private void executeTrainingSession(StartVocabularyTrainingSessionCmdArgs args) {
         List<VocabularyEntryDto> entries = findEntries(args);
         if (entries.size() == 0) {
             adapter.error("No records");
         } else {
             adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
-            executeTrainingSessionBasedOnMode(args.mode(), entries);
+            executeTrainingSessionBasedOnMode(args.getMode(), entries);
             stats.showAnswers();
             adapter.writeLine(ColorCodes.yellow("Training session finished!"));
         }
     }
 
-    private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCommandArgs args) {
-        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.sessionSize()));
+    private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCmdArgs args) {
+        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.getEntriesPerVocabularyTrainingSession()));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);

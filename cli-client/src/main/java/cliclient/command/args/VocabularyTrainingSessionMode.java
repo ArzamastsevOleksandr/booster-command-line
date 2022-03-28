@@ -1,4 +1,4 @@
-package cliclient.command.arguments;
+package cliclient.command.args;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import static java.util.stream.Collectors.*;
 @RequiredArgsConstructor
 public enum VocabularyTrainingSessionMode {
 
+    @Deprecated
     ANTONYMS("a"),
     SYNONYMS("s"),
     UNRECOGNIZED("UNRECOGNIZED");

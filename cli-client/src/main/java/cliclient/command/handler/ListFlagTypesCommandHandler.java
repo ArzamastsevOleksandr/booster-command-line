@@ -3,7 +3,7 @@ package cliclient.command.handler;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
 import cliclient.command.FlagType;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.service.ColorProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class ListFlagTypesCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         Arrays.stream(FlagType.values())
                 .filter(FlagType::isKnown)
                 .map(colorProcessor::coloredFlagType)
