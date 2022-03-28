@@ -4,8 +4,8 @@ import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.ListVocabularyEntriesCommandArgs;
+import cliclient.command.args.ListVocabularyEntriesCmdWithArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,8 +21,8 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (ListVocabularyEntriesCommandArgs) commandArgs;
+    public void handle(CmdArgs cwa) {
+        var args = (ListVocabularyEntriesCmdWithArgs) cwa;
         args.id().ifPresentOrElse(this::displayVocabularyEntryById, () -> displayVocabularyEntries(args));
     }
 
@@ -41,16 +41,16 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
         vocabularyEntryService.updateLastSeenAt(vocabularyEntryDtos);
     }
 
-    private void displayVocabularyEntries(ListVocabularyEntriesCommandArgs args) {
+    private void displayVocabularyEntries(ListVocabularyEntriesCmdWithArgs args) {
         args.substring().ifPresentOrElse(substring -> {
-            var paginator = new Paginator<VocabularyEntryDto>(args.pagination(), vocabularyEntryApi.countWithSubstring(substring)) {
+            var paginator = new Paginator<VocabularyEntryDto>(args.getPagination(), vocabularyEntryApi.countWithSubstring(substring)) {
                 List<VocabularyEntryDto> nextBatch() {
                     return vocabularyEntryApi.findFirstWithSubstring(limit(), substring);
                 }
             };
             display(paginator);
         }, () -> {
-            var paginator = new Paginator<VocabularyEntryDto>(args.pagination(), vocabularyEntryApi.countAll()) {
+            var paginator = new Paginator<VocabularyEntryDto>(args.getPagination(), vocabularyEntryApi.countAll()) {
                 List<VocabularyEntryDto> nextBatch() {
                     return vocabularyEntryApi.findFirst(limit());
                 }

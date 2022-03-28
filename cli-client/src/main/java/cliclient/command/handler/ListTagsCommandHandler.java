@@ -4,7 +4,7 @@ import api.tags.TagDto;
 import api.tags.TagsApi;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -19,7 +19,7 @@ public class ListTagsCommandHandler implements CommandHandler {
     private final TagsApi tagsApi;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         Collection<TagDto> tags = tagsApi.findAll();
         if (CollectionUtils.isEmpty(tags)) {
             adapter.error("No records");

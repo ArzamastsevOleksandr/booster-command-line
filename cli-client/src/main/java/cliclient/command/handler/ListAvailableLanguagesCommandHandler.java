@@ -3,7 +3,7 @@ package cliclient.command.handler;
 import api.vocabulary.LanguageApi;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class ListAvailableLanguagesCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         List<String> languageNames = languageApi.availableLanguages();
         if (languageNames.isEmpty()) {
             adapter.error("No records");

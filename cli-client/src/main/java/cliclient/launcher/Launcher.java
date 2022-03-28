@@ -3,11 +3,10 @@ package cliclient.launcher;
 import api.exception.HttpErrorResponse;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandWithArgs;
+import cliclient.command.args.CmdArgs;
 import cliclient.command.service.CommandHandlerCollectionService;
 import cliclient.config.PropertyHolder;
 import cliclient.parser.CommandLineInputTransformer;
-import cliclient.postprocessor.CommandWithArgsPostProcessor;
 import cliclient.service.SessionTrackerService;
 import cliclient.util.ColorCodes;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +23,6 @@ public class Launcher {
 
     private final CommandHandlerCollectionService commandHandlerCollectionService;
     private final CommandLineAdapter adapter;
-    private final CommandWithArgsPostProcessor postProcessor;
     private final SessionTrackerService sessionTrackerService;
     private final CommandLineInputTransformer transformer;
     private final ObjectMapper objectMapper;
@@ -40,16 +38,16 @@ public class Launcher {
     }
 
     private void userInteractions() {
-        CommandWithArgs commandWithArgs = readInputAndParseToCommandWithArgs();
-        while (commandWithArgs.getCommand() != Command.EXIT) {
-            handleCommandWithArgs(commandWithArgs);
-            commandWithArgs = readInputAndParseToCommandWithArgs();
+        CmdArgs cmdArgs = readInputAndParseToCommandWithArgs();
+        while (cmdArgs.getCommand() != Command.EXIT) {
+            handleCommandWithArgs(cmdArgs);
+            cmdArgs = readInputAndParseToCommandWithArgs();
         }
     }
 
-    private void handleCommandWithArgs(CommandWithArgs commandWithArgs) {
+    private void handleCommandWithArgs(CmdArgs cmdArgs) {
         try {
-            commandHandlerCollectionService.handle(commandWithArgs);
+            commandHandlerCollectionService.handle(cmdArgs);
         } catch (Throwable t) {
             if (t instanceof FeignException.FeignClientException) {
                 try {
@@ -70,11 +68,10 @@ public class Launcher {
     }
 
     // todo: if settings service is down, process exception
-    private CommandWithArgs readInputAndParseToCommandWithArgs() {
+    private CmdArgs readInputAndParseToCommandWithArgs() {
         adapter.write(ColorCodes.purple(">> "));
         String input = adapter.readLine();
-        CommandWithArgs commandWithArgs = transformer.toCommandWithArgs(input);
-        return commandWithArgs.hasNoErrors() ? postProcessor.process(commandWithArgs) : commandWithArgs;
+        return transformer.toCommandWithArgs(input);
     }
 
 }

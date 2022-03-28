@@ -1,6 +1,6 @@
 package cliclient.parser;
 
-import cliclient.command.arguments.CommandWithArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class CommandLineInputTransformer {
     private final TokenSequenceValidator tokenSequenceValidator;
     private final CommandWithArgsService commandWithArgsService;
 
-    public CommandWithArgs toCommandWithArgs(String input) {
+    public CmdArgs toCommandWithArgs(String input) {
         List<Token> tokens = tokenizer.parseIntoTokens(input);
         ValidationResult validationResult = tokenSequenceValidator.validate(tokens);
         return commandWithArgsService.toCommandWithArgs(tokens, validationResult);

@@ -4,7 +4,7 @@ import api.settings.SettingsApi;
 import api.settings.SettingsDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public class ShowSettingsCommandHandler implements CommandHandler {
     private final SettingsApi settingsApi;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         SettingsDto settingsDto = settingsApi.findOne();
         adapter.writeLine(settingsDto);
     }

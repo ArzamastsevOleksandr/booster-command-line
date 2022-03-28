@@ -14,6 +14,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: delete ve by name
         // todo: fix: dwn => no settings => 404 error
         // todo: log request/response in tests
         // todo: do not create an empty sheet when downloading data

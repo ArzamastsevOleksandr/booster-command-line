@@ -5,8 +5,8 @@ import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.UpdateVocabularyEntryCommandArgs;
+import cliclient.command.args.CmdArgs;
+import cliclient.command.args.UpdateVocabularyEntryCmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +19,8 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
 
     // todo: update contexts
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (UpdateVocabularyEntryCommandArgs) commandArgs;
+    public void handle(CmdArgs cwa) {
+        var args = (UpdateVocabularyEntryCmdArgs) cwa;
 
         var input = new PatchVocabularyEntryInput();
 

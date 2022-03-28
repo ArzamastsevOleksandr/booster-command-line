@@ -2,13 +2,11 @@ package cliclient.command.handler;
 
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.util.ColorCodes;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static cliclient.command.Command.HELP;
-
+@Deprecated
 @Component
 @RequiredArgsConstructor
 public class UnrecognizedCommandHandler implements CommandHandler {
@@ -16,7 +14,7 @@ public class UnrecognizedCommandHandler implements CommandHandler {
     private final CommandLineAdapter adapter;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
+    public void handle(CmdArgs cwa) {
         adapter.writeLine("Unknown command.");
         adapter.newLine();
         adapter.help();

@@ -2,7 +2,7 @@ package cliclient.parser;
 
 import cliclient.command.Command;
 import cliclient.command.FlagType;
-import cliclient.command.arguments.VocabularyTrainingSessionMode;
+import cliclient.command.args.VocabularyTrainingSessionMode;
 import cliclient.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

@@ -1,14 +1,19 @@
-package cliclient.command.arguments;
+package cliclient.command.args;
 
+import cliclient.command.Command;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 import java.util.Set;
 
-@Value
+@Data
 @Builder
-public class AddVocabularyEntryCommandArgs implements CommandArgs {
+@AllArgsConstructor
+@NoArgsConstructor
+public class AddVocabularyEntryCmdArgs implements CmdArgs {
 
     String name;
     String language;
@@ -22,16 +27,21 @@ public class AddVocabularyEntryCommandArgs implements CommandArgs {
     @Builder.Default
     Set<String> contexts = Set.of();
 
-    public Optional<String> language() {
+    public Optional<String> getLanguage() {
         return Optional.ofNullable(language);
     }
 
-    public Optional<String> definition() {
+    public Optional<String> getDefinition() {
         return Optional.ofNullable(definition);
     }
 
-    public Optional<String> tag() {
+    public Optional<String> getTag() {
         return Optional.ofNullable(tag);
+    }
+
+    @Override
+    public Command getCommand() {
+        return Command.ADD_VOCABULARY_ENTRY;
     }
 
 }

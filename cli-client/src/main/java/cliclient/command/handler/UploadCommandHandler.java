@@ -3,8 +3,8 @@ package cliclient.command.handler;
 import api.upload.UploadResponse;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.UploadCommandArgs;
+import cliclient.command.args.CmdArgs;
+import cliclient.command.args.UploadCmdArgs;
 import cliclient.feign.upload.UploadServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.fileupload.FileItem;
@@ -28,16 +28,16 @@ public class UploadCommandHandler implements CommandHandler {
     private final UploadServiceClient uploadServiceClient;
 
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (UploadCommandArgs) commandArgs;
-        boolean fileExists = ofNullable(args.filename())
+    public void handle(CmdArgs cwa) {
+        var args = (UploadCmdArgs) cwa;
+        boolean fileExists = ofNullable(args.getFilename())
                 .map(this::fileExists)
                 .orElse(false);
 
         if (fileExists) {
-            doUpload(args.filename());
+            doUpload(args.getFilename());
         } else {
-            adapter.writeLine("File " + args.filename() + " or default upload file do not exist");
+            adapter.writeLine("File " + args.getFilename() + " or default upload file do not exist");
         }
     }
 

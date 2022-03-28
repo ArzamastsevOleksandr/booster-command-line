@@ -2,8 +2,8 @@ package cliclient.command.handler;
 
 import api.upload.DownloadApi;
 import cliclient.command.Command;
-import cliclient.command.arguments.CommandArgs;
-import cliclient.command.arguments.DownloadCommandArgs;
+import cliclient.command.args.DownloadCmdArgs;
+import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +18,11 @@ public class DownloadCommandHandler implements CommandHandler {
 
     // todo: if the download file already exists - warn and ask for confirmation
     @Override
-    public void handle(CommandArgs commandArgs) {
-        var args = (DownloadCommandArgs) commandArgs;
+    public void handle(CmdArgs cwa) {
+        var args = (DownloadCmdArgs) cwa;
         byte[] bytes = downloadApi.download();
         // todo: settings + properties
-        try (var out = new FileOutputStream(args.filename())) {
+        try (var out = new FileOutputStream(args.getFilename())) {
             out.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();
