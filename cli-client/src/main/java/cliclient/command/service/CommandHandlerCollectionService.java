@@ -42,6 +42,12 @@ public class CommandHandlerCollectionService {
             return;
         } else {
             commandWithArgs.getErrors().forEach(adapter::error);
+            if (commandWithArgs.getCommand() != null) {
+                this.handleCommandWithArgs(CommandWithArgs.builder()
+                        .command(Command.HELP)
+                        .helpTarget(commandWithArgs.getCommand())
+                        .build());
+            }
         }
         adapter.newLine();
     }
