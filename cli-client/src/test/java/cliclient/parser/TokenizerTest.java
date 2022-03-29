@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.LongStream;
 
@@ -30,8 +29,7 @@ class TokenizerTest {
     void stripsWhitespacesAndParsesSingleRecognizableCommands() {
         Arrays.stream(Command.values())
                 .filter(Command::isRecognizable)
-                .map(Command::getEquivalents)
-                .flatMap(Set::stream)
+                .map(Command::getName)
                 .map(this::padWithSpaces)
                 .forEach(this::assertThatRecognizableCommandWrappedWithSpacesIsParsed);
     }
@@ -81,8 +79,7 @@ class TokenizerTest {
     @Test
     void stripsWhitespacesAndParsesText() {
         Arrays.stream(Command.values())
-                .map(Command::getEquivalents)
-                .flatMap(Set::stream)
+                .map(Command::getName)
                 .map(c -> c + "a")
                 .map(this::padWithSpaces)
                 .forEach(this::assertThatTextWrappedWithSpacesIsParsed);
@@ -92,7 +89,7 @@ class TokenizerTest {
     void addVocabularyEntryTokenSequence() {
         String input = """
                 %s \\%s=name23 \\%s=one;two \\%s = h lal svts n
-                """.formatted(Command.ADD_VOCABULARY_ENTRY.firstEquivalent(), NAME.value, SYNONYMS.value, DEFINITION.value);
+                """.formatted(Command.ADD_VOCABULARY_ENTRY.getName(), NAME.value, SYNONYMS.value, DEFINITION.value);
 
         List<Token> tokens = tokenizer.parseIntoTokens(input);
 
@@ -100,7 +97,7 @@ class TokenizerTest {
 
         assertThat(tokens.get(0))
                 .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
-                .hasFieldOrPropertyWithValue("value", Command.ADD_VOCABULARY_ENTRY.firstEquivalent());
+                .hasFieldOrPropertyWithValue("value", Command.ADD_VOCABULARY_ENTRY.getName());
 
         assertThat(tokens.get(1))
                 .hasFieldOrPropertyWithValue("type", TokenType.FLAG)
@@ -144,7 +141,7 @@ class TokenizerTest {
     void helpTokenSequence(Command helpTarget) {
         String input = """
                 %s %s
-                """.formatted(Command.HELP.firstEquivalent(), helpTarget.firstEquivalent());
+                """.formatted(Command.HELP.getName(), helpTarget.getName());
 
         List<Token> tokens = tokenizer.parseIntoTokens(input);
 
@@ -152,11 +149,11 @@ class TokenizerTest {
 
         assertThat(tokens.get(0))
                 .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
-                .hasFieldOrPropertyWithValue("value", Command.HELP.firstEquivalent());
+                .hasFieldOrPropertyWithValue("value", Command.HELP.getName());
 
         assertThat(tokens.get(1))
                 .hasFieldOrPropertyWithValue("type", TokenType.COMMAND)
-                .hasFieldOrPropertyWithValue("value", helpTarget.firstEquivalent());
+                .hasFieldOrPropertyWithValue("value", helpTarget.getName());
     }
 
     private void assertThatTextWrappedWithSpacesIsParsed(String text) {

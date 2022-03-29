@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ColorProcessor {
 
     public String coloredCommand(Command command) {
-        return ColorCodes.cyan(command.name()) + ColorCodes.green(" (" + String.join(", ", command.getEquivalents()) + ")");
+        return ColorCodes.cyan(command.name()) + ColorCodes.green(" (" + String.join(", ", command.getName()) + ")");
     }
 
     public String coloredFlagType(FlagType flagType) {

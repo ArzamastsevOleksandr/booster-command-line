@@ -29,6 +29,8 @@ class VocabularyTrainingSessionStats {
     private final Set<VocabularyEntryDto> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> correctAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> partialAnswers = new HashSet<>();
+    // todo: hintsUsed
+    // todo: skipped
     private final Set<VocabularyEntryDto> skipped = new HashSet<>();
 
     void reset() {

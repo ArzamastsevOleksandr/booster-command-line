@@ -1,5 +1,6 @@
 package cliclient.command;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
@@ -10,50 +11,48 @@ import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.*;
 
-// todo: a single equivalent
 @RequiredArgsConstructor
 public enum Command {
 
-    HELP(Set.of("h")),
+    HELP("h"),
 
-    LIST_AVAILABLE_LANGUAGES(Set.of("lal")),
+    LIST_AVAILABLE_LANGUAGES("al"),
     // todo: my langs
 
-    LIST_VOCABULARY_ENTRIES(Set.of("ve")),
-    DELETE_VOCABULARY_ENTRY(Set.of("dve")),
-    ADD_VOCABULARY_ENTRY(Set.of("ave")),
-    UPDATE_VOCABULARY_ENTRY(Set.of("uve")),
+    LIST_VOCABULARY_ENTRIES("ve"),
+    DELETE_VOCABULARY_ENTRY("dve"),
+    ADD_VOCABULARY_ENTRY("ave"),
+    UPDATE_VOCABULARY_ENTRY("uve"),
 
-    START_VOCABULARY_TRAINING_SESSION(Set.of("svts")),
+    START_VOCABULARY_TRAINING_SESSION("svts"),
 
-    DOWNLOAD(Set.of("dwn")),
-    UPLOAD(Set.of("upl")),
+    DOWNLOAD("dwn"),
+    UPLOAD("upl"),
 
-    SHOW_SETTINGS(Set.of("ss")),
-    ADD_SETTINGS(Set.of("as")),
-    DELETE_SETTINGS(Set.of("ds")),
+    SHOW_SETTINGS("ss"),
+    ADD_SETTINGS("as"),
+    DELETE_SETTINGS("ds"),
 
-    LIST_NOTES(Set.of("n")),
-    ADD_NOTE(Set.of("an")),
-    DELETE_NOTE(Set.of("dn")),
+    LIST_NOTES("n"),
+    ADD_NOTE("an"),
+    DELETE_NOTE("dn"),
 
-    ADD_TAG(Set.of("at")),
-    LIST_TAGS(Set.of("t")),
+    ADD_TAG("at"),
+    LIST_TAGS("t"),
     // todo: DELETE_TAG
-    USE_TAG(Set.of("ut")),
+    USE_TAG("ut"),
 
-    LIST_FLAG_TYPES(Set.of("ft")),
+    LIST_FLAG_TYPES("ft"),
 
-    EXIT(Set.of("e")),
-    NO_INPUT(Set.of()),
+    EXIT("e"),
+    NO_INPUT("NO_INPUT"),
 
-    UNRECOGNIZED(Set.of("UNRECOGNIZED"));
+    UNRECOGNIZED("UNRECOGNIZED");
 
     // if any of the commands have shared equivalents - crash the program early
     static {
         Map<String, Long> equivalent2Count = Arrays.stream(values())
-                .map(Command::getEquivalents)
-                .flatMap(Set::stream)
+                .map(Command::getName)
                 .collect(groupingBy(Function.identity(), counting()));
 
         Predicate<Map.Entry<String, Long>> isSharedEquivalent = e -> e.getValue() > 1;
@@ -64,31 +63,24 @@ public enum Command {
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         if (!sharedEquivalents.isEmpty()) {
-            throw new AssertionError("Duplicate commands detected: " + sharedEquivalents);
+            throw new AssertionError("Duplicate command names detected: " + sharedEquivalents);
         }
     }
 
-    static final Set<Command> NON_RECOGNIZABLE_COMMANDS = Set.of(UNRECOGNIZED, NO_INPUT);
+    private static final Set<Command> NON_RECOGNIZABLE_COMMANDS = Set.of(UNRECOGNIZED, NO_INPUT);
 
-    private final Set<String> equivalents;
+    @Getter
+    private final String name;
 
     public static Command fromString(String str) {
         return Arrays.stream(values())
-                .filter(command -> command.equivalents.contains(str))
+                .filter(command -> command.name.contains(str))
                 .findFirst()
                 .orElse(UNRECOGNIZED);
     }
 
     public static boolean isRecognizable(Command command) {
         return !NON_RECOGNIZABLE_COMMANDS.contains(command);
-    }
-
-    public Set<String> getEquivalents() {
-        return equivalents;
-    }
-
-    public String firstEquivalent() {
-        return equivalents.iterator().next();
     }
 
 }
