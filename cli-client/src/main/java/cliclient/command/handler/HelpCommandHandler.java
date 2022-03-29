@@ -42,9 +42,9 @@ public class HelpCommandHandler implements CommandHandler {
                             %s %s: help on the %s command
                     """.formatted(
                     colorProcessor.coloredCommand(Command.HELP),
-                    ColorCodes.green(Command.HELP.firstEquivalent()),
-                    ColorCodes.green(Command.HELP.firstEquivalent()),
-                    ColorCodes.green(Command.ADD_VOCABULARY_ENTRY.firstEquivalent()),
+                    ColorCodes.green(Command.HELP.getName()),
+                    ColorCodes.green(Command.HELP.getName()),
+                    ColorCodes.green(Command.ADD_VOCABULARY_ENTRY.getName()),
                     colorProcessor.coloredCommand(Command.ADD_VOCABULARY_ENTRY));
             case LIST_AVAILABLE_LANGUAGES -> """
                     %s: Display available languages
@@ -63,10 +63,10 @@ public class HelpCommandHandler implements CommandHandler {
                     ColorCodes.green(FlagType.ID.value),
                     ColorCodes.green(FlagType.SUBSTRING.value),
                     ColorCodes.green(FlagType.PAGINATION.value),
-                    ColorCodes.green(Command.LIST_VOCABULARY_ENTRIES.firstEquivalent()),
+                    ColorCodes.green(Command.LIST_VOCABULARY_ENTRIES.getName()),
                     ColorCodes.green(FlagType.PAGINATION.value),
                     ColorCodes.green(FlagType.SUBSTRING.value),
-                    ColorCodes.green(Command.LIST_VOCABULARY_ENTRIES.firstEquivalent()),
+                    ColorCodes.green(Command.LIST_VOCABULARY_ENTRIES.getName()),
                     ColorCodes.green(FlagType.ID.value));
             case DELETE_VOCABULARY_ENTRY -> """
                     %s: Delete vocabulary entry
@@ -77,7 +77,7 @@ public class HelpCommandHandler implements CommandHandler {
                     """.formatted(
                     colorProcessor.coloredCommand(Command.DELETE_VOCABULARY_ENTRY),
                     ColorCodes.green(FlagType.ID.value),
-                    ColorCodes.green(Command.DELETE_VOCABULARY_ENTRY.firstEquivalent()),
+                    ColorCodes.green(Command.DELETE_VOCABULARY_ENTRY.getName()),
                     ColorCodes.green(FlagType.ID.value));
             case START_VOCABULARY_TRAINING_SESSION -> """
                     %s: Start a vocabulary training session
@@ -100,9 +100,9 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredCommand(Command.DOWNLOAD),
                     ColorCodes.green(FlagType.FILE.value),
                     ColorCodes.blue(propertyHolder.getDownloadFilename()),
-                    ColorCodes.green(Command.DOWNLOAD.firstEquivalent()),
+                    ColorCodes.green(Command.DOWNLOAD.getName()),
                     ColorCodes.blue(propertyHolder.getDownloadFilename()),
-                    ColorCodes.green(Command.DOWNLOAD.firstEquivalent()),
+                    ColorCodes.green(Command.DOWNLOAD.getName()),
                     ColorCodes.green(FlagType.FILE.value),
                     ColorCodes.blue(exampleFileName),
                     ColorCodes.blue(exampleFileName));
@@ -118,9 +118,9 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredCommand(Command.UPLOAD),
                     ColorCodes.green(FlagType.FILE.value),
                     ColorCodes.blue(propertyHolder.getUploadFilename()),
-                    ColorCodes.green(Command.UPLOAD.firstEquivalent()),
+                    ColorCodes.green(Command.UPLOAD.getName()),
                     ColorCodes.blue(propertyHolder.getUploadFilename()),
-                    ColorCodes.green(Command.UPLOAD.firstEquivalent()),
+                    ColorCodes.green(Command.UPLOAD.getName()),
                     ColorCodes.green(FlagType.FILE.value),
                     ColorCodes.blue(exampleFileName),
                     ColorCodes.blue(exampleFileName));
@@ -162,7 +162,7 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredFlagType(FlagType.NOTES_PAGINATION),
                     colorProcessor.coloredFlagType(FlagType.TAGS_PAGINATION),
                     colorProcessor.coloredFlagType(FlagType.VOCABULARY_PAGINATION),
-                    ColorCodes.green(Command.ADD_SETTINGS.firstEquivalent()),
+                    ColorCodes.green(Command.ADD_SETTINGS.getName()),
                     ColorCodes.green(FlagType.LANGUAGE_NAME.value),
                     ColorCodes.green(FlagType.ENTRIES_PER_VOCABULARY_TRAINING_SESSION.value));
             case DELETE_SETTINGS -> """
@@ -180,9 +180,9 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredCommand(Command.LIST_NOTES),
                     colorProcessor.coloredFlagType(FlagType.ID),
                     colorProcessor.coloredFlagType(FlagType.PAGINATION),
-                    ColorCodes.green(Command.LIST_NOTES.firstEquivalent()),
+                    ColorCodes.green(Command.LIST_NOTES.getName()),
                     ColorCodes.green(FlagType.ID.value),
-                    ColorCodes.green(Command.LIST_NOTES.firstEquivalent()),
+                    ColorCodes.green(Command.LIST_NOTES.getName()),
                     ColorCodes.green(FlagType.PAGINATION.value));
             case ADD_NOTE -> """
                     %s: Create a note
@@ -196,7 +196,7 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredCommand(Command.ADD_NOTE),
                     ColorCodes.green(FlagType.CONTENT.value),
                     ColorCodes.green(FlagType.TAG.value),
-                    ColorCodes.green(Command.ADD_NOTE.firstEquivalent()),
+                    ColorCodes.green(Command.ADD_NOTE.getName()),
                     ColorCodes.green(FlagType.CONTENT.value),
                     ColorCodes.green(FlagType.TAG.value));
             case DELETE_NOTE -> """
@@ -208,7 +208,7 @@ public class HelpCommandHandler implements CommandHandler {
                     """.formatted(
                     colorProcessor.coloredCommand(Command.DELETE_NOTE),
                     ColorCodes.green(FlagType.ID.value),
-                    ColorCodes.green(Command.DELETE_NOTE.firstEquivalent()),
+                    ColorCodes.green(Command.DELETE_NOTE.getName()),
                     ColorCodes.green(FlagType.ID.value));
             case ADD_TAG -> """
                     %s: Create a tag
@@ -219,7 +219,7 @@ public class HelpCommandHandler implements CommandHandler {
                     """.formatted(
                     colorProcessor.coloredCommand(Command.ADD_TAG),
                     ColorCodes.green(FlagType.NAME.value),
-                    ColorCodes.green(Command.ADD_TAG.firstEquivalent()),
+                    ColorCodes.green(Command.ADD_TAG.getName()),
                     ColorCodes.green(FlagType.NAME.value));
             case LIST_TAGS -> """
                     %s: Display tags
@@ -235,7 +235,7 @@ public class HelpCommandHandler implements CommandHandler {
                     colorProcessor.coloredCommand(Command.USE_TAG),
                     ColorCodes.green(FlagType.TAG.value),
                     ColorCodes.green(FlagType.NOTE_ID.value),
-                    ColorCodes.green(Command.USE_TAG.firstEquivalent()),
+                    ColorCodes.green(Command.USE_TAG.getName()),
                     ColorCodes.green(FlagType.TAG.value),
                     tag,
                     ColorCodes.green(FlagType.NOTE_ID.value));

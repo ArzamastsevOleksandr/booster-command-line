@@ -45,7 +45,7 @@ public class CommandLineAdapter {
     }
 
     public void help() {
-        writeLine(ColorCodes.green("Type command or " + HELP.getEquivalents() + " to get help."));
+        writeLine(ColorCodes.green("Type command or " + HELP.getName() + " to get help."));
     }
 
 }
