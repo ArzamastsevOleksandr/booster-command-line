@@ -20,7 +20,7 @@ public class AddTagCommandHandler implements CommandHandler {
     @Override
     public void handle(CmdArgs cmdArgs) {
         var args = (AddTagCmdArgs) cmdArgs;
-        TagDto tagDto = tagsApi.create(new CreateTagInput(args.getName()));
+        TagDto tagDto = tagsApi.create(new CreateTagInput(args.name()));
         adapter.writeLine(tagDto);
     }
 

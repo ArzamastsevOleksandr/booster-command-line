@@ -23,8 +23,8 @@ public class UseTagCommandHandler implements CommandHandler {
     public void handle(CmdArgs cwa) {
         var args = (UseTagCmdArgs) cwa;
         NoteDto noteDto = noteApi.addTags(AddTagsToNoteInput.builder()
-                .noteId(args.getNoteId())
-                .tagNames(Set.of(args.getTag()))
+                .noteId(args.noteId())
+                .tagNames(Set.of(args.tag()))
                 .build());
         adapter.writeLine(noteDto);
     }

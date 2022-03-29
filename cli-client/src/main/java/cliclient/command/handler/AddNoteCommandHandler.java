@@ -23,7 +23,7 @@ public class AddNoteCommandHandler implements CommandHandler {
     public void handle(CmdArgs cmdArgs) {
         var args = (AddNoteCmdArgs) cmdArgs;
         NoteDto noteDto = noteApi.add(AddNoteInput.builder()
-                .content(args.getContent())
+                .content(args.content())
                 .build());
         sessionTrackerService.notesAddedCount++;
         adapter.writeLine(noteDto);

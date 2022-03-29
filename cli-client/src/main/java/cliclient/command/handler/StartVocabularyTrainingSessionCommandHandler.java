@@ -118,14 +118,14 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
             adapter.error("No records");
         } else {
             adapter.writeLine("Loaded " + ColorCodes.cyan(entries.size()) + " entries.");
-            executeTrainingSessionBasedOnMode(args.getMode(), entries);
+            executeTrainingSessionBasedOnMode(args.mode(), entries);
             stats.showAnswers();
             adapter.writeLine(ColorCodes.yellow("Training session finished!"));
         }
     }
 
     private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCmdArgs args) {
-        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.getEntriesPerVocabularyTrainingSession()));
+        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.entriesPerVocabularyTrainingSession()));
 //        return switch (mode) {
 //            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
 //            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);

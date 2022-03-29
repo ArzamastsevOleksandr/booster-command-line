@@ -1,18 +1,8 @@
 package cliclient.command.args;
 
 import cliclient.command.Command;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class SingleCmdArgs implements CmdArgs {
-
-    Command command;
+public record SingleCmdArgs(Command command) implements CmdArgs {
 
     @Override
     public Command getCommand() {

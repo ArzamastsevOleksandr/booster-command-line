@@ -62,9 +62,8 @@ class CommandWithArgsService {
     }
 
     private CmdArgs listNotes() {
-        return ListNotesCmdArgs.builder()
-                .pagination(findSettingsIgnoringNotFound().map(SettingsDto::getNotesPagination).orElse(propertyHolder.getDefaultPagination()))
-                .build();
+        Integer pagination = findSettingsIgnoringNotFound().map(SettingsDto::getNotesPagination).orElse(propertyHolder.getDefaultPagination());
+        return new ListNotesCmdArgs(null, pagination);
     }
 
     private CmdArgs addSettings() {
@@ -143,10 +142,7 @@ class CommandWithArgsService {
         if (cwa.getNoteId() == null) {
             return new ErroneousCmdArgs(USE_TAG, "Note id is missing");
         }
-        return UseTagCmdArgs.builder()
-                .noteId(cwa.getNoteId())
-                .tag(cwa.getTag())
-                .build();
+        return new UseTagCmdArgs(cwa.getNoteId(), cwa.getTag());
     }
 
     private CmdArgs addTagWithParams(CommandWithArgs cwa) {
@@ -167,18 +163,13 @@ class CommandWithArgsService {
         if (cwa.getContent() == null) {
             return new ErroneousCmdArgs(ADD_NOTE, "Content is missing");
         }
-        return AddNoteCmdArgs.builder()
-                .content(cwa.getContent())
-                .tag(cwa.getTag())
-                .build();
+        return new AddNoteCmdArgs(cwa.getContent(), cwa.getTag());
     }
 
     private CmdArgs listNotesWithParams(CommandWithArgs cwa) {
-        return ListNotesCmdArgs.builder()
-                .id(cwa.getId())
-                .pagination(Optional.ofNullable(cwa.getPagination())
-                        .orElse(findSettingsIgnoringNotFound().map(SettingsDto::getNotesPagination).orElse(propertyHolder.getDefaultPagination())))
-                .build();
+        Integer pagination = Optional.ofNullable(cwa.getPagination())
+                .orElse(findSettingsIgnoringNotFound().map(SettingsDto::getNotesPagination).orElse(propertyHolder.getDefaultPagination()));
+        return new ListNotesCmdArgs(cwa.getId(), pagination);
     }
 
     private AddSettingsCmdArgs addSettingsWithParams(CommandWithArgs cwa) {
@@ -199,10 +190,7 @@ class CommandWithArgsService {
         var sessionSize = cwa.getEntriesPerVocabularyTrainingSession() == null
                 ? resolveVocabularyTrainingSessionSize()
                 : cwa.getEntriesPerVocabularyTrainingSession();
-        return StartVocabularyTrainingSessionCmdArgs.builder()
-                .mode(mode)
-                .entriesPerVocabularyTrainingSession(sessionSize)
-                .build();
+        return new StartVocabularyTrainingSessionCmdArgs(mode, sessionSize);
     }
 
     private CmdArgs updateVocabularyEntryWithParams(CommandWithArgs cwa) {

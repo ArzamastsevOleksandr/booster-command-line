@@ -18,7 +18,7 @@ public class DeleteNoteCommandHandler implements CommandHandler {
     @Override
     public void handle(CmdArgs cmdArgs) {
         var args = (DeleteNoteCmdArgs) cmdArgs;
-        noteApi.deleteById(args.getId());
+        noteApi.deleteById(args.id());
         adapter.writeLine("Done");
     }
 
