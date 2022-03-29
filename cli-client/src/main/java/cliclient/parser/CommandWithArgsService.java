@@ -134,7 +134,8 @@ class CommandWithArgsService {
             case DELETE_NOTE -> deleteNoteWithParams(cwa);
             case ADD_TAG -> addTagWithParams(cwa);
             case USE_TAG -> useTagWithParams(cwa);
-            default -> throw new IllegalStateException("Unexpected value: " + cwa.getCommand());
+            // todo: handle globally with no program interruption
+            default -> throw new IllegalStateException("Command does not support \\flag=value pairs: " + cwa.getCommand());
         };
     }
 

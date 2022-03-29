@@ -3,7 +3,6 @@ package cliclient.parser;
 import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.args.VocabularyTrainingSessionMode;
-import cliclient.util.NumberUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +11,9 @@ import java.util.List;
 import static cliclient.parser.CommandValidationResult.*;
 
 @Component
-@RequiredArgsConstructor
 public class TokenSequenceValidator {
 
-    private final NumberUtil numberUtil;
+    private static final int FLAG_VALUE_PAIR_SIZE = 3;
 
     ValidationResult validate(List<Token> tokens) {
         if (tokens.isEmpty()) {
@@ -33,7 +31,7 @@ public class TokenSequenceValidator {
             return validateHelpCommand(tokens, command);
         }
         List<Token> commandArguments = tokens.subList(1, tokens.size());
-        if (commandArguments.size() % 3 != 0) {
+        if (commandArguments.size() % FLAG_VALUE_PAIR_SIZE != 0) {
             return new ValidationResult(COMMAND_MUST_BE_FOLLOWED_BY_FLAG_ARGUMENT_PAIRS, command);
         }
         try {
@@ -45,19 +43,19 @@ public class TokenSequenceValidator {
     }
 
     private ValidationResult validateHelpCommand(List<Token> tokens, Command command) {
-        String secondTokenValue = tokens.get(1).value();
-        Command secondCommand = Command.fromString(secondTokenValue);
-        if (command == Command.HELP && Command.isRecognizable(secondCommand)) {
-            return new ValidationResult(HELP_ON_COMMAND, secondCommand);
-        } else if (command == Command.HELP && !Command.isRecognizable(secondCommand)) {
-            return new ValidationResult(HELP_ON_TEXT, secondTokenValue);
+        String helpTargetValue = tokens.get(1).value();
+        Command helpTargetCommand = Command.fromString(helpTargetValue);
+        if (command == Command.HELP && Command.isRecognizable(helpTargetCommand)) {
+            return new ValidationResult(HELP_ON_COMMAND, helpTargetCommand);
+        } else if (command == Command.HELP && !Command.isRecognizable(helpTargetCommand)) {
+            return new ValidationResult(HELP_ON_TEXT, helpTargetValue);
         } else {
             return new ValidationResult(HELP_EXPECTED_BUT_GOT_OTHER_COMMAND_INSTEAD, command);
         }
     }
 
     private void validateCommandArguments(List<Token> commandArguments) {
-        for (int i = 0; i < commandArguments.size(); i += 3) {
+        for (int i = 0; i < commandArguments.size(); i += FLAG_VALUE_PAIR_SIZE) {
             Token flag = commandArguments.get(i);
             checkIsFlag(flag);
 
@@ -96,9 +94,8 @@ public class TokenSequenceValidator {
         String flagTypeName = flagType.name();
         String value = expectedValue.value();
         switch (flagType) {
-            case ID, NOTE_ID, VOCABULARY_ENTRY_ID -> checkIdIsPositiveLong(flagTypeName, value);
-            case CORRECT_ANSWERS_COUNT, ENTRIES_PER_VOCABULARY_TRAINING_SESSION,
-                    PAGINATION, NOTES_PAGINATION, LANGUAGES_PAGINATION, TAGS_PAGINATION, VOCABULARY_PAGINATION -> checkValueIsPositiveInteger(flagTypeName, value);
+            case ID, NOTE_ID, VOCABULARY_ENTRY_ID, CORRECT_ANSWERS_COUNT, ENTRIES_PER_VOCABULARY_TRAINING_SESSION,
+                    PAGINATION, NOTES_PAGINATION, LANGUAGES_PAGINATION, TAGS_PAGINATION, VOCABULARY_PAGINATION -> checkValueIsPositiveIntegralNumber(flagTypeName, value);
             case MODE_VOCABULARY -> checkVocabularyTrainingSessionModeIsCorrect(value);
         }
     }
@@ -117,15 +114,18 @@ public class TokenSequenceValidator {
         }
     }
 
-    private void checkValueIsPositiveInteger(String name, String value) {
-        if (numberUtil.isNotPositiveInteger(value)) {
-            throw new TokenValidationException(name + " argument must be a positive integer number, got: " + value);
+    private void checkValueIsPositiveIntegralNumber(String name, String value) {
+        if (isNotPositiveLong(value)) {
+            throw new TokenValidationException(name + " argument must be a positive integral number, got: " + value);
         }
     }
 
-    private void checkIdIsPositiveLong(String name, String value) {
-        if (numberUtil.isNotPositiveLong(value)) {
-            throw new TokenValidationException(name + " argument must be a positive long number, got: " + value);
+    public boolean isNotPositiveLong(String check) {
+        try {
+            long result = Long.parseLong(check);
+            return result < 0;
+        } catch (NumberFormatException e) {
+            return true;
         }
     }
 
