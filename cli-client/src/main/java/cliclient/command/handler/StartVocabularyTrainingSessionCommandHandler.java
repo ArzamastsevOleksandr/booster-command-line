@@ -5,7 +5,9 @@ import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.Command;
-import cliclient.command.args.*;
+import cliclient.command.args.CmdArgs;
+import cliclient.command.args.StartVocabularyTrainingSessionCmdArgs;
+import cliclient.command.args.VocabularyTrainingSessionMode;
 import cliclient.util.ColorCodes;
 import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     private final VocabularyEntryApi vocabularyEntryApi;
     private final CommandLineAdapter adapter;
     private final VocabularyTrainingSessionStats stats;
+    private final ThreadUtil threadUtil;
 
     @Override
     public void handle(CmdArgs cwa) {
@@ -179,7 +182,7 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
                 adapter.writeLine(ColorCodes.red("Max hints used"));
                 stats.skipped(tracker.current);
                 adapter.writeLine(tracker.current);
-                ThreadUtil.sleepSeconds(1);
+                threadUtil.sleepSeconds(1);
             } else {
                 Set<String> parsedAnswer = parseEquivalents(answer);
                 answerConsumer.accept(parsedAnswer, entry);
