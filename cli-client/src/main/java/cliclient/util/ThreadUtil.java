@@ -1,12 +1,13 @@
 package cliclient.util;
 
+import org.springframework.stereotype.Component;
+
 import java.util.concurrent.TimeUnit;
 
-@Deprecated
-// todo: a separate service
-public interface ThreadUtil {
+@Component
+public class ThreadUtil {
 
-    static void sleepSeconds(int s) {
+    public void sleepSeconds(int s) {
         try {
             TimeUnit.SECONDS.sleep(s);
         } catch (InterruptedException e) {

@@ -24,6 +24,7 @@ class VocabularyTrainingSessionStats {
 
     private final CommandLineAdapter adapter;
     private final VocabularyEntryService vocabularyEntryService;
+    private final ThreadUtil threadUtil;
 
     private final Set<VocabularyEntryDto> wrongAnswers = new HashSet<>();
     private final Set<VocabularyEntryDto> correctAnswers = new HashSet<>();
@@ -62,7 +63,7 @@ class VocabularyTrainingSessionStats {
 
     private void showAnswers(Set<VocabularyEntryDto> answers, String label) {
         if (!answers.isEmpty()) {
-            ThreadUtil.sleepSeconds(1);
+            threadUtil.sleepSeconds(1);
             adapter.writeLine(purpleSeparator());
             adapter.writeLine(label);
             adapter.newLine();
