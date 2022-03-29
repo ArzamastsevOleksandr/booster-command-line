@@ -39,7 +39,7 @@ public class Launcher {
 
     private void userInteractions() {
         CmdArgs cmdArgs = readInputAndParseToCommandWithArgs();
-        while (cmdArgs.getCommand() != Command.EXIT) {
+        while (cmdArgs.isNotExit()) {
             handleCommandWithArgs(cmdArgs);
             cmdArgs = readInputAndParseToCommandWithArgs();
         }

@@ -4,7 +4,6 @@ import api.notes.NoteApi;
 import api.notes.NoteDto;
 import api.notes.PatchNoteLastSeenAtInput;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.ListNotesCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -84,8 +83,8 @@ public class ListNotesCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.LIST_NOTES;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ListNotesCmdArgs.class;
     }
 
 }

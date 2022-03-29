@@ -2,7 +2,6 @@ package cliclient.command.handler;
 
 import api.notes.NoteApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.DeleteNoteCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,8 @@ public class DeleteNoteCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.DELETE_NOTE;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return DeleteNoteCmdArgs.class;
     }
 
 }

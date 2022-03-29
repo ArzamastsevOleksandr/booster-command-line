@@ -3,9 +3,8 @@ package cliclient.command.handler;
 import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
-import cliclient.command.args.ListVocabularyEntriesCmdWithArgs;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.ListVocabularyEntriesCmdWithArgs;
 import cliclient.service.VocabularyEntryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,8 +26,8 @@ public class ListVocabularyEntriesCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.LIST_VOCABULARY_ENTRIES;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ListVocabularyEntriesCmdWithArgs.class;
     }
 
     private void displayVocabularyEntryById(Long id) {

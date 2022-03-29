@@ -4,7 +4,6 @@ import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.StartVocabularyTrainingSessionCmdArgs;
 import cliclient.command.args.VocabularyTrainingSessionMode;
@@ -39,8 +38,8 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     }
 
     @Override
-    public Command getCommand() {
-        return Command.START_VOCABULARY_TRAINING_SESSION;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return StartVocabularyTrainingSessionCmdArgs.class;
     }
 
     @RequiredArgsConstructor

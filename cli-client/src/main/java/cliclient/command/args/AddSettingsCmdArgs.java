@@ -1,6 +1,5 @@
 package cliclient.command.args;
 
-import cliclient.command.Command;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,10 +20,5 @@ public class AddSettingsCmdArgs implements CmdArgs {
     Integer languagesPagination;
     Integer tagsPagination;
     // todo: print a message if defaults are used
-
-    @Override
-    public Command getCommand() {
-        return Command.ADD_SETTINGS;
-    }
 
 }

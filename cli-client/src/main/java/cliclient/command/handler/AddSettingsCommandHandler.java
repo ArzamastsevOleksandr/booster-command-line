@@ -4,7 +4,6 @@ import api.settings.CreateSettingsInput;
 import api.settings.SettingsApi;
 import api.settings.SettingsDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.AddSettingsCmdArgs;
 import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +35,8 @@ public class AddSettingsCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.ADD_SETTINGS;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return AddSettingsCmdArgs.class;
     }
 
 }

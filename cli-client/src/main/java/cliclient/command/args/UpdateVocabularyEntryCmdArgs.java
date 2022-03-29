@@ -1,6 +1,5 @@
 package cliclient.command.args;
 
-import cliclient.command.Command;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,8 +44,4 @@ public class UpdateVocabularyEntryCmdArgs implements CmdArgs {
         return Optional.ofNullable(name);
     }
 
-    @Override
-    public Command getCommand() {
-        return Command.UPDATE_VOCABULARY_ENTRY;
-    }
 }

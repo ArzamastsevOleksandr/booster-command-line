@@ -4,7 +4,6 @@ import api.notes.AddNoteInput;
 import api.notes.NoteApi;
 import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.AddNoteCmdArgs;
 import cliclient.command.args.CmdArgs;
 import cliclient.service.SessionTrackerService;
@@ -31,8 +30,8 @@ public class AddNoteCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.ADD_NOTE;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return AddNoteCmdArgs.class;
     }
 
 }

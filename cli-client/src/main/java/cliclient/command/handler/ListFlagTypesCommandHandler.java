@@ -1,9 +1,9 @@
 package cliclient.command.handler;
 
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.FlagType;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.ListFlagTypesCmdWithArgs;
 import cliclient.service.ColorProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,8 +26,8 @@ public class ListFlagTypesCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.LIST_FLAG_TYPES;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ListFlagTypesCmdWithArgs.class;
     }
 
 }

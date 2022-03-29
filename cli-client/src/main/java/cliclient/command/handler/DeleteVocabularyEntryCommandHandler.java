@@ -2,7 +2,6 @@ package cliclient.command.handler;
 
 import api.vocabulary.VocabularyEntryApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.DeleteVocabularyEntryCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +22,8 @@ public class DeleteVocabularyEntryCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.DELETE_VOCABULARY_ENTRY;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return DeleteVocabularyEntryCmdArgs.class;
     }
 
 }

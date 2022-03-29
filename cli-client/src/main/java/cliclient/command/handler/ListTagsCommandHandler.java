@@ -3,8 +3,8 @@ package cliclient.command.handler;
 import api.tags.TagDto;
 import api.tags.TagsApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.ListTagsCmdWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -29,8 +29,8 @@ public class ListTagsCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.LIST_TAGS;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ListTagsCmdWithArgs.class;
     }
 
 }

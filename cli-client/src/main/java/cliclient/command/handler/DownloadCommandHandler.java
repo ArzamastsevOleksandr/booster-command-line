@@ -1,7 +1,6 @@
 package cliclient.command.handler;
 
 import api.upload.DownloadApi;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.DownloadCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ public class DownloadCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.DOWNLOAD;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return DownloadCmdArgs.class;
     }
 
 }

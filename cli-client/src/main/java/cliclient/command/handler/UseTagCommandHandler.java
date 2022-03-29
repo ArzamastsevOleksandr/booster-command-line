@@ -4,7 +4,6 @@ import api.notes.AddTagsToNoteInput;
 import api.notes.NoteApi;
 import api.notes.NoteDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.UseTagCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,8 @@ public class UseTagCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.USE_TAG;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return UseTagCmdArgs.class;
     }
 
 }

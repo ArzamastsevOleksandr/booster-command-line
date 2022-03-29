@@ -4,7 +4,6 @@ import api.vocabulary.PatchVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.UpdateVocabularyEntryCmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +34,8 @@ public class UpdateVocabularyEntryCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.UPDATE_VOCABULARY_ENTRY;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return UpdateVocabularyEntryCmdArgs.class;
     }
 
 }
