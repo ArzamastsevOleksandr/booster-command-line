@@ -1,23 +1,12 @@
 package cliclient.command.args;
 
 import cliclient.command.Command;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ListNotesCmdArgs implements CmdArgs {
+public record ListNotesCmdArgs(Long id, Integer pagination) implements CmdArgs {
 
-    Long id;
-    Integer pagination;
-
-    public Optional<Long> id() {
+    public Optional<Long> getId() {
         return Optional.ofNullable(id);
     }
 

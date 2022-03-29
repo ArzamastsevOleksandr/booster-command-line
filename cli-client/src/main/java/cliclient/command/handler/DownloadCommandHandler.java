@@ -2,8 +2,8 @@ package cliclient.command.handler;
 
 import api.upload.DownloadApi;
 import cliclient.command.Command;
-import cliclient.command.args.DownloadCmdArgs;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.DownloadCmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class DownloadCommandHandler implements CommandHandler {
         var args = (DownloadCmdArgs) cwa;
         byte[] bytes = downloadApi.download();
         // todo: settings + properties
-        try (var out = new FileOutputStream(args.getFilename())) {
+        try (var out = new FileOutputStream(args.filename())) {
             out.write(bytes);
         } catch (IOException e) {
             e.printStackTrace();

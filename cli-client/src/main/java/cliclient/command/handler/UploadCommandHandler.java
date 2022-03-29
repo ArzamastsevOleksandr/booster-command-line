@@ -30,14 +30,14 @@ public class UploadCommandHandler implements CommandHandler {
     @Override
     public void handle(CmdArgs cwa) {
         var args = (UploadCmdArgs) cwa;
-        boolean fileExists = ofNullable(args.getFilename())
+        boolean fileExists = ofNullable(args.filename())
                 .map(this::fileExists)
                 .orElse(false);
 
         if (fileExists) {
-            doUpload(args.getFilename());
+            doUpload(args.filename());
         } else {
-            adapter.writeLine("File " + args.getFilename() + " or default upload file do not exist");
+            adapter.writeLine("File " + args.filename() + " or default upload file do not exist");
         }
     }
 

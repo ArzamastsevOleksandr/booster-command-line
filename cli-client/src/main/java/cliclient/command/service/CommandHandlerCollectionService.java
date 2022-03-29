@@ -40,7 +40,7 @@ public class CommandHandlerCollectionService {
         } else if (cmdArgs.hasNoErrors()) {
             handleCommandWithArgs(cmdArgs);
         } else {
-            adapter.error(((ErroneousCmdArgs) cmdArgs).getError());
+            adapter.error(((ErroneousCmdArgs) cmdArgs).error());
             if (cmdArgs.getCommand() != null) {
                 this.handleCommandWithArgs(new HelpCmdArgs(cmdArgs.getCommand()));
             }
