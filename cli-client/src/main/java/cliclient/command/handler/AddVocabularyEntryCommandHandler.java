@@ -4,7 +4,6 @@ import api.vocabulary.AddVocabularyEntryInput;
 import api.vocabulary.VocabularyEntryApi;
 import api.vocabulary.VocabularyEntryDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.AddVocabularyEntryCmdArgs;
 import cliclient.command.args.CmdArgs;
 import cliclient.service.SessionTrackerService;
@@ -36,8 +35,8 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.ADD_VOCABULARY_ENTRY;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return AddVocabularyEntryCmdArgs.class;
     }
 
 }

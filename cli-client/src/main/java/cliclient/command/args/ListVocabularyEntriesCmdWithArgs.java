@@ -1,6 +1,5 @@
 package cliclient.command.args;
 
-import cliclient.command.Command;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +23,6 @@ public class ListVocabularyEntriesCmdWithArgs implements CmdArgs {
 
     public Optional<String> substring() {
         return Optional.ofNullable(substring);
-    }
-
-    @Override
-    public Command getCommand() {
-        return Command.LIST_VOCABULARY_ENTRIES;
     }
 
 }

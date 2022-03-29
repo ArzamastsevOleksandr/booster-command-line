@@ -14,6 +14,9 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: when training vocabularies:
+        //  if i answered some words incorrectly, then in some time they should appear in the next training session
+        //  regardless of their lastSeenAt attribute
         // todo: delete ve by name
         // todo: fix: dwn => no settings => 404 error
         // todo: log request/response in tests

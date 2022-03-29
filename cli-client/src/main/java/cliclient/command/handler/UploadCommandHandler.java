@@ -2,7 +2,6 @@ package cliclient.command.handler;
 
 import api.upload.UploadResponse;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.UploadCmdArgs;
 import cliclient.feign.upload.UploadServiceClient;
@@ -72,8 +71,8 @@ public class UploadCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.UPLOAD;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return UploadCmdArgs.class;
     }
 
 }

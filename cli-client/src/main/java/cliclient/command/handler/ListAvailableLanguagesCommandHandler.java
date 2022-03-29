@@ -2,8 +2,8 @@ package cliclient.command.handler;
 
 import api.vocabulary.LanguageApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.ListAvailableLanguagesCmdWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +27,8 @@ public class ListAvailableLanguagesCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.LIST_AVAILABLE_LANGUAGES;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ListAvailableLanguagesCmdWithArgs.class;
     }
 
 }

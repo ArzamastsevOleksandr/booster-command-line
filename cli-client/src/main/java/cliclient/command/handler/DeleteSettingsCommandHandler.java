@@ -2,8 +2,8 @@ package cliclient.command.handler;
 
 import api.settings.SettingsApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.DeleteSettingsCmdArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +21,8 @@ public class DeleteSettingsCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.DELETE_SETTINGS;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return DeleteSettingsCmdArgs.class;
     }
 
 }

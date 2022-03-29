@@ -3,8 +3,8 @@ package cliclient.command.handler;
 import api.settings.SettingsApi;
 import api.settings.SettingsDto;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.CmdArgs;
+import cliclient.command.args.ShowSettingsCmdWithArgs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -22,8 +22,8 @@ public class ShowSettingsCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.SHOW_SETTINGS;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return ShowSettingsCmdWithArgs.class;
     }
 
 }

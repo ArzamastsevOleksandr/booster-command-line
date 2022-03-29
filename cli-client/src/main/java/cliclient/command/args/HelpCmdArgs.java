@@ -10,8 +10,4 @@ public record HelpCmdArgs(Command helpTarget) implements CmdArgs {
         return Optional.ofNullable(helpTarget);
     }
 
-    public Command getCommand() {
-        return Command.HELP;
-    }
-
 }

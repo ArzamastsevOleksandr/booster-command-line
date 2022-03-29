@@ -43,7 +43,12 @@ class CommandWithArgsService {
     private CmdArgs singleCommand(Command command) {
         return switch (command) {
             case HELP -> new HelpCmdArgs(null);
-            case LIST_AVAILABLE_LANGUAGES, SHOW_SETTINGS, DELETE_SETTINGS, LIST_TAGS, LIST_FLAG_TYPES, EXIT -> new SingleCmdArgs(command);
+            case LIST_AVAILABLE_LANGUAGES -> new ListAvailableLanguagesCmdWithArgs();
+            case SHOW_SETTINGS -> new ShowSettingsCmdWithArgs();
+            case DELETE_SETTINGS -> new DeleteSettingsCmdArgs();
+            case LIST_TAGS -> new ListTagsCmdWithArgs();
+            case LIST_FLAG_TYPES -> new ListFlagTypesCmdWithArgs();
+            case EXIT -> new ExitCmdArgs();
             case LIST_VOCABULARY_ENTRIES -> listVocabularyEntries();
             case DELETE_VOCABULARY_ENTRY -> new ErroneousCmdArgs(DELETE_VOCABULARY_ENTRY, "Id is missing");
             case ADD_VOCABULARY_ENTRY -> new ErroneousCmdArgs(ADD_VOCABULARY_ENTRY, "Name is missing");

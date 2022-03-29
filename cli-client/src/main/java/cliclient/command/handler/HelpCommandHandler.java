@@ -252,8 +252,8 @@ public class HelpCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.HELP;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return HelpCmdArgs.class;
     }
 
 }

@@ -4,7 +4,6 @@ import api.tags.CreateTagInput;
 import api.tags.TagDto;
 import api.tags.TagsApi;
 import cliclient.adapter.CommandLineAdapter;
-import cliclient.command.Command;
 import cliclient.command.args.AddTagCmdArgs;
 import cliclient.command.args.CmdArgs;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +24,8 @@ public class AddTagCommandHandler implements CommandHandler {
     }
 
     @Override
-    public Command getCommand() {
-        return Command.ADD_TAG;
+    public Class<? extends CmdArgs> getCmdArgsClass() {
+        return AddTagCmdArgs.class;
     }
 
 }
