@@ -14,15 +14,17 @@ import java.util.Set;
 @NoArgsConstructor
 public class AddVocabularyEntryInput {
 
-    private String name;
-    private String definition;
-    private int correctAnswersCount;
+    String name;
+    String definition;
+    int correctAnswersCount;
 
     Timestamp lastSeenAt;
 
-    private String language;
+    String language;
 
     @Builder.Default
-    private Set<String> synonyms = Set.of();
+    Set<String> synonyms = Set.of();
+    @Builder.Default
+    Set<String> translations = Set.of();
 
 }

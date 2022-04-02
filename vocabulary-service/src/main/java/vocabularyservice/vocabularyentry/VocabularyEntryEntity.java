@@ -1,7 +1,6 @@
 package vocabularyservice.vocabularyentry;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
@@ -18,7 +17,6 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 class VocabularyEntryEntity {
 
     @Id
@@ -31,6 +29,9 @@ class VocabularyEntryEntity {
     //  Chances are ID is better if we want to minimize the dependencies between packages (we communicate only via services etc).
     @ManyToOne
     private WordEntity word;
+
+    @ManyToMany
+    private Set<WordEntity> translations;
 
     @Enumerated(EnumType.STRING)
     private Language language;

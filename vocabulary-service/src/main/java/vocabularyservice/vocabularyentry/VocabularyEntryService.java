@@ -47,6 +47,7 @@ public class VocabularyEntryService {
                 .definition(entity.getDefinition())
                 .lastSeenAt(entity.getLastSeenAt())
                 .synonyms(entity.getSynonyms().stream().map(WordEntity::getName).collect(toSet()))
+                .translations(entity.getTranslations().stream().map(WordEntity::getName).collect(toSet()))
                 .build();
     }
 
@@ -70,6 +71,12 @@ public class VocabularyEntryService {
                 .map(wordService::findByNameOrCreateAndGet)
                 .collect(toSet());
         entity.setSynonyms(synonyms);
+
+        Set<WordEntity> translations = input.getTranslations()
+                .stream()
+                .map(wordService::findByNameOrCreateAndGet)
+                .collect(toSet());
+        entity.setTranslations(translations);
 
         return toDto(vocabularyEntryRepository.save(entity));
     }
@@ -108,6 +115,7 @@ public class VocabularyEntryService {
         });
     }
 
+    @Deprecated
     @Transactional
     public VocabularyEntryDto patch(PatchVocabularyEntryInput input) {
         VocabularyEntryEntity vocabularyEntryEntity = vocabularyEntryRepository.findById(input.getId())

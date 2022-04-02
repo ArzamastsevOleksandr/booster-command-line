@@ -206,12 +206,9 @@ class UploadController implements UploadApi {
 
                         int correctAnswersCount = (int) row.getCell(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.position).getNumericCellValue();
 
-//                        Set<String> tags = getStringValues(row.getCell(6), ";");
-//                        Set<String> contexts = getStringValues(row.getCell(7), "/");
-
                         Timestamp lastSeenAt = getLastSeenAt(row, XlsxVocabularyColumn.LAST_SEEN_AT.position);
 
-//                        tagService.createIfNotExist(tags);
+                        Set<String> translations = getEquivalents(row.getCell(XlsxVocabularyColumn.TRANSLATIONS.position));
 
                         vocabularyEntryApi.create(AddVocabularyEntryInput.builder()
                                 .name(vocabularyEntryName)
@@ -220,6 +217,7 @@ class UploadController implements UploadApi {
                                 .lastSeenAt(lastSeenAt)
                                 .language(language)
                                 .synonyms(synonyms)
+                                .translations(translations)
                                 .build());
                         tracker.incVocabularyEntriesUploadCount();
                     });
@@ -235,7 +233,8 @@ class UploadController implements UploadApi {
                 checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT),
                 checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.TAGS),
                 checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.CONTEXTS),
-                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT)
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.LAST_SEEN_AT),
+                checkLanguageHeaderColumn(headerRow, XlsxVocabularyColumn.TRANSLATIONS)
         );
         if (isNotBlank(validationErrors)) {
             throw new XlsxStructureUnsupportedException(validationErrors);

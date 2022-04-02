@@ -11,7 +11,8 @@ enum XlsxVocabularyColumn {
     CORRECT_ANSWERS_COUNT(3, "correct answers count"),
     TAGS(4, "tags"),
     CONTEXTS(5, "contexts"),
-    LAST_SEEN_AT(6, "last seen at");
+    LAST_SEEN_AT(6, "last seen at"),
+    TRANSLATIONS(7, "translations");
 
     final int position;
     final String name;

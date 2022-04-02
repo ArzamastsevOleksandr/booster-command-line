@@ -14,6 +14,13 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: ping other services on app startup and display a warning that some are unavailable
+        // todo: validate xlsx structure and then upload
+        // todo: cli-client: create ves with translations
+        // todo: cli-client: command to add translations
+        // todo: svts \m=t
+        // todo: have an interactive command that analyzes all your vocabulary
+        //  and finds intersections of words from different languages and adds corresponding translations to them
         // todo: api & dto with open api
         // todo: logging in kotlin
         // todo: when I answer with an empty synonym - it is a skip
