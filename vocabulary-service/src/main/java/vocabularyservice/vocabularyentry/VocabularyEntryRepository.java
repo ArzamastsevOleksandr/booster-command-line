@@ -2,10 +2,12 @@ package vocabularyservice.vocabularyentry;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import vocabularyservice.language.Language;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
@@ -52,5 +54,10 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
     List<String> myLanguages();
 
     Stream<VocabularyEntryEntity> findAllByLanguage(Language language);
+
+    Optional<VocabularyEntryEntity> findByWordId(Long id);
+
+    @Query("select new java.lang.Boolean(count(*) > 0) from VocabularyEntryEntity where word.id = :id")
+    Boolean existsWithWordId(@Param("id") Long id);
 
 }

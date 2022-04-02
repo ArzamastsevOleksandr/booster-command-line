@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "vocabulary_entries")
+@Table(name = "vocabulary_entries", uniqueConstraints = @UniqueConstraint(columnNames = {"word_id"}))
 @Getter
 @Setter
 @ToString

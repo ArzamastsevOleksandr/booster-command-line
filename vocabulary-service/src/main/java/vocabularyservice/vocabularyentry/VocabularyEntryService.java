@@ -58,6 +58,9 @@ public class VocabularyEntryService {
 
         Language language = resolveLanguage(input);
         WordEntity wordEntity = wordService.findByNameOrCreateAndGet(input.getName());
+        vocabularyEntryRepository.findByWordId(wordEntity.getId()).ifPresent(entry -> {
+            throw new IllegalStateException("Vocabulary entry already exists for word: " + wordEntity.getName() + " with id: " + entry.getId());
+        });
 
         entity.setWord(wordEntity);
         entity.setLanguage(language);
