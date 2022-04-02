@@ -50,6 +50,7 @@ class VocabularyEntryController implements VocabularyEntryApi {
         vocabularyEntryService.deleteById(id);
     }
 
+    @Deprecated
     @Override
     public VocabularyEntryDto patchEntry(PatchVocabularyEntryInput input) {
         return vocabularyEntryService.patch(input);

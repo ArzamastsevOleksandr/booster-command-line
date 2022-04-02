@@ -23,5 +23,7 @@ public class VocabularyEntryDto {
 
     @Builder.Default
     Set<String> synonyms = Set.of();
+    @Builder.Default
+    Set<String> translations = Set.of();
 
 }

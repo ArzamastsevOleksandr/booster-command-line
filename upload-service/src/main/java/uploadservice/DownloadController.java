@@ -173,13 +173,18 @@ class DownloadController implements DownloadApi {
     private void createLanguageHeaderRow(XSSFSheet sheet) {
         XSSFRow row = sheet.createRow(HEADER_ROW_NUMBER);
 
-        row.createCell(XlsxVocabularyColumn.WORD.position).setCellValue(XlsxVocabularyColumn.WORD.name);
-        row.createCell(XlsxVocabularyColumn.DEFINITION.position).setCellValue(XlsxVocabularyColumn.DEFINITION.name);
-        row.createCell(XlsxVocabularyColumn.SYNONYMS.position).setCellValue(XlsxVocabularyColumn.SYNONYMS.name);
-        row.createCell(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.position).setCellValue(XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT.name);
-        row.createCell(XlsxVocabularyColumn.TAGS.position).setCellValue(XlsxVocabularyColumn.TAGS.name);
-        row.createCell(XlsxVocabularyColumn.CONTEXTS.position).setCellValue(XlsxVocabularyColumn.CONTEXTS.name);
-        row.createCell(XlsxVocabularyColumn.LAST_SEEN_AT.position).setCellValue(XlsxVocabularyColumn.LAST_SEEN_AT.name);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.WORD);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.DEFINITION);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.SYNONYMS);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.CORRECT_ANSWERS_COUNT);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.TAGS);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.CONTEXTS);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.LAST_SEEN_AT);
+        createLanguageHeaderColumn(row, XlsxVocabularyColumn.TRANSLATIONS);
+    }
+
+    private void createLanguageHeaderColumn(XSSFRow row, XlsxVocabularyColumn column) {
+        row.createCell(column.position).setCellValue(column.name);
     }
 
     private void createVocabularyEntryRows(String language, XSSFSheet sheet) {
