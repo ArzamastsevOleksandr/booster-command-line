@@ -206,6 +206,7 @@ class DownloadController implements DownloadApi {
 //        row.createCell(6).setCellValue(String.join(";", vocabularyEntryDto.getTags()));
 //        row.createCell(7).setCellValue(String.join("/", vocabularyEntryDto.getContexts()));
         row.createCell(XlsxVocabularyColumn.LAST_SEEN_AT.position).setCellValue(vocabularyEntryDto.getLastSeenAt().toString());
+        row.createCell(XlsxVocabularyColumn.TRANSLATIONS.position).setCellValue(String.join(";", vocabularyEntryDto.getTranslations()));
     }
 
 }

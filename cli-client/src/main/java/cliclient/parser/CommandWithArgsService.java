@@ -228,6 +228,7 @@ class CommandWithArgsService {
                 .contexts(cwa.getContexts())
                 .synonyms(cwa.getSynonyms())
                 .antonyms(cwa.getAntonyms())
+                .translations(cwa.getTranslations())
                 .build();
     }
 
@@ -281,6 +282,7 @@ class CommandWithArgsService {
                 case SUBSTRING -> cwaBuilder.substring(flagValue);
                 case CONTEXTS -> cwaBuilder.contexts(getContexts(flagValue));
                 case ENTRIES_PER_VOCABULARY_TRAINING_SESSION -> cwaBuilder.entriesPerVocabularyTrainingSession(Integer.parseInt(flagValue));
+                case TRANSLATIONS -> cwaBuilder.translations(getWordEquivalentNames(flagValue));
                 default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
             };
         }

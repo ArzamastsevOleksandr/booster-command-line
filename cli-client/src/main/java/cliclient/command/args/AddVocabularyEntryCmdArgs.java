@@ -25,6 +25,8 @@ public class AddVocabularyEntryCmdArgs implements CmdArgs {
     Set<String> antonyms = Set.of();
     @Builder.Default
     Set<String> contexts = Set.of();
+    @Builder.Default
+    Set<String> translations = Set.of();
 
     public Optional<String> getLanguage() {
         return Optional.ofNullable(language);

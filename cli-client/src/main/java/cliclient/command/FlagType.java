@@ -41,6 +41,7 @@ public enum FlagType {
     SUBSTRING("ss"),
     CONTEXTS("ctx"),
     ENTRIES_PER_VOCABULARY_TRAINING_SESSION("epvts"),
+    TRANSLATIONS("tr"),
     UNKNOWN("UNKNOWN");
 
     // if any of the flag types have shared values - crash the program early

@@ -27,6 +27,7 @@ public class AddVocabularyEntryCommandHandler implements CommandHandler {
         args.getLanguage().ifPresent(input::setLanguage);
         args.getDefinition().ifPresent(input::setDefinition);
         input.setSynonyms(args.getSynonyms());
+        input.setTranslations(args.getTranslations());
 
         VocabularyEntryDto vocabularyEntryDto = vocabularyEntryApi.create(input);
         adapter.writeLine(vocabularyEntryDto);
