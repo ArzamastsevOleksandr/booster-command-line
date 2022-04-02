@@ -14,6 +14,8 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: api & dto with open api
+        // todo: logging in kotlin
         // todo: when I answer with an empty synonym - it is a skip
         // todo: pre-screen session before training session
         // todo: when training vocabularies:
