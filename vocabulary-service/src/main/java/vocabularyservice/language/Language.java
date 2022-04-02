@@ -16,7 +16,7 @@ public enum Language {
 
     public static Language fromString(String name) {
         return Arrays.stream(values())
-                .filter(language -> language.name.equals(name))
+                .filter(language -> language.name.equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("No language found by name: " + name));
     }
