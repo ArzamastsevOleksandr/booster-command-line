@@ -25,6 +25,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: >> svts \mv=t Loaded 1 entries. Word: a Translations >> h Hint: >> a_;a Translations >> h begin 0, end 2, length 1 and session ends
         // todo: a parameterized bash script that rebuilds services based on parameters
         // todo: Cannot invoke "java.lang.Integer.intValue()" because the return value of "api.settings.SettingsDto.getEntriesPerVocabularyTrainingSession()" is null
         //  when downloading settings with null
@@ -32,7 +33,6 @@ public class CliClientApplication {
         // todo: ping other services on app startup and display a warning that some are unavailable
         // todo: validate xlsx structure and then upload
         // todo: cli-client: command to add translations
-        // todo: svts \m=t
         // todo: have an interactive command that analyzes all your vocabulary
         //  and finds intersections of words from different languages and adds corresponding translations to them
         // todo: api & dto with open api

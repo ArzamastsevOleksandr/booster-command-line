@@ -12,7 +12,10 @@ import cliclient.util.ThreadUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -42,75 +45,6 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         return StartVocabularyTrainingSessionCmdArgs.class;
     }
 
-    @RequiredArgsConstructor
-    private class EntryTracker {
-        final int maxHintsPerEntry = 3;
-
-        VocabularyTrainingSessionMode mode = VocabularyTrainingSessionMode.getDefaultMode();
-        int index = 0;
-        int hintsPerEntryUsed = 0;
-        VocabularyEntryDto current;
-        final List<VocabularyEntryDto> entries;
-
-        boolean shouldContinue(String answer) {
-            return !"e".equalsIgnoreCase(answer) && hasMoreEntries();
-        }
-
-        boolean hasMoreEntries() {
-            return index < entries.size();
-        }
-
-        VocabularyEntryDto showNextAndReturn() {
-            current = entries.get(index);
-            printCurrentWord(current);
-            return current;
-        }
-
-        void printCurrentWord(VocabularyEntryDto entry) {
-            adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
-            adapter.newLine();
-        }
-
-        void inc() {
-            index++;
-            hintsPerEntryUsed = 0;
-        }
-
-        boolean canShowHints(String input) {
-            return "h".equalsIgnoreCase(input);
-        }
-
-        String hint() {
-            hintsPerEntryUsed++;
-            return getCorrectAnswers().stream()
-                    .map(s -> s.substring(0, hintsPerEntryUsed) + "_".repeat(s.length() - hintsPerEntryUsed))
-                    .collect(Collectors.joining(";"));
-        }
-
-        Set<String> getCorrectAnswers() {
-            return current.getSynonyms();
-//            return switch (mode) {
-//                case SYNONYMS -> current.getSynonyms();
-//                case ANTONYMS -> current.getAntonyms();
-//                case UNRECOGNIZED -> throw new RuntimeException("Unrecognized tracker mode. Unable to get correct answers.");
-//            };
-        }
-
-        boolean allHintsExhausted() {
-            return hintsPerEntryUsed > maxHintsPerEntry;
-        }
-
-        EntryTracker modeSynonyms() {
-            mode = VocabularyTrainingSessionMode.SYNONYMS;
-            return this;
-        }
-
-        EntryTracker modeAntonyms() {
-            mode = VocabularyTrainingSessionMode.ANTONYMS;
-            return this;
-        }
-    }
-
     private void executeTrainingSession(StartVocabularyTrainingSessionCmdArgs args) {
         List<VocabularyEntryDto> entries = findEntries(args);
         if (entries.size() == 0) {
@@ -124,25 +58,32 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
     }
 
     private List<VocabularyEntryDto> findEntries(StartVocabularyTrainingSessionCmdArgs args) {
-        return new ArrayList<>(vocabularyEntryApi.findWithSynonyms(args.entriesPerVocabularyTrainingSession()));
-//        return switch (mode) {
-//            case SYNONYMS -> vocabularyEntryService.findAllWithSynonyms(ENTRIES_PER_TRAINING_SESSION);
-//            case ANTONYMS -> vocabularyEntryService.findAllWithAntonyms(ENTRIES_PER_TRAINING_SESSION);
-//            default -> throw new RuntimeException("Unrecognized training session mode: " + mode);
-//        };
+        return switch (args.mode()) {
+            case SYNONYMS -> vocabularyEntryApi.findWithSynonyms(args.entriesPerVocabularyTrainingSession());
+            case TRANSLATIONS -> vocabularyEntryApi.findWithTranslations(args.entriesPerVocabularyTrainingSession());
+            default -> throw new RuntimeException("Unsupported training session mode: " + args.mode());
+        };
     }
 
     private void executeTrainingSessionBasedOnMode(VocabularyTrainingSessionMode mode, List<VocabularyEntryDto> entries) {
-        var tracker = new EntryTracker(entries);
+        var tracker = new EntryTracker(entries, mode);
         switch (mode) {
-            case SYNONYMS -> executeSynonymsTrainingSession(tracker.modeSynonyms());
-//            case ANTONYMS -> executeAntonymsTrainingSession(tracker.modeAntonyms());
+            case SYNONYMS -> executeSynonymsTrainingSession(tracker);
+            case TRANSLATIONS -> executeTranslationsTrainingSession(tracker);
             case UNRECOGNIZED -> throw new RuntimeException("Unrecognized training session mode: " + mode);
         }
     }
 
+    private void executeTranslationsTrainingSession(EntryTracker tracker) {
+        executeTrainingSession(tracker, this::readTranslations, this::handleAnswerTranslations);
+    }
+
     private String readSynonyms() {
         return readEquivalents("Synonyms");
+    }
+
+    private String readTranslations() {
+        return readEquivalents("Translations");
     }
 
     private String readAntonyms() {
@@ -197,6 +138,10 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
         handleAnswer(synonymsAnswer, entry, entry::getSynonyms, this::processPartialSynonymsAnswer);
     }
 
+    private void handleAnswerTranslations(Set<String> translationsAnswer, VocabularyEntryDto entry) {
+        handleAnswer(translationsAnswer, entry, entry::getTranslations, this::processPartialTranslationsAnswer);
+    }
+
 //    private void handleAnswerAntonyms(Set<String> antonymsAnswer, VocabularyEntry entry) {
 //        handleAnswer(antonymsAnswer, entry, entry::getAntonyms, this::processPartialAntonymsAnswer);
 //    }
@@ -222,6 +167,10 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     private void processPartialSynonymsAnswer(Set<String> partialAnswer, VocabularyEntryDto entry) {
         processPartialAnswer(partialAnswer, entry, entry::getSynonyms, "synonyms");
+    }
+
+    private void processPartialTranslationsAnswer(Set<String> partialAnswer, VocabularyEntryDto entry) {
+        processPartialAnswer(partialAnswer, entry, entry::getTranslations, "translations");
     }
 
 //    private void processPartialAntonymsAnswer(Set<String> partialAnswer, VocabularyEntryDto entry) {
@@ -280,6 +229,65 @@ public class StartVocabularyTrainingSessionCommandHandler implements CommandHand
 
     private boolean isValidCorrectAnswersCount(int cacUpdated) {
         return MIN_CORRECT_ANSWERS_COUNT <= cacUpdated;
+    }
+
+    @RequiredArgsConstructor
+    private class EntryTracker {
+        final List<VocabularyEntryDto> entries;
+        final VocabularyTrainingSessionMode mode;
+        final int maxHintsPerEntry = 3;
+
+        int index = 0;
+        int hintsPerEntryUsed = 0;
+        VocabularyEntryDto current;
+
+        boolean shouldContinue(String answer) {
+            return !"e".equalsIgnoreCase(answer) && hasMoreEntries();
+        }
+
+        boolean hasMoreEntries() {
+            return index < entries.size();
+        }
+
+        VocabularyEntryDto showNextAndReturn() {
+            current = entries.get(index);
+            printCurrentWord(current);
+            return current;
+        }
+
+        void printCurrentWord(VocabularyEntryDto entry) {
+            adapter.writeLine("Word: " + ColorCodes.cyan(entry.getName()));
+            adapter.newLine();
+        }
+
+        void inc() {
+            index++;
+            hintsPerEntryUsed = 0;
+        }
+
+        boolean canShowHints(String input) {
+            return "h".equalsIgnoreCase(input);
+        }
+
+        String hint() {
+            hintsPerEntryUsed++;
+            return getCorrectAnswers().stream()
+                    .map(s -> s.substring(0, hintsPerEntryUsed) + "_".repeat(s.length() - hintsPerEntryUsed))
+                    .collect(Collectors.joining(";"));
+        }
+
+        Set<String> getCorrectAnswers() {
+            return switch (mode) {
+                case SYNONYMS -> current.getSynonyms();
+                case TRANSLATIONS -> current.getTranslations();
+                default -> throw new RuntimeException("Unsupported tracker mode. Unable to get correct answers.");
+            };
+        }
+
+        boolean allHintsExhausted() {
+            return hintsPerEntryUsed > maxHintsPerEntry;
+        }
+
     }
 
 }

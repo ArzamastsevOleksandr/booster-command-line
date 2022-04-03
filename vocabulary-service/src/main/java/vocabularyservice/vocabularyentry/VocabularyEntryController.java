@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -26,12 +25,12 @@ class VocabularyEntryController implements VocabularyEntryApi {
     }
 
     @Override
-    public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
+    public List<VocabularyEntryDto> findWithSynonyms(Integer limit) {
         return vocabularyEntryService.findWithSynonyms(limit);
     }
 
     @Override
-    public Collection<VocabularyEntryDto> findWithTranslations(Integer limit) {
+    public List<VocabularyEntryDto> findWithTranslations(Integer limit) {
         return vocabularyEntryService.findWithTranslations(limit);
     }
 

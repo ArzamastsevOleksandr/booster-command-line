@@ -16,6 +16,7 @@ public enum VocabularyTrainingSessionMode {
     @Deprecated
     ANTONYMS("a"),
     SYNONYMS("s"),
+    TRANSLATIONS("t"),
     UNRECOGNIZED("UNRECOGNIZED");
 
     // if any of the training session modes have shared values - crash the program early
