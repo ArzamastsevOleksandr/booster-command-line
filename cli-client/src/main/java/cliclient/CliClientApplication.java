@@ -1,5 +1,8 @@
 package cliclient;
 
+import cliclient.command.Command;
+import cliclient.command.FlagType;
+import cliclient.command.args.VocabularyTrainingSessionMode;
 import cliclient.launcher.Launcher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +14,14 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"cliclient", "api"})
 @EnableFeignClients(basePackages = {"api", "cliclient"})
 public class CliClientApplication {
+
+    static {
+        // explicitly invoke methods on enums to trigger their static validation initializers
+        // and fail fast in case any duplicates are detected
+        VocabularyTrainingSessionMode.getDefaultMode();
+        FlagType.values();
+        Command.values();
+    }
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
