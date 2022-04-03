@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vocabularyservice.language.Language;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -135,7 +134,7 @@ public class VocabularyEntryService {
         return toDto(vocabularyEntryRepository.save(vocabularyEntryEntity));
     }
 
-    public Collection<VocabularyEntryDto> findWithSynonyms(Integer limit) {
+    public List<VocabularyEntryDto> findWithSynonyms(Integer limit) {
         return vocabularyEntryRepository.findWithSynonyms(limit)
                 .map(this::toDto)
                 .toList();
@@ -178,7 +177,7 @@ public class VocabularyEntryService {
                 .toList();
     }
 
-    public Collection<VocabularyEntryDto> findWithTranslations(Integer limit) {
+    public List<VocabularyEntryDto> findWithTranslations(Integer limit) {
         return vocabularyEntryRepository.findWithTranslations(limit)
                 .map(this::toDto)
                 .toList();
