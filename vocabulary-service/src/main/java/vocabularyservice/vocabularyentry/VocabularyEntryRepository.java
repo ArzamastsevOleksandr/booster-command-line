@@ -60,4 +60,13 @@ interface VocabularyEntryRepository extends JpaRepository<VocabularyEntryEntity,
     @Query("select new java.lang.Boolean(count(*) > 0) from VocabularyEntryEntity where word.id = :id")
     Boolean existsWithWordId(@Param("id") Long id);
 
+    @Query(value = """
+            select *
+            from vocabulary_entries
+            where id in (select vocabulary_entry_entity_id from vocabulary_entries_translations)
+            order by correct_answers_count, last_seen_at
+            limit ?1
+            """, nativeQuery = true)
+    Stream<VocabularyEntryEntity> findWithTranslations(Integer limit);
+
 }
