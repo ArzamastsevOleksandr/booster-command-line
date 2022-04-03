@@ -14,6 +14,7 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: a parameterized bash script that rebuilds services based on parameters
         // todo: Cannot invoke "java.lang.Integer.intValue()" because the return value of "api.settings.SettingsDto.getEntriesPerVocabularyTrainingSession()" is null
         //  when downloading settings with null
         // todo: as \ln=WRONG [500]
