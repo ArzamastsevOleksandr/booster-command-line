@@ -104,7 +104,8 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
                 .jsonPath("$.lastSeenAt").value(lastSeenAt -> jsonPathValueRecorder.setTime((Long) lastSeenAt))
                 .jsonPath("$.language").isEqualTo(input.getLanguage())
-                .jsonPath("$.synonyms").value(synonymsBaseMatcher(input.getSynonyms()));
+                .jsonPath("$.synonyms").value(setBaseMatcher(input.getSynonyms()))
+                .jsonPath("$.translations").value(setBaseMatcher(input.getTranslations()));
         // then
         var vocabularyEntryDto = new VocabularyEntryDto();
         BeanUtils.copyProperties(input, vocabularyEntryDto);
@@ -189,7 +190,8 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(0)
                 .jsonPath("$.lastSeenAt").value(lastSeenAt -> jsonPathValueRecorder.setTime((Long) lastSeenAt))
                 .jsonPath("$.language").isEqualTo(language)
-                .jsonPath("$.synonyms").value(synonymsBaseMatcher(input.getSynonyms()));
+                .jsonPath("$.synonyms").value(setBaseMatcher(input.getSynonyms()))
+                .jsonPath("$.translations").value(setBaseMatcher(input.getTranslations()));
         // then
         var vocabularyEntryDto = new VocabularyEntryDto();
         BeanUtils.copyProperties(input, vocabularyEntryDto);
@@ -473,10 +475,11 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .jsonPath("$.correctAnswersCount").isEqualTo(vocabularyEntryDto.getCorrectAnswersCount())
                 .jsonPath("$.lastSeenAt").isEqualTo(vocabularyEntryDto.getLastSeenAt().getTime())
                 .jsonPath("$.language").isEqualTo(vocabularyEntryDto.getLanguage())
-                .jsonPath("$.synonyms").value(synonymsBaseMatcher(vocabularyEntryDto.getSynonyms()));
+                .jsonPath("$.synonyms").value(setBaseMatcher(vocabularyEntryDto.getSynonyms()))
+                .jsonPath("$.translations").value(setBaseMatcher(vocabularyEntryDto.getTranslations()));
     }
 
-    private BaseMatcher<HashSet<String>> synonymsBaseMatcher(Set<String> synonyms) {
+    private BaseMatcher<HashSet<String>> setBaseMatcher(Set<String> synonyms) {
         return new BaseMatcher<>() {
             @Override
             public void describeTo(Description description) {
@@ -508,6 +511,7 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
                 .definition("of average quality")
                 .synonyms(Set.of("ordinary"))
                 .language(Language.ENGLISH.getName())
+                .translations(Set.of("translations"))
                 .build();
 
         String name = IntStream.range(0, nameReplication).mapToObj(i -> "mediocre").collect(joining("_"));
