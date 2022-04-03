@@ -178,4 +178,10 @@ public class VocabularyEntryService {
                 .toList();
     }
 
+    public Collection<VocabularyEntryDto> findWithTranslations(Integer limit) {
+        return vocabularyEntryRepository.findWithTranslations(limit)
+                .map(this::toDto)
+                .toList();
+    }
+
 }

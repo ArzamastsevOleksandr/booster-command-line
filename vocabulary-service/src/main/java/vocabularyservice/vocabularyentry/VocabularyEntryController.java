@@ -31,6 +31,11 @@ class VocabularyEntryController implements VocabularyEntryApi {
     }
 
     @Override
+    public Collection<VocabularyEntryDto> findWithTranslations(Integer limit) {
+        return vocabularyEntryService.findWithTranslations(limit);
+    }
+
+    @Override
     public List<VocabularyEntryDto> findAllByLanguage(String language) {
         return vocabularyEntryService.findAllByLanguage(language);
     }

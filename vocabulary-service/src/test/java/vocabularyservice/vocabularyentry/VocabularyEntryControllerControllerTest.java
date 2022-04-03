@@ -366,6 +366,40 @@ class VocabularyEntryControllerControllerTest extends BaseIntegrationTest {
     }
 
     @Test
+    void findsVocabularyEntriesWithTranslations() {
+        // given
+        webTestClient.get()
+                .uri(baseUrl + "/with-translations/?limit=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(0);
+        // when
+        AddVocabularyEntryInput input1 = addVocabularyEntryInput();
+        VocabularyEntryDto vocabularyEntry1 = createVocabularyEntry(input1);
+        // then
+        webTestClient.get()
+                .uri(baseUrl + "/with-synonyms/?limit=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntry1.getId());
+        // when
+        AddVocabularyEntryInput input2 = addVocabularyEntryInput(2);
+        input2.setTranslations(Set.of());
+        createVocabularyEntry(input2);
+        // then
+        webTestClient.get()
+                .uri(baseUrl + "/with-synonyms/?limit=1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1)
+                .jsonPath("$[0].id").isEqualTo(vocabularyEntry1.getId());
+    }
+
+    @Test
     @Disabled("such tests are not for lazy people")
     void findsVocabularyEntriesWithLimitBasedOnCorrectAnswersCountAndLastSeenAt() {
     }
