@@ -36,8 +36,8 @@ public class CommandHandlerCollectionService {
         } else {
             var erroneous = (ErroneousCmdArgs) cmdArgs;
             adapter.error(erroneous.error());
-            if (erroneous.getCommand() != null) {
-                this.handleCommandWithArgs(new HelpCmdArgs(erroneous.getCommand()));
+            if (erroneous.command() != null) {
+                this.handleCommandWithArgs(new HelpCmdArgs(erroneous.command()));
             }
         }
         adapter.newLine();
