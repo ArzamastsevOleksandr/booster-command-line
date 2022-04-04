@@ -13,8 +13,10 @@ $(sudo lsof -t -i:8083) \
 $(sudo lsof -t -i:8084) \
 $(sudo lsof -t -i:8085)
 
+# build the whole project and create executable jars while skipping tests
 ./mvnw clean package -Dmaven.test.skip
 
+# start the services
 java -jar notes-service/target/notes-service-0.0.1-SNAPSHOT.jar &
 java -jar settings-service/target/settings-service-0.0.1-SNAPSHOT.jar &
 java -jar tag-service/target/tag-service-0.0.1-SNAPSHOT.jar &
