@@ -25,6 +25,11 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: for every delete ask for confirmation
+        // todo: for every delete have a corresponding force delete command that does not ask for confirmation
+        // todo: ve: full and short display modes
+        // todo: svts: randomly select word from (word + synonyms)
+        // todo: ave: a (a;aa) and I add b(a;cc) => merge it to be a(a;aa;b;cc)?
         // todo: >> svts \mv=t Loaded 1 entries. Word: a Translations >> h Hint: >> a_;a Translations >> h begin 0, end 2, length 1 and session ends
         // todo: a parameterized bash script that rebuilds services based on parameters
         // todo: Cannot invoke "java.lang.Integer.intValue()" because the return value of "api.settings.SettingsDto.getEntriesPerVocabularyTrainingSession()" is null
