@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# kill services running on ports
+# stop the services running on ports
 # 8081: notes-service
 # 8082: vocabulary-service
 # 8083: upload-service
