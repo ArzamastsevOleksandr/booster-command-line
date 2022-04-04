@@ -18,7 +18,7 @@ public class CliClientApplication {
     static {
         // explicitly invoke methods on enums to trigger their static validation initializers
         // and fail fast in case any duplicates are detected
-        VocabularyTrainingSessionMode.getDefaultMode();
+        VocabularyTrainingSessionMode.values();
         FlagType.values();
         Command.values();
     }
@@ -55,7 +55,6 @@ public class CliClientApplication {
         // todo: help with pagination + help --all
         // todo: lal, t: paginated output
         // todo: an \t= allow creating notes with tags
-        // todo: if the first token is a recognized command, but the rest of the input is wrong - display an error message + the help on the command
         // todo: an NoteDto(id=336, content=null
         // todo: at the end of the training session - save the details.
         //  I can later start a training session with words that I did not provide a correct answer for.
