@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static cliclient.command.Command.*;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
 @Component
@@ -172,7 +173,7 @@ class CommandWithArgsService {
     }
 
     private CmdArgs listNotesWithParams(CommandWithArgs cwa) {
-        Integer pagination = Optional.ofNullable(cwa.getPagination())
+        Integer pagination = ofNullable(cwa.getPagination())
                 .orElse(findSettingsIgnoringNotFound().map(SettingsDto::getNotesPagination).orElse(propertyHolder.getDefaultPagination()));
         return new ListNotesCmdArgs(cwa.getId(), pagination);
     }
@@ -189,12 +190,10 @@ class CommandWithArgsService {
     }
 
     private CmdArgs startVocabularyTrainingSessionWithParams(CommandWithArgs cwa) {
-        var mode = cwa.getMode() == null
-                ? VocabularyTrainingSessionMode.getDefaultMode()
-                : cwa.getMode();
-        var sessionSize = cwa.getEntriesPerVocabularyTrainingSession() == null
-                ? resolveVocabularyTrainingSessionSize()
-                : cwa.getEntriesPerVocabularyTrainingSession();
+        var mode = ofNullable(cwa.getMode())
+                .orElse(VocabularyTrainingSessionMode.getDefaultMode());
+        var sessionSize = ofNullable(cwa.getEntriesPerVocabularyTrainingSession())
+                .orElseGet(this::resolveVocabularyTrainingSessionSize);
         return new StartVocabularyTrainingSessionCmdArgs(mode, sessionSize);
     }
 
@@ -242,7 +241,7 @@ class CommandWithArgsService {
     private CmdArgs listVocabularyEntriesWithParameters(CommandWithArgs cwa) {
         return ListVocabularyEntriesCmdWithArgs.builder()
                 .id(cwa.getId())
-                .pagination(Optional.ofNullable(cwa.getPagination()).orElse(findSettingsIgnoringNotFound().map(SettingsDto::getVocabularyPagination).orElse(propertyHolder.getDefaultPagination())))
+                .pagination(ofNullable(cwa.getPagination()).orElse(findSettingsIgnoringNotFound().map(SettingsDto::getVocabularyPagination).orElse(propertyHolder.getDefaultPagination())))
                 .substring(cwa.getSubstring())
                 .build();
     }
