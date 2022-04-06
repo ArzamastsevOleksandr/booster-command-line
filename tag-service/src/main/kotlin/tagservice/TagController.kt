@@ -32,4 +32,8 @@ class TagController : TagsApi {
         return tagService.create(input)
     }
 
+    override fun findByNames(names: MutableSet<String>): MutableList<TagDto> {
+        return tagService.findByNames(names)
+    }
+
 }

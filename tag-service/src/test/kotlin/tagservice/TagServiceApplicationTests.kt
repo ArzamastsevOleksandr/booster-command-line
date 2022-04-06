@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.test.web.reactive.server.expectBodyList
 
 private const val EDUCATION = "education"
 
@@ -154,6 +155,38 @@ class TagServiceApplicationTests {
             .jsonPath("$.path").isEqualTo(baseUrl)
             .jsonPath("$.httpStatus").isEqualTo(HttpStatus.CONFLICT.name)
             .jsonPath("$.message").isEqualTo("Tag already exists with name: $EDUCATION")
+    }
+
+    @Test
+    fun findsTagsByNamesInBatch() {
+        val tagDto1 = tagService.create(CreateTagInput(EDUCATION))
+        val tagDto2 = tagService.create(CreateTagInput(MOVIES))
+
+        val tagDtosByNames = webTestClient.post()
+            .uri("${baseUrl}find/name/batch")
+            .bodyValue(listOf(EDUCATION, MOVIES))
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList<TagDto>()
+            .returnResult()
+            .responseBody
+
+        assertThat(tagDtosByNames).containsExactlyInAnyOrder(tagDto1, tagDto2)
+    }
+
+    @Test
+    fun returns404WhenDoesNotFindTagsByNamesInBatch() {
+        tagService.create(CreateTagInput(EDUCATION))
+
+        webTestClient.post()
+            .uri("${baseUrl}find/name/batch")
+            .bodyValue(listOf(EDUCATION, MOVIES))
+            .exchange()
+            .expectStatus().isNotFound
+            .expectBody()
+            .jsonPath("$.path").isEqualTo("${baseUrl}find/name/batch")
+            .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name)
+            .jsonPath("$.message").isEqualTo("Tags not found: [$MOVIES]")
     }
 
     @Data

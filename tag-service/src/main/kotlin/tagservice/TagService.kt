@@ -51,4 +51,21 @@ class TagService {
         return toDto(tagEntity)
     }
 
+    fun findByNames(names: MutableSet<String>): MutableList<TagDto> {
+        val tagEntities = tagRepository.findByNames(names)
+        val foundTagNames = tagEntities.map { tagEntity -> tagEntity.name }.toSet()
+
+        checkThatAllTagsFound(foundTagNames, names)
+
+        return tagEntities.map { tagEntity ->  toDto(tagEntity) }.toMutableList()
+    }
+
+    private fun checkThatAllTagsFound(foundTagNames: Set<String>, names: MutableSet<String>) {
+        if (foundTagNames != names) {
+            val namesCopy = HashSet<String>(names)
+            namesCopy.removeAll(foundTagNames)
+            throw NotFoundException("Tags not found: $namesCopy")
+        }
+    }
+
 }
