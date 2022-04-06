@@ -24,6 +24,7 @@
         <module>upload-service</module>
         <module>settings-service</module>
         <module>tag-service</module>
+        <module>mental-arithmetic-service</module>
     </modules>
 
     <properties>
