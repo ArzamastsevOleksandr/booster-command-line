@@ -1,10 +1,7 @@
 package notesservice;
 
 import api.exception.HttpErrorResponse;
-import api.notes.AddNoteInput;
-import api.notes.AddTagsToNoteInput;
-import api.notes.NoteDto;
-import api.notes.PatchNoteLastSeenAtInput;
+import api.notes.*;
 import api.tags.TagDto;
 import api.tags.TagsApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -288,6 +285,54 @@ class NotesServiceApplicationTest {
                 .returnResult().getResponseBody();
 
         assertThat(responseBody.getLastSeenAt()).isCloseTo(lastSeenAt, 0);
+    }
+
+    @Test
+    void updatesNote() {
+        // given
+        TagDto tagDto1 = createTag(1, TAG_NAME_1);
+        TagDto tagDto2 = createTag(2, TAG_NAME_2);
+        when(tagsApi.findByName(TAG_NAME_1)).thenReturn(tagDto1);
+        when(tagsApi.findByNames(Set.of(TAG_NAME_2))).thenReturn(List.of(tagDto2));
+        when(tagsApi.findById(tagDto2.getId())).thenReturn(tagDto2);
+
+        NoteDto noteDto = noteService.add(AddNoteInput.builder()
+                .content(CONTENT_1)
+                .tags(Set.of(TAG_NAME_1))
+                .build());
+        // when
+        webTestClient.put()
+                .uri(baseUrl)
+                .bodyValue(UpdateNoteInput.builder()
+                        .id(noteDto.getId())
+                        .content(CONTENT_2)
+                        .tags(Set.of(TAG_NAME_2))
+                        .build())
+                .exchange()
+                .expectStatus().isOk()
+                // then
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(noteDto.getId())
+                .jsonPath("$.content").isEqualTo(CONTENT_2)
+                .jsonPath("$.tags.length()").isEqualTo(1)
+                .jsonPath("$.tags[0].id").isEqualTo(tagDto2.getId())
+                .jsonPath("$.tags[0].name").isEqualTo(tagDto2.getName());
+    }
+
+    @Test
+    void returns404WhenNoteNotFoundByIdDuringUpdate() {
+        webTestClient.put()
+                .uri(baseUrl)
+                .bodyValue(UpdateNoteInput.builder()
+                        .id(Long.MAX_VALUE)
+                        .content(CONTENT_2)
+                        .build())
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("$.path").isEqualTo(baseUrl)
+                .jsonPath("$.httpStatus").isEqualTo(HttpStatus.NOT_FOUND.name())
+                .jsonPath("$.message").isEqualTo("Note not found by id: " + Long.MAX_VALUE);
     }
 
     private void assertThatNoteIsNotFoundById(long id) {

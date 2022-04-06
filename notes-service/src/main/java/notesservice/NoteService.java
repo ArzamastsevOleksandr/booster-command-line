@@ -2,10 +2,7 @@ package notesservice;
 
 import api.exception.HttpErrorResponse;
 import api.exception.NotFoundException;
-import api.notes.AddNoteInput;
-import api.notes.AddTagsToNoteInput;
-import api.notes.NoteDto;
-import api.notes.PatchNoteLastSeenAtInput;
+import api.notes.*;
 import api.tags.TagDto;
 import api.tags.TagsApi;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,6 +45,7 @@ class NoteService {
                 .id(noteEntity.getId())
                 .content(noteEntity.getContent())
                 .lastSeenAt(noteEntity.getLastSeenAt())
+                // todo: batch
                 .tags(noteEntity.getTagIds()
                         .stream()
                         .map(tagIdEntity -> tagsApi.findById(tagIdEntity.id))
@@ -131,6 +129,44 @@ class NoteService {
                 .toList();
     }
 
+    @Transactional
+    public NoteDto update(UpdateNoteInput input) {
+        log.debug("{}", input);
+        NoteEntity noteEntity = noteRepository.findById(input.getId())
+                .orElseThrow(() -> new NotFoundException("Note not found by id: " + input.getId()));
+
+        Set<TagIdEntity> tagIds = findTagsByNamesOrThrowNotFoundException(input.getTags())
+                .stream()
+                .map(tagDto -> tagIdRepository.findById(tagDto.getId()).orElseGet(() -> {
+                    var tagIdEntity = new TagIdEntity(tagDto.getId());
+                    return tagIdRepository.save(tagIdEntity);
+                }))
+                .collect(toSet());
+        log.debug("tagIds: {} for {}", tagIds, input);
+
+        noteEntity.setTagIds(tagIds);
+        noteEntity.setContent(input.getContent());
+        noteEntity.setTagIds(tagIds);
+        return toDto(noteRepository.save(noteEntity));
+    }
+
+    private List<TagDto> findTagsByNamesOrThrowNotFoundException(Set<String> tags) {
+        try {
+            return tagsApi.findByNames(tags);
+        } catch (FeignException.FeignClientException e) {
+            if (e.status() == HttpStatus.NOT_FOUND.value()) {
+                try {
+                    var httpErrorResponse = objectMapper.readValue(e.contentUTF8().getBytes(), HttpErrorResponse.class);
+                    throw new NotFoundException(httpErrorResponse.getMessage());
+                } catch (IOException ioe) {
+                    throw e;
+                }
+            }
+            throw e;
+        }
+    }
+
+    @Deprecated
     private TagDto findTagByNameOrThrowNotFoundException(String tag) {
         try {
             return tagsApi.findByName(tag);

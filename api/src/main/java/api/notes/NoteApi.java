@@ -46,4 +46,7 @@ public interface NoteApi {
     @ResponseStatus(OK)
     List<NoteDto> patchLastSeenAt(@RequestBody PatchNoteLastSeenAtInput input);
 
+    @PutMapping
+    NoteDto update(@RequestBody UpdateNoteInput input);
+
 }

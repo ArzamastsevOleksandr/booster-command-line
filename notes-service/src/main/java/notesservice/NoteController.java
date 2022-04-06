@@ -56,4 +56,9 @@ class NoteController implements NoteApi {
         return noteService.patchLastSeenAt(input);
     }
 
+    @Override
+    public NoteDto update(UpdateNoteInput input) {
+        return noteService.update(input);
+    }
+
 }
