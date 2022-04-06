@@ -14,33 +14,26 @@ public class CommandWithArgs {
     Command command;
     Command helpTarget;
 
+    VocabularyTrainingSessionMode mode;
+
     Long id;
     Long noteId;
     Long vocabularyEntryId;
 
     String name;
     String languageName;
-
+    String substring;
+    String tag;
     String definition;
-
     String filename;
-
-    VocabularyTrainingSessionMode mode;
-
     String content;
 
     Integer correctAnswersCount;
-
     Integer pagination;
     Integer languagesPagination;
     Integer notesPagination;
     Integer tagsPagination;
     Integer vocabularyPagination;
-
-    String substring;
-
-    String tag;
-
     Integer entriesPerVocabularyTrainingSession;
 
     @Builder.Default
@@ -59,6 +52,10 @@ public class CommandWithArgs {
     Set<String> contexts = Set.of();
     @Builder.Default
     Set<String> translations = Set.of();
+    @Builder.Default
+    Set<String> removeTags = Set.of();
+    @Builder.Default
+    Set<String> addTags = Set.of();
 
     @Builder.Default
     List<String> errors = List.of();

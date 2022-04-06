@@ -36,6 +36,7 @@ public enum Command {
 
     LIST_NOTES("n"),
     ADD_NOTE("an"),
+    UPDATE_NOTE("un"),
     DELETE_NOTE("dn"),
 
     ADD_TAG("at"),
