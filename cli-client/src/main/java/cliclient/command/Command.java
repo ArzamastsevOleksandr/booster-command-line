@@ -46,6 +46,8 @@ public enum Command {
 
     LIST_FLAG_TYPES("ft"),
 
+    START_MENTAL_ARITHMETIC_SESSION("smas"),
+
     EXIT("e"),
     NO_INPUT("NO_INPUT"),
 

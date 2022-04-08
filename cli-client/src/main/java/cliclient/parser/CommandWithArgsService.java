@@ -64,6 +64,7 @@ class CommandWithArgsService {
             case DELETE_NOTE -> new ErroneousCmdArgs(DELETE_NOTE, "Id is missing");
             case ADD_TAG -> new ErroneousCmdArgs(ADD_TAG, "Name is missing");
             case USE_TAG -> new ErroneousCmdArgs(USE_TAG, "Note id is missing");
+            case START_MENTAL_ARITHMETIC_SESSION -> new StartMentalArithmeticSessionCmdWithArgs();
             default -> throw new IllegalStateException("Unexpected value: " + command);
         };
     }
