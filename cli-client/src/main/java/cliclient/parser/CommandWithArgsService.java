@@ -60,9 +60,11 @@ class CommandWithArgsService {
             case ADD_SETTINGS -> addSettings();
             case LIST_NOTES -> listNotes();
             case ADD_NOTE -> new ErroneousCmdArgs(ADD_NOTE, "Content is missing");
+            case UPDATE_NOTE -> new ErroneousCmdArgs(UPDATE_NOTE, "Id is missing");
             case DELETE_NOTE -> new ErroneousCmdArgs(DELETE_NOTE, "Id is missing");
             case ADD_TAG -> new ErroneousCmdArgs(ADD_TAG, "Name is missing");
             case USE_TAG -> new ErroneousCmdArgs(USE_TAG, "Note id is missing");
+            case START_MENTAL_ARITHMETIC_SESSION -> new StartMentalArithmeticSessionCmdWithArgs();
             default -> throw new IllegalStateException("Unexpected value: " + command);
         };
     }
@@ -136,12 +138,25 @@ class CommandWithArgsService {
             case ADD_SETTINGS -> addSettingsWithParams(cwa);
             case LIST_NOTES -> listNotesWithParams(cwa);
             case ADD_NOTE -> addNoteWithParams(cwa);
+            case UPDATE_NOTE -> updateNoteWithParams(cwa);
             case DELETE_NOTE -> deleteNoteWithParams(cwa);
             case ADD_TAG -> addTagWithParams(cwa);
             case USE_TAG -> useTagWithParams(cwa);
             // todo: handle globally with no program interruption
             default -> throw new IllegalStateException("Command does not support \\flag=value pairs: " + cwa.getCommand());
         };
+    }
+
+    private CmdArgs updateNoteWithParams(CommandWithArgs cwa) {
+        if (cwa.getId() == null) {
+            return new ErroneousCmdArgs(UPDATE_NOTE, "Id is missing");
+        }
+        return UpdateNoteCmdArgs.builder()
+                .id(cwa.getId())
+                .content(cwa.getContent())
+                .addTags(cwa.getAddTags())
+                .removeTags(cwa.getRemoveTags())
+                .build();
     }
 
     private CmdArgs useTagWithParams(CommandWithArgs cwa) {
@@ -282,6 +297,8 @@ class CommandWithArgsService {
                 case CONTEXTS -> cwaBuilder.contexts(getContexts(flagValue));
                 case ENTRIES_PER_VOCABULARY_TRAINING_SESSION -> cwaBuilder.entriesPerVocabularyTrainingSession(Integer.parseInt(flagValue));
                 case TRANSLATIONS -> cwaBuilder.translations(getWordEquivalentNames(flagValue));
+                case ADD_TAGS -> cwaBuilder.addTags(getWordEquivalentNames(flagValue));
+                case REMOVE_TAGS -> cwaBuilder.removeTags(getWordEquivalentNames(flagValue));
                 default -> throw new RuntimeException("Flag does not have a handler: " + flagType);
             };
         }

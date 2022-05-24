@@ -36,6 +36,7 @@ public enum Command {
 
     LIST_NOTES("n"),
     ADD_NOTE("an"),
+    UPDATE_NOTE("un"),
     DELETE_NOTE("dn"),
 
     ADD_TAG("at"),
@@ -44,6 +45,8 @@ public enum Command {
     USE_TAG("ut"),
 
     LIST_FLAG_TYPES("ft"),
+
+    START_MENTAL_ARITHMETIC_SESSION("smas"),
 
     EXIT("e"),
     NO_INPUT("NO_INPUT"),

@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
-@FeignClient(value = "language", url = "http://localhost:8082/languages")
+@FeignClient(value = "language", url = "http://localhost:8081/languages")
 public interface LanguageApi {
 
     @GetMapping(value = "/")

@@ -25,6 +25,8 @@ public class CliClientApplication {
 
     // todo: pom.xml optimization with dependency management
     public static void main(String[] args) {
+        // todo: run a dwn command at application end and print stats
+        // todo: svts: if n syn answered - cac = cac + n
         // todo: for every delete ask for confirmation
         // todo: for every delete have a corresponding force delete command that does not ask for confirmation
         // todo: ve: full and short display modes

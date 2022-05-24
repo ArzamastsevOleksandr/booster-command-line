@@ -48,4 +48,8 @@ public class CommandLineAdapter {
         writeLine(ColorCodes.green("Type command or " + HELP.getName() + " to get help."));
     }
 
+    public void greenLine(Object o) {
+        writeLine(ColorCodes.green(o));
+    }
+
 }

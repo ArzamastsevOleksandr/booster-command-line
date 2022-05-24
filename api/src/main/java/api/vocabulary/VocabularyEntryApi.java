@@ -10,7 +10,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-@FeignClient(value = "vocabulary-entry", url = "http://localhost:8082/vocabulary-entries")
+@FeignClient(value = "vocabulary-entry", url = "http://localhost:8081/vocabulary-entries")
 public interface VocabularyEntryApi {
 
     @GetMapping(value = "/", params = {"limit"})
