@@ -19,12 +19,8 @@
     <modules>
         <module>api</module>
         <module>cli-client</module>
-        <module>notes-service</module>
-        <module>vocabulary-service</module>
+        <module>booster</module>
         <module>upload-service</module>
-        <module>settings-service</module>
-        <module>tag-service</module>
-        <module>mental-arithmetic-service</module>
     </modules>
 
     <properties>

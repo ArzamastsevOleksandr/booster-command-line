@@ -1,7 +1,7 @@
 package cliclient.command.handler;
 
-import api.arithmetic.ArithmeticExpression;
-import api.arithmetic.MentalArithmeticApi;
+import api.math.ArithmeticExpression;
+import api.math.MathApi;
 import cliclient.adapter.CommandLineAdapter;
 import cliclient.command.args.CmdArgs;
 import cliclient.command.args.StartMentalArithmeticSessionCmdWithArgs;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class StartMentalArithmeticSessionCommandHandler implements CommandHandler {
 
     private final CommandLineAdapter adapter;
-    private final MentalArithmeticApi mentalArithmeticApi;
+    private final MathApi mathApi;
 
     @Override
     public void handle(CmdArgs cwa) {
@@ -42,7 +42,7 @@ public class StartMentalArithmeticSessionCommandHandler implements CommandHandle
     }
 
     private ArithmeticExpression getArithmeticExpression() {
-        ArithmeticExpression expression = mentalArithmeticApi.random(1);
+        ArithmeticExpression expression = mathApi.random(1);
         adapter.writeLine(expression);
         return expression;
     }

@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
-@FeignClient(value = "settings", url = "http://localhost:8084/settings/")
+@FeignClient(value = "settings", url = "http://localhost:8081/settings/")
 public interface SettingsApi {
 
     @GetMapping(value = "/")

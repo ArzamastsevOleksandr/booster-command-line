@@ -9,7 +9,7 @@ import java.util.Set;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
-@FeignClient(value = "tags", url = "http://localhost:8085/tags/")
+@FeignClient(value = "tags", url = "http://localhost:8081/tags/")
 public interface TagsApi {
 
     @GetMapping(value = "/")
